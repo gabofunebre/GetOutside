@@ -1,0 +1,70 @@
+<!-- app/templates/ranking_filter.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ranking de Productos</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet" crossorigin="anonymous"
+  >
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">Ranking de Productos Vendidos</h1>
+    <form id="rankFilterForm" method="get" action="/ranking/list">
+      <div class="row mb-3">
+        <div class="col">
+          <label for="start" class="form-label">Desde</label>
+          <input type="date" id="start" name="start" class="form-control">
+        </div>
+        <div class="col">
+          <label for="end" class="form-label">Hasta</label>
+          <input type="date" id="end" name="end" class="form-control">
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col">
+          <label for="tipo" class="form-label">Tipo</label>
+          <select id="tipo" name="tipo" class="form-select">
+            <option value="">Todos</option>
+            {% for t in tipos %}
+              <option value="{{ t }}">{{ t }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col">
+          <label for="proceso_aplicado" class="form-label">Proceso Aplicado</label>
+          <select id="proceso_aplicado" name="proceso_aplicado" class="form-select">
+            <option value="">Todos</option>
+            {% for p in procesos %}
+              <option value="{{ p }}">{{ p }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col">
+          <label for="diseno_aplicado" class="form-label">Diseño Aplicado</label>
+          <select id="diseno_aplicado" name="diseno_aplicado" class="form-select">
+            <option value="">Todos</option>
+            {% for d in disenos %}
+              <option value="{{ d }}">{{ d }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Filtrar</button>
+      <button type="button" class="btn btn-secondary" id="btn-last30">Último mes</button>
+      <button type="button" class="btn btn-secondary" id="btn-all">Todo historial</button>
+    </form>
+  </div>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    crossorigin="anonymous"
+    defer
+  ></script>
+  <script src="/static/js/ranking_filter.js" defer></script>
+</body>
+</html>

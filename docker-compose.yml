@@ -1,0 +1,24 @@
+# docker-compose.yml
+services:
+  db:
+    image: postgres:15
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    ports:
+      - "14141:8000"
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+volumes:
+  db_data:
