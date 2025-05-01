@@ -18,17 +18,38 @@ def get_db():
     finally:
         db.close()
 
-# 1) Formulario de registro de venta (GET /ventas/new)
+# 1) Formulario de registro de venta
 @router.get("/new", response_class=HTMLResponse)
 def new_sale_form(request: Request, db: Session = Depends(get_db)):
-    productos = db.query(models.Producto).all()
-    medios    = db.query(models.PaymentMethod).all()
+    productos_raw = db.query(models.Producto).all()
+    medios_raw    = db.query(models.PaymentMethod).all()
+
+    productos = [
+        {
+            "codigo_getoutside": p.codigo_getoutside,
+            "tipo":               p.tipo,
+            "precio_venta":       float(p.precio_venta),
+        }
+        for p in productos_raw
+    ]
+    medios = [
+        {
+            "id":   m.id,
+            "name": m.name,
+        }
+        for m in medios_raw
+    ]
+
     return templates.TemplateResponse(
         "sales_form.html",
-        {"request": request, "productos": productos, "medios": medios}
+        {
+            "request": request,
+            "productos": productos,
+            "medios": medios
+        }
     )
 
-# 2) Formulario de filtros (GET /ventas/)
+# 2) Pantalla de filtros
 @router.get("/", response_class=HTMLResponse)
 def ventas_filter(request: Request, db: Session = Depends(get_db)):
     medios = db.query(models.PaymentMethod).all()
@@ -37,7 +58,7 @@ def ventas_filter(request: Request, db: Session = Depends(get_db)):
         {"request": request, "payment_methods": medios}
     )
 
-# 3) Lista de ventas según filtros (GET /ventas/list)
+# 3) Listado de ventas según filtros
 @router.get("/list", response_class=HTMLResponse)
 def ventas_list(
     request: Request,
@@ -61,7 +82,7 @@ def ventas_list(
         {"request": request, "ventas": ventas}
     )
 
-# 4) API JSON para crear venta (POST /ventas)
+# 4) API JSON para crear venta
 @router.post("/", response_model=schemas.VentaOut)
 def create_venta_api(v: schemas.VentaCreate, db: Session = Depends(get_db)):
     try:
@@ -69,7 +90,7 @@ def create_venta_api(v: schemas.VentaCreate, db: Session = Depends(get_db)):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-# 5) API JSON para ingresos (GET /ventas/ingresos)
+# 5) API JSON para ingresos
 @router.get("/ingresos")
 def ingresos(db: Session = Depends(get_db)):
     return crud.get_ingresos(db)
