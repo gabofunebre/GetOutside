@@ -1,16 +1,13 @@
 /* app/static/css/style.css */
 
-/* Fondo general */
+/* Tus estilos existentes */
 body {
   background-color: #f8f9fa;
 }
-
-/* Espaciado para alertas */
 #alert-placeholder .alert {
   margin-top: 1rem;
 }
-
-/* Contenedor de botones uniforme */
+/* Contenedor de botones uniforme para dashboard, admin y otras vistas */
 .buttons-container {
   width: 315px;
   margin: 0 auto;
@@ -19,8 +16,7 @@ body {
   align-items: center;
   gap: 1.75rem;
 }
-
-/* Botones grandes uniformes */
+/* Botones de acción grandes y uniformes */
 .btn-action {
   width: 100%;
   padding-top: 1rem;
@@ -28,95 +24,35 @@ body {
   font-size: 1.125rem;
 }
 
-/* Inputs y selects llenan su celda */
-#items-table input,
-#items-table select {
+/* ------------------------------
+   Estilos para el formulario
+   de Nuevo Medio de Pago
+   ------------------------------ */
+.payment-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.payment-form .form-control {
+  /* input no tan ancho */
+  max-width: 300px;
   width: 100%;
 }
-
-/* Responsive para tabla de pagos */
-@media (max-width: 576px) {
-  #payments-table thead {
-    display: none;
-  }
-  #payments-table,
-  #payments-table tbody,
-  #payments-table tr,
-  #payments-table td {
-    display: block;
-    width: 100%;
-  }
-  #payments-table tr {
-    margin-bottom: 1rem;
-    border: 1px solid #dee2e6;
-    border-radius: .25rem;
-    padding: .5rem;
-  }
-  #payments-table td {
-    display: flex;
-    justify-content: space-between;
-    padding: .25rem 0;
-  }
-  #payments-table td:nth-child(1)::before {
-    content: "Medio: ";
-    font-weight: bold;
-  }
-  #payments-table td:nth-child(2)::before {
-    content: "Monto: ";
-    font-weight: bold;
-  }
-  #payments-table td:nth-child(3) {
-    justify-content: flex-end;
-  }
+.payment-form button {
+  flex-shrink: 0;
 }
-/* Estilos responsive para la tabla de productos en móvil */
-@media (max-width: 576px) {
-  #items-table thead {
-    display: none;
-  }
 
-  #items-table,
-  #items-table tbody,
-  #items-table tr,
-  #items-table td {
-    display: block;
-    width: 100%;
+/* En pantallas md+ lo ponemos en línea */
+@media (min-width: 768px) {
+  .payment-form {
+    flex-direction: row;
+    justify-content: center;
   }
-
-  #items-table tr {
-    margin-bottom: 1rem;
-    border: 1px solid #dee2e6;
-    border-radius: .25rem;
-    padding: .5rem;
-  }
-
-  #items-table td {
-    display: flex;
-    justify-content: space-between;
-    padding: .25rem 0;
-  }
-
-  #items-table td:nth-child(1) {
-    font-weight: bold;
-    padding-bottom: .5rem;
-  }
-
-  #items-table td:nth-child(2)::before {
-    content: "Cant.: ";
-    font-weight: bold;
-  }
-
-  #items-table td:nth-child(3)::before {
-    content: "Precio: ";
-    font-weight: bold;
-  }
-
-  #items-table td:nth-child(4)::before {
-    content: "SubT.: ";
-    font-weight: bold;
-  }
-
-  #items-table td:nth-child(5) {
-    justify-content: flex-end;
+  .payment-form .form-control {
+    margin-right: 1rem;
+    max-width: 300px;
   }
 }
