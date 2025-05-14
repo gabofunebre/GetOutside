@@ -19,6 +19,7 @@ def create_producto(db: Session, p: schemas.ProductoCreate):
     db.refresh(db_p)
     return db_p
 
+
 # -- Stock / Movimientos --
 def update_stock(db: Session, codigo: str, delta: int, referencia: str):
     prod = get_producto(db, codigo)

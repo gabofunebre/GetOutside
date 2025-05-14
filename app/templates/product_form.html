@@ -3,75 +3,103 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agregar Producto al Catálogo</title>
+  <title>Agregar Producto</title>
   <!-- Bootstrap CSS -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    integrity="sha384-..."
-    crossorigin="anonymous"
+    rel="stylesheet" crossorigin="anonymous"
   >
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <div class="container mt-5">
-    <h1 class="mb-4">Agregar Producto al Catálogo</h1>
+  <div class="container mt-5" style="max-width: 600px;">
+    <h1 class="text-center mb-4">Agregar Producto</h1>
     <div id="alert-placeholder"></div>
+
     <form id="productForm">
       <div class="mb-3">
-        <label for="codigo_getoutside" class="form-label">Código GetOutside</label>
-        <input type="text" class="form-control" id="codigo_getoutside" name="codigo_getoutside" required>
+        <label for="codigo_getoutside" class="form-label">
+          Código GetOutside <span class="text-danger">*</span>
+        </label>
+        <input
+          type="text"
+          class="form-control"
+          id="codigo_getoutside"
+          name="codigo_getoutside"
+          required
+        >
       </div>
+
       <div class="mb-3">
-        <label for="codigo_mercaderia" class="form-label">CODMercadería</label>
-        <input type="text" class="form-control" id="codigo_mercaderia" name="codigo_mercaderia" required>
+        <label for="descripcion" class="form-label">
+          Descripción <span class="text-danger">*</span>
+        </label>
+        <textarea
+          class="form-control"
+          id="descripcion"
+          name="descripcion"
+          rows="2"
+          required
+        ></textarea>
       </div>
+
       <div class="mb-3">
-        <label for="tipo" class="form-label">Tipo</label>
-        <input type="text" class="form-control" id="tipo" name="tipo" required>
+        <label for="catalogo_id" class="form-label">Catálogo</label>
+        <select
+          id="catalogo_id"
+          name="catalogo_id"
+          class="form-select"
+          required
+        >
+          {% for c in catalogos %}
+            <option value="{{ c.id }}">{{ c.filename }}</option>
+          {% endfor %}
+        </select>
       </div>
-      <div class="mb-3">
-        <label for="descripcion" class="form-label">Descripción <small class="text-muted">(opcional)</small></label>
-        <textarea class="form-control" id="descripcion" name="descripcion"></textarea>
-      </div>
-      <div class="mb-3">
-        <label for="color_prenda" class="form-label">Color Prenda <small class="text-muted">(opcional)</small></label>
-        <input type="text" class="form-control" id="color_prenda" name="color_prenda">
-      </div>
-      <div class="mb-3">
-        <label for="proceso_aplicado" class="form-label">Proceso Aplicado <small class="text-muted">(opcional)</small></label>
-        <input type="text" class="form-control" id="proceso_aplicado" name="proceso_aplicado">
-      </div>
-      <div class="mb-3">
-        <label for="diseno_aplicado" class="form-label">Diseño Aplicado <small class="text-muted">(opcional)</small></label>
-        <input type="text" class="form-control" id="diseno_aplicado" name="diseno_aplicado">
-      </div>
-      <div class="mb-3">
-        <label for="variante_diseno" class="form-label">Variante de diseño <small class="text-muted">(opcional)</small></label>
-        <input type="text" class="form-control" id="variante_diseno" name="variante_diseno">
-      </div>
-      <div class="mb-3">
-        <label for="talle" class="form-label">Talle <small class="text-muted">(opcional)</small></label>
-        <input type="text" class="form-control" id="talle" name="talle">
-      </div>
+
       <div class="mb-3">
         <label for="precio_venta" class="form-label">Precio de venta</label>
-        <input type="number" step="0.01" class="form-control" id="precio_venta" name="precio_venta" required>
+        <input
+          type="number"
+          step="0.01"
+          class="form-control"
+          id="precio_venta"
+          name="precio_venta"
+          required
+        >
       </div>
+
       <div class="mb-3">
-        <label for="stock_actual" class="form-label">Stock a ingresar</label>
-        <input type="number" class="form-control" id="stock_actual" name="stock_actual" value="0" required>
+        <label for="stock_actual" class="form-label">Stock</label>
+        <input
+          type="number"
+          class="form-control"
+          id="stock_actual"
+          name="stock_actual"
+          value="0"
+          required
+        >
       </div>
-      <button type="submit" class="btn btn-primary">Crear Producto</button>
+
+      <div class="d-flex justify-content-center mb-4">
+        <button type="submit" class="btn btn-primary">
+          Crear Producto
+        </button>
+      </div>
     </form>
+
+    <div class="text-center">
+      <a href="/" class="text-muted">&larr; Volver al Dashboard</a>
+    </div>
   </div>
 
+  <!-- Bootstrap JS -->
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-..."
     crossorigin="anonymous"
     defer
   ></script>
+  <!-- Lógica del formulario -->
   <script src="/static/js/product_form.js" defer></script>
 </body>
 </html>

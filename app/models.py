@@ -13,18 +13,15 @@ class TipoMov(enum.Enum):
 
 class Producto(Base):
     __tablename__ = "productos"
-    codigo_getoutside = Column(String, primary_key=True, index=True)
-    codigo_mercaderia = Column(String, nullable=False)
-    tipo            = Column(String, nullable=False)   # ← Nuevo campo obligatorio
-    descripcion       = Column(String, nullable=True)    # ← Nuevo campo opcional
-    color_prenda      = Column(String, nullable=True)
-    proceso_aplicado  = Column(String, nullable=True)
-    diseno_aplicado   = Column(String, nullable=True)
-    variante_diseno   = Column(String, nullable=True)
-    talle             = Column(String, nullable=True)
-    precio_venta      = Column(DECIMAL(12,2), nullable=False)
-    stock_actual      = Column(Integer, default=0, nullable=False)
 
+    id                = Column(Integer, primary_key=True, index=True)
+    codigo_getoutside = Column(String, nullable=False, unique=True, index=True)
+    descripcion       = Column(String, nullable=False)
+    catalogo_id       = Column(Integer, ForeignKey("catalogos.id"), nullable=False)
+    precio_venta      = Column(DECIMAL(12,2), nullable=False)
+    stock_actual      = Column(Integer, nullable=False)
+
+    catalogo = relationship("Catalogo")
     movimientos      = relationship("InventarioMovimiento", back_populates="producto")
     detalles_venta   = relationship("DetalleVenta", back_populates="producto")
 

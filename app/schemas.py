@@ -6,20 +6,15 @@ from typing import List, Optional
 # --- Productos ---
 class ProductoBase(BaseModel):
     codigo_getoutside: str
-    codigo_mercaderia: str
-    tipo: str                               # ← Nuevo campo obligatorio
-    descripcion: Optional[str] = None         # ← Nuevo campo opcional
-    color_prenda: Optional[str] = None
-    proceso_aplicado: Optional[str] = None
-    diseno_aplicado: Optional[str] = None
-    variante_diseno: Optional[str] = None
-    talle: Optional[str] = None
+    descripcion: str
+    catalogo_id: int
     precio_venta: float
 
 class ProductoCreate(ProductoBase):
     stock_actual: int
 
 class ProductoOut(ProductoBase):
+    id: int
     stock_actual: int
     class Config:
         orm_mode = True
