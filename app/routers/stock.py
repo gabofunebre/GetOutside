@@ -1,12 +1,11 @@
 # app/routers/stock.py
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from ..core.templates import templates
 from sqlalchemy.orm import Session
 from .. import database, models
 
 router = APIRouter(prefix="/stock", tags=["Stock"])
-templates = Jinja2Templates(directory="app/templates")
 
 def get_db():
     db = database.SessionLocal()

@@ -68,3 +68,17 @@ class PaymentMethodOut(PaymentMethodBase):
     id: int
     class Config:
         orm_mode = True
+
+class CatalogoBase(BaseModel):
+    filename: str
+
+class CatalogoCreate(CatalogoBase):
+    pass
+
+class Catalogo(CatalogoBase):
+    id: int
+    filepath: str
+    uploaded_at: datetime
+
+    class Config:
+        orm_mode = True

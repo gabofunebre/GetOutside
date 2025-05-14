@@ -1,8 +1,12 @@
 # app/crud.py
+import os
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from datetime import datetime
+from fastapi import UploadFile
 from . import models, schemas
+
+PDF_DIR = "app/static/catalogos"
 
 # -- Productos --
 def get_producto(db: Session, codigo: str):
@@ -170,3 +174,39 @@ def get_product_ranking(
     ).order_by(func.sum(models.DetalleVenta.cantidad).desc())
 
     return query.all()
+
+def create_catalogo(db: Session, file: UploadFile) -> models.Catalogo:
+    # Asegúrate de que exista la carpeta
+    os.makedirs(PDF_DIR, exist_ok=True)
+    dest_path = os.path.join(PDF_DIR, file.filename)
+    with open(dest_path, "wb") as f:
+        f.write(file.file.read())
+    db_obj = models.Catalogo(
+        filename=file.filename,
+        filepath=f"/static/catalogos/{file.filename}"
+    )
+    db.add(db_obj)
+    db.commit()
+    db.refresh(db_obj)
+    return db_obj
+
+def get_catalogos(db: Session):
+    return db.query(models.Catalogo).order_by(models.Catalogo.uploaded_at.desc()).all()
+
+def get_catalogo(db: Session, catalogo_id: int) -> models.Catalogo | None:
+    return db.query(models.Catalogo).filter(models.Catalogo.id == catalogo_id).first()
+
+def create_catalogo(db: Session, file: UploadFile) -> models.Catalogo:
+    # asegurarnos de que exista la carpeta
+    os.makedirs(PDF_DIR, exist_ok=True)
+    dest_path = os.path.join(PDF_DIR, file.filename)
+    with open(dest_path, "wb") as out:
+        out.write(file.file.read())
+    db_obj = models.Catalogo(
+        filename=file.filename,
+        filepath=dest_path
+    )
+    db.add(db_obj)
+    db.commit()
+    db.refresh(db_obj)
+    return db_obj

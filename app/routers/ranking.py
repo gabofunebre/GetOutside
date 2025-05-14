@@ -1,13 +1,12 @@
 # app/routers/ranking.py
 from fastapi import APIRouter, Depends, Request, Query
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from ..core.templates import templates
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from .. import database, crud, models
 
 router = APIRouter(prefix="/ranking", tags=["Ranking"])
-templates = Jinja2Templates(directory="app/templates")
 
 def get_db():
     db = database.SessionLocal()

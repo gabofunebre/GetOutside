@@ -75,3 +75,11 @@ class VentaPago(Base):
 
     venta  = relationship("Venta",         back_populates="pagos")
     metodo = relationship("PaymentMethod", back_populates="pagos")
+
+class Catalogo(Base):
+    __tablename__ = "catalogos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String, nullable=False, unique=True)
+    filepath = Column(String, nullable=False, unique=True)
+    uploaded_at = Column(DateTime, default=datetime.utcnow)

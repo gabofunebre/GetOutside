@@ -1,13 +1,12 @@
 # app/routers/payment_methods.py
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from ..core.templates import templates
 from sqlalchemy.orm import Session
 from typing import List
 from .. import crud, schemas, database
 
 router = APIRouter(prefix="/payment_methods", tags=["Payment Methods"])
-templates = Jinja2Templates(directory="app/templates")
 
 def get_db():
     db = database.SessionLocal()
