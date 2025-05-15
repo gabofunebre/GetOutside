@@ -83,6 +83,10 @@ class VentaPago(Base):
     venta  = relationship("Venta",         back_populates="pagos")
     metodo = relationship("PaymentMethod", back_populates="pagos")
 
+    @property
+    def metodo_str(self):
+        return self.metodo.name if self.metodo else None
+
 class Catalogo(Base):
     __tablename__ = "catalogos"
 

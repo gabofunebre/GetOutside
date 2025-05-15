@@ -1,4 +1,3 @@
-<!-- app/templates/catalogos_list.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,23 +12,25 @@
 </head>
 <body>
   <div class="container mt-5">
-    <h2 class="text-center mb-4">Catálogos PDF</h2>
-    <ul class="list-group">
-      {% for c in catalogos %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          {{ c.filename }}
-          <a
-            href="/catalogos/download/{{ c.id }}"
-            target="_blank"
-            class="btn btn-sm btn-primary"
-          >
-            Ver PDF
-          </a>
-        </li>
-      {% endfor %}
-    </ul>
-    <div class="text-center mt-4">
-      <a href="/consultas" class="text-muted">&larr; Volver a Consultas</a>
+    <div class="mx-auto" style="max-width: 750px;">
+      <h2 class="text-center mb-4">Catálogos PDF</h2>
+      <ul class="list-group">
+        {% for c in catalogos %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ c.filename }}
+            <a
+              href="/catalogos/download/{{ c.id }}"
+              target="_blank"
+              class="btn btn-sm btn-primary btn-view-pdf"
+            >
+              Ver PDF
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+      <div class="text-center mt-4">
+        <a href="/consultas" class="text-muted">&larr; Volver a Consultas</a>
+      </div>
     </div>
   </div>
   <script

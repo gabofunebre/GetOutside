@@ -90,13 +90,17 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  max-width: 500px;
+  max-width: 750px;
+  width: 100%;
   margin: 0 auto;
 }
 
 .catalogo-form .form-control {
-  max-width: 400px;
   width: 100%;
+}
+
+.catalogo-form button[type="submit"] {
+  width: 150px;
 }
 
 /* Ajustes para los botones finales */
@@ -106,6 +110,10 @@ body {
   align-items: center;
   gap: 1rem;
   margin-bottom: 3rem;
+}
+
+.btn-view-pdf {
+  width: 120px;
 }
 
 #submit-sale {
@@ -123,4 +131,17 @@ body {
   background-color: #f9c58e;
   border-color: #f9c58e;
   color: #000;
+}
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.7);
+  display: none; /* 🔹 Esto lo oculta por defecto */
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
 }

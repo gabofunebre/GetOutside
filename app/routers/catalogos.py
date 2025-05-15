@@ -1,5 +1,3 @@
-# app/routers/catalogos.py
-
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Request
 from fastapi.responses import RedirectResponse, FileResponse, HTMLResponse
 from sqlalchemy.orm import Session
@@ -30,12 +28,20 @@ def new_catalogo_form(request: Request):
 @router.post("/", status_code=303)
 async def upload_catalogo(
     file: UploadFile = File(..., media_type="application/pdf"),
-    db: Session = Depends(deps.get_db)
+    db: Session = Depends(deps.get_db),
+    request: Request = None
 ):
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(400, "Solo se admiten archivos PDF")
-    crud.create_catalogo(db, file)
-    return RedirectResponse(url="/catalogos", status_code=303)
+    try:
+        crud.create_catalogo(db, file)
+        return RedirectResponse(url="/catalogos", status_code=303)
+    except ValueError as e:
+        return templates.TemplateResponse(
+            "catalogo_upload.html",
+            {"request": request, "error": str(e)},
+            status_code=400
+        )
 
 @router.get("/download/{catalogo_id}")
 def download_catalogo(

@@ -1,4 +1,3 @@
-# app/crud.py
 import os
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
@@ -18,7 +17,6 @@ def create_producto(db: Session, p: schemas.ProductoCreate):
     db.commit()
     db.refresh(db_p)
     return db_p
-
 
 # -- Stock / Movimientos --
 def update_stock(db: Session, codigo: str, delta: int, referencia: str):
@@ -90,9 +88,7 @@ def create_venta(db: Session, v: schemas.VentaCreate):
 
 # -- INGRESOS (total y por método) --
 def get_ingresos(db: Session):
-    # Total recaudado
     total = db.query(func.sum(models.VentaPago.amount)).scalar() or 0
-    # Desglose por método
     rows = (
         db.query(models.PaymentMethod.name, func.sum(models.VentaPago.amount))
           .join(models.VentaPago, models.PaymentMethod.id == models.VentaPago.payment_method_id)
@@ -186,15 +182,21 @@ def get_product_ranking(
 
     return query.all()
 
+# -- Catálogos --
 def create_catalogo(db: Session, file: UploadFile) -> models.Catalogo:
-    # Asegúrate de que exista la carpeta
+    # Validar si ya existe
+    existing = db.query(models.Catalogo).filter_by(filename=file.filename).first()
+    if existing:
+        raise ValueError(f"Ya existe un catálogo con el nombre '{file.filename}'.")
+
     os.makedirs(PDF_DIR, exist_ok=True)
     dest_path = os.path.join(PDF_DIR, file.filename)
-    with open(dest_path, "wb") as f:
-        f.write(file.file.read())
+    with open(dest_path, "wb") as out:
+        out.write(file.file.read())
+
     db_obj = models.Catalogo(
         filename=file.filename,
-        filepath=f"/static/catalogos/{file.filename}"
+        filepath=dest_path
     )
     db.add(db_obj)
     db.commit()
@@ -206,18 +208,3 @@ def get_catalogos(db: Session):
 
 def get_catalogo(db: Session, catalogo_id: int) -> models.Catalogo | None:
     return db.query(models.Catalogo).filter(models.Catalogo.id == catalogo_id).first()
-
-def create_catalogo(db: Session, file: UploadFile) -> models.Catalogo:
-    # asegurarnos de que exista la carpeta
-    os.makedirs(PDF_DIR, exist_ok=True)
-    dest_path = os.path.join(PDF_DIR, file.filename)
-    with open(dest_path, "wb") as out:
-        out.write(file.file.read())
-    db_obj = models.Catalogo(
-        filename=file.filename,
-        filepath=dest_path
-    )
-    db.add(db_obj)
-    db.commit()
-    db.refresh(db_obj)
-    return db_obj

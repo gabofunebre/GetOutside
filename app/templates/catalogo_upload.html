@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Subir Catálogo PDF</title>
+  <title>Subir Catálogo</title>
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
     rel="stylesheet"
@@ -12,10 +12,21 @@
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <div class="container mt-5">
-    <h1 class="text-center mb-4">Subir Catálogo PDF</h1>
+  <div id="overlay">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Subiendo...</span>
+    </div>
+  </div>
 
-    <!-- placeholder para alertas si las gestionas vía JS -->
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Subir Catálogo</h1>
+
+    {% if error %}
+      <div class="alert alert-danger" role="alert">
+        {{ error }}
+      </div>
+    {% endif %}
+
     <div id="alert-placeholder"></div>
 
     <form
@@ -25,11 +36,9 @@
       method="post"
       enctype="multipart/form-data"
     >
-      <div class="mb-3 w-100">
+      <div class="mb-3 w-100" >
         <label for="file" class="form-label">Archivo PDF</label>
-        <input
-          type="file"
-          class="form-control"
+        <input type="file" class="form-control" 
           id="file"
           name="file"
           accept="application/pdf"
@@ -38,7 +47,7 @@
       </div>
 
       <button type="submit" class="btn btn-primary">
-        Subir Catálogo
+        Subir
       </button>
     </form>
 
@@ -46,6 +55,14 @@
       <a href="/" class="text-muted">&larr; Volver al Dashboard</a>
     </div>
   </div>
+
+  <script>
+    const form = document.getElementById('catalogoForm');
+    const overlay = document.getElementById('overlay');
+    form.addEventListener('submit', () => {
+      overlay.style.display = 'flex';
+    });
+  </script>
 
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"

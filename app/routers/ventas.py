@@ -28,7 +28,6 @@ def new_sale_form(request: Request, db: Session = Depends(get_db)):
         {
             "codigo_getoutside": p.codigo_getoutside,
             "descripcion":       p.descripcion,
-            "tipo":              p.tipo,
             "precio_venta":      float(p.precio_venta),
         }
         for p in productos_raw

@@ -1,4 +1,3 @@
-# app/schemas.py
 from pydantic import BaseModel
 from datetime import datetime
 from typing import List, Optional
@@ -19,7 +18,7 @@ class ProductoOut(ProductoBase):
     class Config:
         orm_mode = True
 
-# --- Ventas / Pagos (sin cambios) ---
+# --- Ventas / Pagos / Descuentos ---
 class DetalleVentaIn(BaseModel):
     codigo_getoutside: str
     cantidad: int
@@ -34,8 +33,19 @@ class PagoCreate(BaseModel):
     payment_method_id: int
     amount: float
 
+class PaymentMethodBase(BaseModel):
+    name: str
+
+class PaymentMethodCreate(PaymentMethodBase):
+    pass
+
+class PaymentMethodOut(PaymentMethodBase):
+    id: int
+    class Config:
+        orm_mode = True
+
 class PagoOut(PagoCreate):
-    metodo: str
+    metodo: PaymentMethodOut
     class Config:
         orm_mode = True
 
@@ -62,18 +72,7 @@ class VentaOut(BaseModel):
     class Config:
         orm_mode = True
 
-# --- Métodos de Pago ---
-class PaymentMethodBase(BaseModel):
-    name: str
-
-class PaymentMethodCreate(PaymentMethodBase):
-    pass
-
-class PaymentMethodOut(PaymentMethodBase):
-    id: int
-    class Config:
-        orm_mode = True
-
+# --- Catálogos ---
 class CatalogoBase(BaseModel):
     filename: str
 
@@ -84,6 +83,5 @@ class Catalogo(CatalogoBase):
     id: int
     filepath: str
     uploaded_at: datetime
-
     class Config:
         orm_mode = True

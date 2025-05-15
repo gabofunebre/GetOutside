@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from ..core.templates import templates
 from sqlalchemy.orm import Session
-from .. import crud, schemas, database
+from .. import crud, schemas, database, models
 
 router = APIRouter(prefix="/productos", tags=["Productos"])
 
@@ -15,8 +15,12 @@ def get_db():
         db.close()
 
 @router.get("/new", response_class=HTMLResponse)
-def new_product_form(request: Request):
-    return templates.TemplateResponse("product_form.html", {"request": request})
+def new_product_form(request: Request, db: Session = Depends(get_db)):
+    catalogos = db.query(models.Catalogo).all()
+    return templates.TemplateResponse(
+        "product_form.html",
+        {"request": request, "catalogos": catalogos}
+    )
 
 @router.post("/", response_model=schemas.ProductoOut)
 def create_producto(p: schemas.ProductoCreate, db: Session = Depends(get_db)):
