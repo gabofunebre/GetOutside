@@ -2,7 +2,8 @@ body {
   background-color: #f8f9fa;
 }
 
-.producto-block {
+.producto-block,
+.pago-block {
   background-color: #fefefe;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -10,13 +11,20 @@ body {
   margin-bottom: 1rem;
 }
 
-.producto-block .form-label {
+.producto-block .form-label,
+.pago-block .form-label {
   font-weight: 500;
 }
 
 .producto-block .subtotal {
   font-weight: bold;
   font-size: 1.1rem;
+}
+
+.btn-quitar-producto,
+.btn-quitar-pago {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
 }
 
 #alert-placeholder .alert {

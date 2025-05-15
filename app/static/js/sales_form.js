@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const medios = window.mediosData;
 
   const productosContainer = document.getElementById("productos-container");
-  const paymentsTable = document.getElementById("payments-table").querySelector("tbody");
+  const pagosContainer = document.getElementById("pagos-container");
   const addItemBtn = document.getElementById("add-item");
   const addPaymentBtn = document.getElementById("add-payment");
   const totalVentaEl = document.getElementById("total-venta");
@@ -29,8 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
     totalVentaEl.textContent = formatNum(totalV);
 
     let totalP = 0;
-    paymentsTable.querySelectorAll("tr").forEach(row => {
-      totalP += Number(row.querySelector("[name='amount']").value) || 0;
+    pagosContainer.querySelectorAll(".pago-block").forEach(block => {
+      totalP += Number(block.querySelector("[name='amount']").value) || 0;
     });
     totalPagoEl.textContent = formatNum(totalP);
   }
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       <div class="d-flex justify-content-between align-items-center">
         <span>Total: $<span class="subtotal">0.00</span></span>
-        <button class="btn btn-sm btn-danger remove">Quitar</button>
+        <button class="btn btn-danger btn-sm btn-quitar-producto">Quitar</button>
       </div>
     `;
     productosContainer.appendChild(block);
@@ -70,15 +70,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     select.addEventListener("change", () => {
       const selected = select.selectedOptions[0];
-      precioInput.value = selected.dataset.precio;
+      if (selected) {
+        precioInput.value = selected.dataset.precio;
+      }
       recalcTotals();
     });
 
     [precioInput, qtyInput].forEach(input =>
-      input.addEventListener("input", () => recalcTotals(block))
+      input.addEventListener("input", () => recalcTotals())
     );
 
-    block.querySelector(".remove").addEventListener("click", () => {
+    block.querySelector(".btn-quitar-producto").addEventListener("click", () => {
       block.remove();
       recalcTotals();
     });
@@ -90,19 +92,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const options = medios.map(m =>
       `<option value="${m.id}">${m.name}</option>`
     ).join("");
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><select name="payment_method_id" class="form-select">${options}</select></td>
-      <td><input type="number" name="amount" class="form-control" step="0.01"></td>
-      <td><button class="btn btn-sm btn-danger remove">×</button></td>
-    `;
-    paymentsTable.appendChild(tr);
 
-    tr.querySelector(".remove").addEventListener("click", () => {
-      tr.remove();
+    const block = document.createElement("div");
+    block.className = "pago-block border rounded p-3 mb-3 bg-light";
+    block.innerHTML = `
+      <div class="mb-2">
+        <label class="form-label">Medio</label>
+        <select name="payment_method_id" class="form-select">${options}</select>
+      </div>
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="flex-grow-1 me-3">
+          <label class="form-label">Monto</label>
+          <input type="number" name="amount" class="form-control" step="0.01">
+        </div>
+        <div class="d-flex align-items-end">
+          <button class="btn btn-danger btn-quitar-pago">Quitar</button>
+        </div>
+      </div>
+    `;
+    pagosContainer.appendChild(block);
+
+    block.querySelector(".btn-quitar-pago").addEventListener("click", () => {
+      block.remove();
       recalcTotals();
     });
-    tr.querySelectorAll("input, select").forEach(el => {
+
+    block.querySelectorAll("input, select").forEach(el => {
       el.addEventListener("input", recalcTotals);
     });
   }
@@ -117,9 +132,9 @@ document.addEventListener("DOMContentLoaded", () => {
       cantidad: Number(block.querySelector("[name='cantidad']").value),
       precio_unitario: Number(block.querySelector("[name='precio_unitario']").value)
     }));
-    const pagos = Array.from(paymentsTable.querySelectorAll("tr")).map(row => ({
-      payment_method_id: Number(row.querySelector("[name='payment_method_id']").value),
-      amount: Number(row.querySelector("[name='amount']").value)
+    const pagos = Array.from(pagosContainer.querySelectorAll(".pago-block")).map(block => ({
+      payment_method_id: Number(block.querySelector("[name='payment_method_id']").value),
+      amount: Number(block.querySelector("[name='amount']").value)
     }));
     try {
       const res = await fetch("/ventas", {
@@ -137,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
           Venta #${venta.id} registrada. Total: ${venta.total.toFixed(2)}
         </div>`;
       productosContainer.innerHTML = "";
-      paymentsTable.innerHTML = "";
+      pagosContainer.innerHTML = "";
       recalcTotals();
       addProductoItem();
       addPaymentRow();
@@ -149,7 +164,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Inicializar con una línea de producto y una de pago
   addProductoItem();
   addPaymentRow();
 });
