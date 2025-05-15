@@ -3,7 +3,8 @@ body {
 }
 
 .producto-block,
-.pago-block {
+.pago-block,
+.descuento-block {
   background-color: #fefefe;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -12,7 +13,8 @@ body {
 }
 
 .producto-block .form-label,
-.pago-block .form-label {
+.pago-block .form-label,
+.descuento-block .form-label {
   font-weight: 500;
 }
 
@@ -22,9 +24,16 @@ body {
 }
 
 .btn-quitar-producto,
-.btn-quitar-pago {
+.btn-quitar-pago,
+.btn-quitar-descuento {
   font-size: 1rem;
   padding: 0.5rem 1rem;
+}
+
+.btn-quitar-pago,
+.btn-quitar-descuento {
+  align-self: flex-end;
+  margin-bottom: 0.25rem;
 }
 
 #alert-placeholder .alert {
@@ -88,4 +97,30 @@ body {
 .catalogo-form .form-control {
   max-width: 400px;
   width: 100%;
+}
+
+/* Ajustes para los botones finales */
+.final-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+#submit-sale {
+  padding: 1rem 2rem;
+  font-size: 1.25rem;
+}
+
+/* Botones de acción en pago y descuento */
+#add-payment,
+#add-discount {
+  width: 200px;
+}
+
+#add-discount {
+  background-color: #f9c58e;
+  border-color: #f9c58e;
+  color: #000;
 }

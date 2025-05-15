@@ -6,8 +6,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const productosContainer = document.getElementById("productos-container");
   const pagosContainer = document.getElementById("pagos-container");
+  const descuentosContainer = document.getElementById("descuentos-container");
   const addItemBtn = document.getElementById("add-item");
   const addPaymentBtn = document.getElementById("add-payment");
+  const addDiscountBtn = document.getElementById("add-discount");
   const totalVentaEl = document.getElementById("total-venta");
   const totalPagoEl = document.getElementById("total-pago");
   const submitBtn = document.getElementById("submit-sale");
@@ -100,12 +102,13 @@ document.addEventListener("DOMContentLoaded", () => {
         <label class="form-label">Medio</label>
         <select name="payment_method_id" class="form-select">${options}</select>
       </div>
-      <div class="d-flex justify-content-between align-items-center">
-        <div class="flex-grow-1 me-3">
+      <div class="row mb-2">
+        <div class="col">
           <label class="form-label">Monto</label>
           <input type="number" name="amount" class="form-control" step="0.01">
         </div>
-        <div class="d-flex align-items-end">
+        <div class="col-auto d-flex flex-column justify-content-end">
+          <label class="form-label invisible">Quitar</label>
           <button class="btn btn-danger btn-quitar-pago">Quitar</button>
         </div>
       </div>
@@ -122,8 +125,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function addDiscountRow() {
+    const block = document.createElement("div");
+    block.className = "descuento-block border rounded p-3 mb-3 bg-light";
+    block.innerHTML = `
+      <div class="mb-2">
+        <label class="form-label">Concepto de Descuento</label>
+        <input type="text" name="concepto" class="form-control">
+      </div>
+      <div class="row mb-2">
+        <div class="col">
+          <label class="form-label">Monto</label>
+          <input type="number" name="amount" class="form-control" step="0.01">
+        </div>
+        <div class="col-auto d-flex flex-column justify-content-end">
+          <label class="form-label invisible">Quitar</label>
+          <button class="btn btn-danger btn-quitar-descuento">Quitar</button>
+        </div>
+      </div>
+    `;
+    descuentosContainer.appendChild(block);
+
+    block.querySelector(".btn-quitar-descuento").addEventListener("click", () => {
+      block.remove();
+    });
+  }
+
   addItemBtn.addEventListener("click", addProductoItem);
   addPaymentBtn.addEventListener("click", addPaymentRow);
+  addDiscountBtn.addEventListener("click", addDiscountRow);
 
   submitBtn.addEventListener("click", async () => {
     alertPlaceholder.innerHTML = "";
@@ -136,11 +166,16 @@ document.addEventListener("DOMContentLoaded", () => {
       payment_method_id: Number(block.querySelector("[name='payment_method_id']").value),
       amount: Number(block.querySelector("[name='amount']").value)
     }));
+    const descuentos = Array.from(descuentosContainer.querySelectorAll(".descuento-block")).map(block => ({
+      concepto: block.querySelector("[name='concepto']").value,
+      amount: Number(block.querySelector("[name='amount']").value)
+    }));
+
     try {
       const res = await fetch("/ventas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ detalles, pagos })
+        body: JSON.stringify({ detalles, pagos, descuentos })
       });
       if (!res.ok) {
         const err = await res.json();
@@ -153,6 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>`;
       productosContainer.innerHTML = "";
       pagosContainer.innerHTML = "";
+      descuentosContainer.innerHTML = "";
       recalcTotals();
       addProductoItem();
       addPaymentRow();

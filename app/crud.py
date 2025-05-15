@@ -37,11 +37,14 @@ def update_stock(db: Session, codigo: str, delta: int, referencia: str):
 # -- Ventas + Pagos --
 def create_venta(db: Session, v: schemas.VentaCreate):
     total_detalles = sum(item.cantidad * item.precio_unitario for item in v.detalles)
+    total_descuentos = sum(d.amount for d in v.descuentos or [])
+    total_venta = total_detalles - total_descuentos
     total_pagos = sum(p.amount for p in v.pagos)
-    if total_pagos != total_detalles:
-        raise ValueError("La suma de pagos debe coincidir con el total de la venta")
 
-    venta = models.Venta(total=total_detalles)
+    if total_pagos != total_venta:
+        raise ValueError("La suma de pagos debe coincidir con el total neto de la venta (con descuentos)")
+
+    venta = models.Venta(total=total_venta)
     db.add(venta)
     db.flush()
 
@@ -73,6 +76,13 @@ def create_venta(db: Session, v: schemas.VentaCreate):
             amount=p.amount
         )
         db.add(vp)
+
+    for d in v.descuentos or []:
+        db.add(models.Descuento(
+            venta_id=venta.id,
+            concepto=d.concepto,
+            amount=d.amount
+        ))
 
     db.commit()
     db.refresh(venta)

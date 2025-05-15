@@ -39,9 +39,18 @@ class PagoOut(PagoCreate):
     class Config:
         orm_mode = True
 
+class DescuentoCreate(BaseModel):
+    concepto: str
+    amount: float
+
+class DescuentoOut(DescuentoCreate):
+    class Config:
+        orm_mode = True
+
 class VentaCreate(BaseModel):
     detalles: List[DetalleVentaIn]
     pagos:    List[PagoCreate]
+    descuentos: Optional[List[DescuentoCreate]] = []
 
 class VentaOut(BaseModel):
     id: int
@@ -49,6 +58,7 @@ class VentaOut(BaseModel):
     total: float
     detalles: List[DetalleVentaOut]
     pagos:    List[PagoOut]
+    descuentos: List[DescuentoOut]
     class Config:
         orm_mode = True
 

@@ -42,8 +42,18 @@ class Venta(Base):
     fecha   = Column(DateTime, default=datetime.utcnow)
     total   = Column(DECIMAL(14,2), nullable=False)
 
-    detalles = relationship("DetalleVenta", back_populates="venta", cascade="all, delete")
-    pagos    = relationship("VentaPago", back_populates="venta", cascade="all, delete")
+    detalles   = relationship("DetalleVenta", back_populates="venta", cascade="all, delete")
+    pagos      = relationship("VentaPago", back_populates="venta", cascade="all, delete")
+    descuentos = relationship("Descuento", back_populates="venta", cascade="all, delete")
+
+class Descuento(Base):
+    __tablename__ = "descuentos"
+    id         = Column(Integer, primary_key=True, index=True)
+    venta_id   = Column(Integer, ForeignKey("ventas.id"), nullable=False)
+    concepto   = Column(String, nullable=False)
+    amount     = Column(DECIMAL(14,2), nullable=False)
+
+    venta = relationship("Venta", back_populates="descuentos")
 
 class DetalleVenta(Base):
     __tablename__ = "venta_detalles"
