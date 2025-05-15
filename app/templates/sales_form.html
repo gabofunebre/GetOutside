@@ -16,26 +16,8 @@
     <div class="card mb-4">
       <div class="card-body">
         <h4 class="card-title">Productos</h4>
-        <table class="table" id="items-table" style="table-layout: fixed;">
-          <colgroup>
-            <col style="width: 60%;">
-            <col style="width: 12%;">
-            <col style="width: 12%;">
-            <col style="width: 12%;">
-            <col style="width: 4%;">
-          </colgroup>
-          <thead>
-            <tr>
-              <th>Producto</th>
-              <th>Cant.</th>
-              <th>Precio</th>
-              <th>SubT.</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <button class="btn btn-secondary" id="add-item">+ Añadir producto</button>
+        <div id="productos-container"></div>
+        <button class="btn btn-secondary mt-3" id="add-item">+ Añadir producto</button>
       </div>
     </div>
 
@@ -95,12 +77,12 @@
   </div>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous" defer></script>
   <script>
     const holder = document.getElementById("data-holder");
     window.productosData = JSON.parse(holder.dataset.productos);
     window.mediosData = JSON.parse(holder.dataset.medios);
   </script>
   <script src="/static/js/sales_form.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous" defer></script>
 </body>
 </html>

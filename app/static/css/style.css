@@ -1,13 +1,28 @@
-/* app/static/css/style.css */
-
-/* Tus estilos existentes */
 body {
   background-color: #f8f9fa;
 }
+
+.producto-block {
+  background-color: #fefefe;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.producto-block .form-label {
+  font-weight: 500;
+}
+
+.producto-block .subtotal {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
 #alert-placeholder .alert {
   margin-top: 1rem;
 }
-/* Contenedor de botones uniforme para dashboard, admin y otras vistas */
+
 .buttons-container {
   width: 315px;
   margin: 0 auto;
@@ -16,7 +31,7 @@ body {
   align-items: center;
   gap: 1.75rem;
 }
-/* Botones de acción grandes y uniformes */
+
 .btn-action {
   width: 100%;
   padding-top: 1rem;
@@ -24,10 +39,6 @@ body {
   font-size: 1.125rem;
 }
 
-/* ------------------------------
-   Estilos para el formulario
-   de Nuevo Medio de Pago
-   ------------------------------ */
 .payment-form {
   display: flex;
   flex-direction: column;
@@ -36,16 +47,16 @@ body {
   max-width: 500px;
   margin: 0 auto;
 }
+
 .payment-form .form-control {
-  /* input no tan ancho */
   max-width: 300px;
   width: 100%;
 }
+
 .payment-form button {
   flex-shrink: 0;
 }
 
-/* En pantallas md+ lo ponemos en línea */
 @media (min-width: 768px) {
   .payment-form {
     flex-direction: row;
@@ -56,10 +67,7 @@ body {
     max-width: 300px;
   }
 }
-/* ------------------------------
-   Estilos para el formulario
-   de Subir Catálogo PDF
-   ------------------------------ */
+
 .catalogo-form {
   display: flex;
   flex-direction: column;
@@ -68,8 +76,8 @@ body {
   max-width: 500px;
   margin: 0 auto;
 }
+
 .catalogo-form .form-control {
-  /* Limitamos ancho en desktop para dejar espacio a los márgenes */
   max-width: 400px;
   width: 100%;
 }

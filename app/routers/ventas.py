@@ -1,4 +1,5 @@
 # app/routers/ventas.py
+
 from fastapi import (
     APIRouter, Depends, HTTPException, Request, Query
 )
@@ -26,8 +27,9 @@ def new_sale_form(request: Request, db: Session = Depends(get_db)):
     productos = [
         {
             "codigo_getoutside": p.codigo_getoutside,
-            "tipo":               p.tipo,
-            "precio_venta":       float(p.precio_venta),
+            "descripcion":       p.descripcion,
+            "tipo":              p.tipo,
+            "precio_venta":      float(p.precio_venta),
         }
         for p in productos_raw
     ]
