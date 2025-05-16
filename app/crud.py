@@ -126,10 +126,12 @@ def get_ventas(
         query = query.join(models.VentaPago).filter(models.VentaPago.payment_method_id == payment_method_id)
     if codigo_getoutside:
         query = query.join(models.DetalleVenta).filter(models.DetalleVenta.codigo_getoutside == codigo_getoutside)
+
     query = query.options(
-        joinedload(models.Venta.detalles),
+        joinedload(models.Venta.detalles).joinedload(models.DetalleVenta.producto),
         joinedload(models.Venta.pagos).joinedload(models.VentaPago.metodo)
     )
+
     return query.order_by(models.Venta.fecha.desc()).all()
 
 # -- Ranking de productos vendidos --

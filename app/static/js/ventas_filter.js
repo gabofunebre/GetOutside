@@ -1,21 +1,33 @@
-// app/static/js/ventas_filter.js
 document.addEventListener("DOMContentLoaded", () => {
-    const form      = document.getElementById("filterForm");
-    const btnLast30 = document.getElementById("btn-last30");
-    const btnAll    = document.getElementById("btn-all");
-  
+  const btnLast30 = document.getElementById("btn-last30");
+  const btnLast7  = document.getElementById("btn-last7");
+  const btnAll    = document.getElementById("btn-all");
+
+  if (btnLast30) {
     btnLast30.addEventListener("click", () => {
       const today = new Date();
       const prior = new Date();
       prior.setDate(today.getDate() - 30);
-      document.getElementById("start").value = prior.toISOString().slice(0,10);
-      document.getElementById("end").value   = today.toISOString().slice(0,10);
-      form.submit();
+      const start = prior.toISOString().slice(0, 10);
+      const end   = today.toISOString().slice(0, 10);
+      location.href = `/ventas/list?start=${start}&end=${end}`;
     });
-  
+  }
+
+  if (btnLast7) {
+    btnLast7.addEventListener("click", () => {
+      const today = new Date();
+      const prior = new Date();
+      prior.setDate(today.getDate() - 7);
+      const start = prior.toISOString().slice(0, 10);
+      const end   = today.toISOString().slice(0, 10);
+      location.href = `/ventas/list?start=${start}&end=${end}`;
+    });
+  }
+
+  if (btnAll) {
     btnAll.addEventListener("click", () => {
-      form.reset();
-      form.submit();
+      location.href = `/ventas/list`;
     });
-  });
-  
+  }
+});

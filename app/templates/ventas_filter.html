@@ -1,53 +1,76 @@
-<!-- app/templates/ventas_filter.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Filtrar Ventas</title>
-  <!-- Bootstrap CSS -->
+  <!-- Bootstrap -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
     rel="stylesheet"
     crossorigin="anonymous"
   >
+  <!-- Tu CSS personalizado -->
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <div class="container mt-5">
-    <h1 class="mb-4">Filtrar Ventas</h1>
-    <form id="filterForm" method="get" action="/ventas/list">
-      <div class="row mb-3">
-        <div class="col">
-          <label for="start" class="form-label">Desde</label>
-          <input type="date" class="form-control" id="start" name="start">
-        </div>
-        <div class="col">
-          <label for="end" class="form-label">Hasta</label>
-          <input type="date" class="form-control" id="end" name="end">
-        </div>
+  <div class="container mt-5 d-flex flex-column align-items-center">
+    <h1 class="text-center mb-4">Filtrar Ventas</h1>
+
+    <!-- Contenedor limitado a 750px -->
+    <div style="max-width: 750px; width: 100%;">
+      <!-- Bloque 1: Botones de rango rápido -->
+      <div class="d-flex justify-content-center gap-3 mb-4">
+        <button type="button" class="btn btn-primary px-4" id="btn-all">Todo el historial</button>
+        <button type="button" class="btn btn-success px-4" id="btn-last7">Última semana</button>
+        <button type="button" class="btn btn-warning px-4" id="btn-last30">Últimos 30 días</button>
       </div>
-      <div class="row mb-3">
-        <div class="col">
-          <label for="payment_method_id" class="form-label">Método de pago</label>
-          <select class="form-select" id="payment_method_id" name="payment_method_id">
-            <option value="">Todos</option>
-            {% for m in payment_methods %}
-              <option value="{{ m.id }}">{{ m.name }}</option>
-            {% endfor %}
-          </select>
+
+      <!-- Bloque 2: Filtros -->
+      <form id="filterForm" method="get" action="/ventas/list">
+        <div class="row mb-3">
+          <div class="col">
+            <label for="start" class="form-label">Desde <small class="text-muted">(opc. desde inicio)</small></label>
+            <input type="date" class="form-control" id="start" name="start" placeholder="Desde el inicio">
+          </div>
+          <div class="col">
+            <label for="end" class="form-label">Hasta <small class="text-muted">(opc. hasta hoy)</small></label>
+            <input type="date" class="form-control" id="end" name="end" placeholder="Hasta hoy">
+          </div>
         </div>
-        <div class="col">
-          <label for="codigo_getoutside" class="form-label">Código GetOutside</label>
-          <input type="text" class="form-control" id="codigo_getoutside" name="codigo_getoutside">
+        <div class="row mb-3">
+          <div class="col">
+            <label for="payment_method_id" class="form-label">Método de pago</label>
+            <select class="form-select" id="payment_method_id" name="payment_method_id">
+              <option value="">Todos</option>
+              {% for m in payment_methods %}
+                <option value="{{ m.id }}">{{ m.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col">
+            <label for="codigo_getoutside" class="form-label">Código GetOutside</label>
+            <input type="text" class="form-control" id="codigo_getoutside" name="codigo_getoutside" placeholder="Todos">
+          </div>
         </div>
+        <div class="d-flex justify-content-center">
+          <button type="submit" class="btn btn-dark" style="width: 250px;">Filtrar</button>
+        </div>
+      </form>
+
+      <!-- Enlace al dashboard -->
+      <div class="text-center mt-4">
+        <a href="/" class="text-muted">&larr; Volver al Dashboard</a>
       </div>
-      <button type="submit" class="btn btn-primary">Filtrar</button>
-      <button type="button" class="btn btn-secondary" id="btn-last30">Últimos 30 días</button>
-      <button type="button" class="btn btn-secondary" id="btn-all">Todo historial</button>
-    </form>
+    </div>
   </div>
 
-  <!-- Bootstrap JS bundle -->
+  <!-- Bootstrap Bundle -->
   <script
-    src="https://cdn
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    crossorigin="anonymous"
+    defer
+  ></script>
+  <script src="/static/js/ventas_filter.js" defer></script>
+</body>
+</html>

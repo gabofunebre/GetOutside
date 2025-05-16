@@ -64,23 +64,46 @@ def ventas_list(
     request: Request,
     start: str | None = Query(None),
     end:   str | None = Query(None),
-    payment_method_id: int | None = Query(None),
+    payment_method_id: str | None = Query(None),  # <- como str para control manual
     codigo_getoutside: str | None = Query(None),
     db: Session = Depends(get_db)
 ):
-    start_dt = datetime.fromisoformat(start) if start else None
-    end_dt   = datetime.fromisoformat(end)   if end   else None
+    start_dt = datetime.fromisoformat(start) if start and start.strip() else None
+    end_dt   = datetime.fromisoformat(end)   if end and end.strip() else None
+    metodo_id = int(payment_method_id) if payment_method_id and payment_method_id.strip().isdigit() else None
+    codigo = codigo_getoutside.strip() if codigo_getoutside and codigo_getoutside.strip() else None
+
     ventas = crud.get_ventas(
         db,
         start=start_dt,
         end=end_dt,
-        payment_method_id=payment_method_id,
-        codigo_getoutside=codigo_getoutside
+        payment_method_id=metodo_id,
+        codigo_getoutside=codigo
     )
+
+    metodo_pago_nombre = None
+    if metodo_id and ventas:
+        for v in ventas:
+            for p in v.pagos:
+                if p.payment_method_id == metodo_id:
+                    metodo_pago_nombre = p.metodo.name
+                    break
+            if metodo_pago_nombre:
+                break
+
     return templates.TemplateResponse(
         "ventas_list.html",
-        {"request": request, "ventas": ventas}
+        {
+            "request": request,
+            "ventas": ventas,
+            "start": start,
+            "end": end,
+            "payment_method_id": metodo_id,
+            "codigo_getoutside": codigo,
+            "metodo_pago_nombre": metodo_pago_nombre
+        }
     )
+
 
 # 4) API JSON para crear venta
 @router.post("/", response_model=schemas.VentaOut)
