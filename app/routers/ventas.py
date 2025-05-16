@@ -5,7 +5,7 @@ from fastapi import (
 )
 from fastapi.responses import HTMLResponse
 from ..core.templates import templates
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from datetime import datetime
 from .. import crud, schemas, database, models
 
@@ -117,3 +117,17 @@ def create_venta_api(v: schemas.VentaCreate, db: Session = Depends(get_db)):
 @router.get("/ingresos")
 def ingresos(db: Session = Depends(get_db)):
     return crud.get_ingresos(db)
+
+# 6) Venta Por ID
+@router.get("/{venta_id}", response_class=HTMLResponse)
+def detalle_venta(venta_id: int, request: Request, db: Session = Depends(get_db)):
+    venta = db.query(models.Venta).options(
+        joinedload(models.Venta.detalles).joinedload(models.DetalleVenta.producto),
+        joinedload(models.Venta.pagos).joinedload(models.VentaPago.metodo),
+        joinedload(models.Venta.descuentos)
+    ).filter(models.Venta.id == venta_id).first()
+
+    if not venta:
+        raise HTTPException(status_code=404, detail="Venta no encontrada")
+
+    return templates.TemplateResponse("venta_detalle.html", {"request": request, "venta": venta})
