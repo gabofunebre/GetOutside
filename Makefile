@@ -1,12 +1,11 @@
-# Makefile para gestión de contenedores Docker Compose y Git
-
-# buscamos el binario de docker en PATH, para usar ruta absoluta
+# Detectamos binarios
 DOCKER := $(shell command -v docker)
-# si no lo encuentra, fallará al ejecutar
 COMPOSE := $(DOCKER) compose
 
-.PHONY: up down down-volumes rebuild ps logs-web logs-db db-psql push
+# Configuración general
+.PHONY: up down down-volumes rebuild rebuild-v ps logs-web logs-db db-psql push dev prod dev-down prod-down dev-logs prod-logs
 
+# Entorno actual (override activo)
 up:
 	$(COMPOSE) up --build -d
 
@@ -16,7 +15,9 @@ down:
 down-volumes:
 	$(COMPOSE) down -v
 
-rebuild: down-volumes up
+rebuild: down up
+
+rebuild-v: down-volumes up
 
 ps:
 	$(COMPOSE) ps
@@ -30,8 +31,27 @@ logs-db:
 db-psql:
 	$(COMPOSE) exec db psql -U $$(echo "$$DB_USER") -d $$(echo "$$DB_NAME")
 
-# push: añade todos los cambios, hace commit con el mensaje
-# Uso: make push "Mensaje de commit"
+# --- Nuevos comandos separados por entorno ---
+
+dev:
+	$(COMPOSE) up --build -d
+
+prod:
+	$(COMPOSE) -f docker-compose.yml up --build -d
+
+dev-down:
+	$(COMPOSE) down
+
+prod-down:
+	$(COMPOSE) -f docker-compose.yml down
+
+dev-logs:
+	$(COMPOSE) logs -f web
+
+prod-logs:
+	$(COMPOSE) -f docker-compose.yml logs -f web
+
+# Git push con mensaje: make push "mensaje"
 push:
 	@$(eval MSG := $(filter-out $@,$(MAKECMDGOALS)))
 	@if [ -z "$(MSG)" ]; then \
@@ -42,5 +62,4 @@ push:
 	git commit -m "$(MSG)"
 	git push -u origin main
 
-# evita errores por objetivos extra (como el mensaje de commit)
 %:
