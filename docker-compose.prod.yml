@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/DataBase:/var/lib/postgresql/data
+    networks:
+      - getoutside-net
+
+  web:
+    build: .
+    ports:
+      - "55155:8000"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/Uploads:/app/static/catalogos
+    networks:
+      - getoutside-net
+
+networks:
+  getoutside-net:
+    external: true
