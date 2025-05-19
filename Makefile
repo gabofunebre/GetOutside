@@ -15,9 +15,9 @@ down:
 down-volumes:
 	$(COMPOSE) down -v
 
-rebuild: down up
-
 rebuild-v: down-volumes up
+
+rebuild: down up
 
 ps:
 	$(COMPOSE) ps
