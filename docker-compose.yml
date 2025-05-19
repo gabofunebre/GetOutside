@@ -17,7 +17,7 @@ services:
   web:
     build: .
     ports:
-      - "55155:8000"  # Producción
+      - "55155:8000"
     depends_on:
       - db
     env_file:
