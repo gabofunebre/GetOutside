@@ -61,6 +61,27 @@ logs-db:
 
 # === Git ===
 
+# Merge de main en prod con commit personalizado, push y retorno a main
+push-to-prod:
+	@CURRENT=$$(git branch --show-current); \
+	if [ "$$CURRENT" != "main" ]; then \
+		echo "⚠️  Esta acción solo se puede ejecutar desde 'main'"; \
+		exit 1; \
+	fi; \
+	read -p "📝 Mensaje de commit para main (ENTER para omitir): " MSG; \
+	if [ ! -z "$$MSG" ]; then \
+		git add . && git commit -m "$$MSG"; \
+	else \
+		echo "🔃 Sin commit nuevo en main."; \
+	fi; \
+	echo "🚀 Cambiando a prod y haciendo merge..."; \
+	git checkout prod && \
+	git merge main && \
+	git push origin prod && \
+	echo "✅ Deploy en prod completado. Volviendo a main..."; \
+	git checkout main
+
+
 # Despliega en producción (pull + up-prod)
 deploy-prod:
 	@if [ "$$(git branch --show-current)" != "prod" ]; then \
