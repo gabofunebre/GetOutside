@@ -1,7 +1,13 @@
+/* ==========================================================================
+   Global Body Styles
+   ========================================================================== */
 body {
   background-color: #f8f9fa;
 }
 
+/* ==========================================================================
+   Block Components: Product, Payment, Discount
+   ========================================================================== */
 .producto-block,
 .pago-block,
 .descuento-block {
@@ -23,6 +29,9 @@ body {
   font-size: 1.1rem;
 }
 
+/* ==========================================================================
+   Action Buttons: Remove
+   ========================================================================== */
 .btn-quitar-producto,
 .btn-quitar-pago,
 .btn-quitar-descuento {
@@ -36,10 +45,16 @@ body {
   margin-bottom: 0.25rem;
 }
 
+/* ==========================================================================
+   Alert Placeholder
+   ========================================================================== */
 #alert-placeholder .alert {
   margin-top: 1rem;
 }
 
+/* ==========================================================================
+   Buttons Container (Generic)
+   ========================================================================== */
 .buttons-container {
   width: 315px;
   margin: 0 auto;
@@ -56,6 +71,9 @@ body {
   font-size: 1.125rem;
 }
 
+/* ==========================================================================
+   Payment Form Layout
+   ========================================================================== */
 .payment-form {
   display: flex;
   flex-direction: column;
@@ -85,6 +103,9 @@ body {
   }
 }
 
+/* ==========================================================================
+   Catalog Upload Form
+   ========================================================================== */
 .catalogo-form {
   display: flex;
   flex-direction: column;
@@ -103,7 +124,9 @@ body {
   width: 150px;
 }
 
-/* Ajustes para los botones finales */
+/* ==========================================================================
+   Final Buttons Layout
+   ========================================================================== */
 .final-buttons {
   display: flex;
   flex-direction: column;
@@ -121,7 +144,9 @@ body {
   font-size: 1.25rem;
 }
 
-/* Botones de acción en pago y descuento */
+/* ==========================================================================
+   Payment & Discount Action Buttons
+   ========================================================================== */
 #add-payment,
 #add-discount {
   width: 200px;
@@ -133,6 +158,9 @@ body {
   color: #000;
 }
 
+/* ==========================================================================
+   Spinner Overlay
+   ========================================================================== */
 #overlay {
   position: fixed;
   top: 0;
@@ -140,8 +168,65 @@ body {
   width: 100vw;
   height: 100vh;
   background: rgba(255, 255, 255, 0.7);
-  display: none; /* 🔹 Esto lo oculta por defecto */
+  display: none; /* Hidden by default */
   align-items: center;
   justify-content: center;
   z-index: 9999;
+}
+
+/* ==========================================================================
+   Autocomplete List — estilos alternos para distinguir filas
+   ========================================================================== */
+.autocomplete-list li {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+/* Fondo claro en filas impares */
+.autocomplete-list li:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+/* Fondo gris muy suave en filas pares */
+.autocomplete-list li:nth-child(even) {
+  background-color: #f1f1f1;
+}
+
+/* Hover para resaltar la fila activa o al pasar el ratón */
+.autocomplete-list li:hover,
+.autocomplete-list li.active {
+  background-color: #d9d9d9;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Autocomplete: dropdown a la misma anchura y estilo que el input,
+   sin viñetas y con bordes integrados
+   ──────────────────────────────────────────────────────────────────────────── */
+.autocomplete {
+  position: relative;
+}
+.autocomplete-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;                    /* ajusta al ancho del input */
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 0;                   /* elimina márgenes por defecto */
+  padding: 0;                  /* elimina padding por defecto */
+  list-style: none;            /* quita los puntos */
+  border: 1px solid #ced4da;   /* mismo borde que Bootstrap */
+  border-top: none;            /* sin doble borde con el input */
+  border-radius: 0 0 .25rem .25rem; /* redondea solo esquinas inferiores */
+  background: #fff;
+  z-index: 1000;
+}
+.autocomplete-list li {
+  padding: .5rem 1rem;
+  cursor: pointer;
+}
+/* hover y fila activa */
+.autocomplete-list li:hover,
+.autocomplete-list li.active {
+  background-color: #e9ecef;
 }
