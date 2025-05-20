@@ -61,6 +61,15 @@ logs-db:
 
 # === Git ===
 
+# Despliega en producción (pull + up-prod)
+deploy-prod:
+	@if [ "$$(git branch --show-current)" != "prod" ]; then \
+		echo "⚠️  Estás en una rama distinta a 'prod'. Abortando..."; \
+		exit 1; \
+	fi
+	git pull origin prod
+	$(MAKE) up-prod
+
 # Commit y push con mensaje: make push "mensaje"
 push:
 	@$(eval MSG := $(filter-out $@,$(MAKECMDGOALS)))
