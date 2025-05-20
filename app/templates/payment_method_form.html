@@ -1,4 +1,3 @@
-<!-- app/templates/payment_method_form.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,16 +11,20 @@
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <div class="container mt-5">
+  <!-- SPINNER OVERLAY -->
+  <div id="overlay">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando…</span>
+    </div>
+  </div>
 
+  <div class="container mt-5">
     <h1 class="text-center mb-4">Nuevo Medio de Pago</h1>
     <div id="alert-placeholder"></div>
 
-    <!-- Aquí el form convertido en flex -->
     <form id="pmForm"
           class="d-flex justify-content-center align-items-center flex-wrap gap-3">
 
-      <!-- contenedor para el input con ancho mínimo -->
       <div class="flex-shrink-0" style="min-width:200px; max-width:300px; width:100%;">
         <label for="name" class="form-label visually-hidden">Nombre del medio</label>
         <input
@@ -34,17 +37,14 @@
         >
       </div>
 
-      <!-- botón en la misma línea -->
       <button type="submit" class="btn btn-primary flex-shrink-0">
         Crear Medio
       </button>
     </form>
 
-    <!-- link debajo, siempre centrado -->
     <div class="text-center mt-3">
       <a href="/" class="text-muted">&larr; Volver al Dashboard</a>
     </div>
-
   </div>
 
   <script
