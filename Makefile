@@ -9,7 +9,8 @@ COMPOSE := $(DOCKER) compose
 
 # Levanta solo el contenedor web de desarrollo
 up:
-	$(COMPOSE) -f docker-compose.yml up --build -d
+	$(COMPOSE) -p getoutside_dev -f docker-compose.yml -f docker-compose.override.yml up --build -d
+
 
 # Baja el contenedor web de desarrollo
 down:
@@ -35,12 +36,18 @@ down-prod-volumes:
 
 # ===================================================
 # ===================================================
+down-all:
+	down down-prod
 # ===================================================
 
 # === Logs ===
 
 # Muestra logs del contenedor web
 logs-web:
+	$(COMPOSE) -p getoutside_dev logs -f web
+
+	# Produccion
+logs-web-prod:
 	$(COMPOSE) logs -f web
 
 # Muestra logs del contenedor db (solo en producción)
