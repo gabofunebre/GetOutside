@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <!-- SPINNER OVERLAY -->
-  <div id="overlay">
+  <!-- SPINNER OVERLAY (oculto por defecto) -->
+  <div id="overlay" style="display:none">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Cargando…</span>
     </div>
@@ -24,7 +24,70 @@
     <div id="alert-placeholder"></div>
 
     <form id="productForm">
-      <!-- ... tus campos ... -->
+      <div class="mb-3">
+        <label for="codigo_getoutside" class="form-label">
+          Código GetOutside <span class="text-danger">*</span>
+        </label>
+        <input
+          type="text"
+          class="form-control"
+          id="codigo_getoutside"
+          name="codigo_getoutside"
+          required
+        >
+      </div>
+
+      <div class="mb-3">
+        <label for="descripcion" class="form-label">
+          Descripción <span class="text-danger">*</span>
+        </label>
+        <textarea
+          class="form-control"
+          id="descripcion"
+          name="descripcion"
+          rows="2"
+          required
+        ></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label for="catalogo_id" class="form-label">Catálogo</label>
+        <select
+          id="catalogo_id"
+          name="catalogo_id"
+          class="form-select"
+          required
+        >
+          {% for c in catalogos %}
+            <option value="{{ c.id }}">{{ c.filename }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="precio_venta" class="form-label">Precio de venta</label>
+        <input
+          type="number"
+          step="0.01"
+          class="form-control"
+          id="precio_venta"
+          name="precio_venta"
+          required
+        >
+      </div>
+
+      <div class="mb-3">
+        <label for="stock_actual" class="form-label">Stock</label>
+        <input
+          type="number"
+          class="form-control"
+          id="stock_actual"
+          name="stock_actual"
+          value="0"
+          required
+        >
+      </div>
+
       <div class="d-flex justify-content-center mb-4">
         <button type="submit" class="btn btn-primary">
           Crear Producto
@@ -43,7 +106,7 @@
     crossorigin="anonymous"
     defer
   ></script>
-  <!-- Lógica del formulario -->
+  <!-- Lógica del formulario con spinner -->
   <script src="/static/js/product_form.js" defer></script>
 </body>
 </html>
