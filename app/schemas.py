@@ -41,10 +41,11 @@ class PaymentMethodBase(BaseModel):
     name: str
 
 class PaymentMethodCreate(PaymentMethodBase):
-    pass
+    currency: str  # ISO 4217 de 3 caracteres
 
 class PaymentMethodOut(PaymentMethodBase):
     id: int
+    currency: str
     class Config:
         orm_mode = True
 

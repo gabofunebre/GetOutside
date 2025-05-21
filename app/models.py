@@ -69,9 +69,10 @@ class DetalleVenta(Base):
 
 class PaymentMethod(Base):
     __tablename__ = "payment_methods"
-    id    = Column(Integer, primary_key=True, index=True)
-    name  = Column(String, unique=True, nullable=False)
-    pagos = relationship("VentaPago", back_populates="metodo", cascade="all, delete")
+    id       = Column(Integer, primary_key=True, index=True)
+    name     = Column(String, unique=True, nullable=False)     # p.ej. "Tarjeta"
+    currency = Column(String(3), nullable=False)               # p.ej. "USD", "EUR"
+    pagos    = relationship("VentaPago", back_populates="metodo", cascade="all, delete")
 
 class VentaPago(Base):
     __tablename__ = "venta_pagos"

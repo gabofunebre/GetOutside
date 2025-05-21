@@ -1,4 +1,3 @@
-# app/crud.py
 import os
 from datetime import datetime
 from typing import Optional
@@ -51,7 +50,10 @@ def create_payment_method(db: Session, pm: schemas.PaymentMethodCreate):
     if existente:
         raise ValueError(f"Ya existe un medio de pago con el nombre '{pm.name}'.")
 
-    pm_obj = models.PaymentMethod(name=pm.name)
+    pm_obj = models.PaymentMethod(
+        name=pm.name,
+        currency=pm.currency.upper()
+    )
     db.add(pm_obj)
     db.commit()
     db.refresh(pm_obj)
@@ -86,7 +88,7 @@ def update_payment_method_by_id(db: Session, id: int, new_name: str) -> models.P
 def create_catalogo(db: Session, file: UploadFile) -> models.Catalogo:
     existing = db.query(models.Catalogo).filter_by(filename=file.filename).first()
     if existing:
-        raise ValueError(f"Ya existe un cat\u00e1logo con el nombre '{file.filename}'.")
+        raise ValueError(f"Ya existe un catálogo con el nombre '{file.filename}'.")
 
     os.makedirs(PDF_DIR, exist_ok=True)
     dest_path = os.path.join(PDF_DIR, file.filename)
@@ -189,46 +191,4 @@ def get_ventas(
         joinedload(models.Venta.pagos).joinedload(models.VentaPago.metodo)
     ).order_by(models.Venta.fecha.desc()).all()
 
-def get_product_ranking(
-    db: Session,
-    start: Optional[datetime] = None,
-    end: Optional[datetime] = None,
-    tipo: Optional[str] = None,
-    proceso_aplicado: Optional[str] = None,
-    diseno_aplicado: Optional[str] = None,
-):
-    query = db.query(
-        models.Producto.codigo_getoutside,
-        models.Producto.codigo_mercaderia,
-        models.Producto.tipo,
-        models.Producto.color_prenda,
-        models.Producto.proceso_aplicado,
-        models.Producto.diseno_aplicado,
-        models.Producto.variante_diseno,
-        models.Producto.talle,
-        models.Producto.precio_venta,
-        func.sum(models.DetalleVenta.cantidad).label("sold_qty")
-    ).join(models.DetalleVenta).join(models.Venta)
-
-    if start:
-        query = query.filter(models.Venta.fecha >= start)
-    if end:
-        query = query.filter(models.Venta.fecha <= end)
-    if tipo:
-        query = query.filter(models.Producto.tipo == tipo)
-    if proceso_aplicado:
-        query = query.filter(models.Producto.proceso_aplicado == proceso_aplicado)
-    if diseno_aplicado:
-        query = query.filter(models.Producto.diseno_aplicado == diseno_aplicado)
-
-    return query.group_by(
-        models.Producto.codigo_getoutside,
-        models.Producto.codigo_mercaderia,
-        models.Producto.tipo,
-        models.Producto.color_prenda,
-        models.Producto.proceso_aplicado,
-        models.Producto.diseno_aplicado,
-        models.Producto.variante_diseno,
-        models.Producto.talle,
-        models.Producto.precio_venta
-    ).order_by(func.sum(models.DetalleVenta.cantidad).desc()).all()
+# === PRODUCT RANKING ===
