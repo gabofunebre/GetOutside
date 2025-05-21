@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
     overlay.style.display = "flex";
 
     const name = form.name.value.trim();
+    const currency = form.currency.value;  // capturamos la moneda seleccionada
+
     if (!name) {
       overlay.style.display = "none";
       alertPlaceholder.innerHTML = `
@@ -23,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/payment_methods/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name })
+        body: JSON.stringify({ name, currency })  // enviamos también currency
       });
 
       if (!res.ok) {
@@ -37,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const pm = await res.json();
       alertPlaceholder.innerHTML = `
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-          Medio <strong>${pm.name}</strong> creado (ID: ${pm.id}).
+          Medio <strong>${pm.name}</strong> (${pm.currency}) creado (ID: ${pm.id}).
           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>`;
       form.reset();

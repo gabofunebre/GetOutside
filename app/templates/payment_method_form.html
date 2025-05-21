@@ -24,6 +24,7 @@
     <form id="pmForm" class="d-flex flex-column gap-3">
       <div id="alert-placeholder"></div>
 
+      <!-- Nombre del medio -->
       <div>
         <label for="name" class="form-label visually-hidden">Nombre del medio</label>
         <input
@@ -34,6 +35,28 @@
           placeholder="Nombre del medio"
           required
         >
+      </div>
+
+      <!-- Moneda ISO -->
+      <div>
+        <label for="currency" class="form-label visually-hidden">Moneda (ISO 4217)</label>
+        <select
+          id="currency"
+          name="currency"
+          class="form-select"
+          required
+        >
+          <!-- Top 5 con bandera -->
+          <option value="NZD">🇳🇿 NZD</option>
+          <option value="AUD">🇦🇺 AUD</option>
+          <option value="USD">🇺🇸 USD</option>
+          <option value="EUR">🇪🇺 EUR</option>
+          <option value="ARS">🇦🇷 ARS</option>
+          <!-- Otras monedas alfabéticamente -->
+          {% for code in otras_monedas %}
+            <option value="{{ code }}">{{ code }}</option>
+          {% endfor %}
+        </select>
       </div>
 
       <button type="submit" class="btn btn-primary">
