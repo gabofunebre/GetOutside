@@ -35,6 +35,9 @@
           name="codigo_getoutside"
           required
         >
+        <div class="invalid-feedback">
+          Este código ya corresponde a un producto existente. Ingrese uno nuevo.
+        </div>
       </div>
 
       <div class="mb-3">
@@ -76,7 +79,8 @@
         >
       </div>
 
-      <div class="mb-3">
+      <!-- Bloque para stock actual y stock a agregar -->
+      <div class="mb-3" id="stock-block">
         <label for="stock_actual" class="form-label">Stock</label>
         <input
           type="number"
@@ -88,8 +92,21 @@
         >
       </div>
 
+      <div class="mb-3 d-none" id="existing-stock-info">
+        <p class="mb-1">Stock actual: <strong id="stock_actual_label">0</strong></p>
+        <label for="stock_agregado" class="form-label">Stock a agregar</label>
+        <input
+          type="number"
+          class="form-control"
+          id="stock_agregado"
+          name="stock_agregado"
+          value="0"
+          min="1"
+        >
+      </div>
+
       <div class="d-flex justify-content-center mb-4">
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" id="submit-button" class="btn btn-primary">
           Crear Producto
         </button>
       </div>
@@ -107,6 +124,26 @@
     defer
   ></script>
   <!-- Lógica del formulario con spinner -->
-  <script src="/static/js/product_form.js" defer></script>
+  <script type="module" src="/static/js/product_form/main.js"></script>
+
+  <!-- Modal de confirmación -->
+<div class="modal fade" id="productoExistenteModal" tabindex="-1" aria-labelledby="productoExistenteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="productoExistenteLabel">Producto existente</h5>
+      </div>
+      <div class="modal-body">
+        El código ingresado ya corresponde a un producto existente.<br>
+        ¿Desea agregar stock a este producto?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelarProductoExistente">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="aceptarProductoExistente">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
