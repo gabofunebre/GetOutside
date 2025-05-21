@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from typing import List, Optional
+from pydantic import ConfigDict  # necesario en Pydantic v2
 
 # --- Productos ---
 class ProductoBase(BaseModel):
@@ -13,13 +14,13 @@ class ProductoCreate(ProductoBase):
     stock_actual: int
 
 class ProductoOut(BaseModel):
+    id: int
     codigo_getoutside: str
     descripcion: str
     precio_venta: float
     stock_actual: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 # --- Ventas / Pagos / Descuentos ---
 class DetalleVentaIn(BaseModel):

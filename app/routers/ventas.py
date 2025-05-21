@@ -24,21 +24,10 @@ def new_sale_form(request: Request, db: Session = Depends(get_db)):
     productos_raw = db.query(models.Producto).all()
     medios_raw    = db.query(models.PaymentMethod).all()
 
-    productos = [
-        {
-            "codigo_getoutside": p.codigo_getoutside,
-            "descripcion":       p.descripcion,
-            "precio_venta":      float(p.precio_venta),
-        }
-        for p in productos_raw
-    ]
-    medios = [
-        {
-            "id":   m.id,
-            "name": m.name,
-        }
-        for m in medios_raw
-    ]
+    productos = [schemas.ProductoOut.from_orm(p) for p in productos_raw]
+    productos = [p.model_dump() for p in productos]  # <- Esta línea es clave
+
+    medios = [{"id": m.id, "name": m.name} for m in medios_raw]
 
     return templates.TemplateResponse(
         "sales_form.html",
