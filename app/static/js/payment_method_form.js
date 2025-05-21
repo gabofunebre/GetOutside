@@ -6,11 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     alertPlaceholder.innerHTML = "";
-    overlay.style.display = "flex";              // ← muestra el spinner
+    overlay.style.display = "flex";
 
     const name = form.name.value.trim();
     if (!name) {
-      overlay.style.display = "none";             // ← oculta si fallo validación
+      overlay.style.display = "none";
       alertPlaceholder.innerHTML = `
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
           El nombre no puede estar vacío.
@@ -28,6 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!res.ok) {
         const err = await res.json();
+        if (err.detail && err.detail.includes("ya existe")) {
+          throw new Error("Ya existe un medio de pago con ese nombre.");
+        }
         throw new Error(err.detail || "Error al crear el medio");
       }
 
@@ -45,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>`;
     } finally {
-      overlay.style.display = "none";             // ← oculta spinner siempre
+      overlay.style.display = "none";
     }
   });
 });

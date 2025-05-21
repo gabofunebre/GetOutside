@@ -12,9 +12,12 @@ class ProductoBase(BaseModel):
 class ProductoCreate(ProductoBase):
     stock_actual: int
 
-class ProductoOut(ProductoBase):
-    id: int
+class ProductoOut(BaseModel):
+    codigo_getoutside: str
+    descripcion: str
+    precio_venta: float
     stock_actual: int
+
     class Config:
         orm_mode = True
 
