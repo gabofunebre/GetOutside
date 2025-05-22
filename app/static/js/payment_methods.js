@@ -1,3 +1,5 @@
+// app/static/js/payment_methods.js
+
 document.addEventListener("DOMContentLoaded", () => {
   const table = document.getElementById("payment-methods-body");
 
@@ -8,8 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // MODAL EDITAR
   const editModal = new bootstrap.Modal(document.getElementById("editModal"));
-  const editInput = document.getElementById("editInput");
   const editForm = document.getElementById("editForm");
+  const nameInput = document.getElementById("editNameInput");
+  const currencySelect = document.getElementById("editCurrencySelect");
 
   let idAEliminar = null;
   let rowAEliminar = null;
@@ -41,12 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
     confirmDeleteBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Eliminando...`;
 
     try {
-      const res = await fetch(`/payment_methods/id/${idAEliminar}`, {
-        method: "DELETE"
-      });
-
+      const res = await fetch(`/payment_methods/id/${idAEliminar}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Error al eliminar");
-
       rowAEliminar.remove();
     } catch (err) {
       alert("Hubo un problema al eliminar: " + err.message);
@@ -65,21 +64,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!btn) return;
 
     const row = btn.closest("tr");
-    const id = row.getAttribute("data-id");
-    const currentName = row.querySelector("td").textContent;
-
-    editInput.value = currentName;
-    idAEditar = id;
+    idAEditar = row.getAttribute("data-id");
     rowAEditar = row;
+    const cells = row.querySelectorAll("td");
+    nameInput.value = cells[0].textContent;
+    currencySelect.value = cells[1].textContent;
 
     editModal.show();
   });
 
   editForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (!idAEditar || !rowAEditar) {
+      alert("Error al editar: datos incompletos.");
+      return;
+    }
 
-    const newName = editInput.value.trim();
-    if (!newName || !idAEditar || !rowAEditar) {
+    const newName = nameInput.value.trim();
+    const newCurrency = currencySelect.value;
+    if (!newName || !newCurrency) {
       alert("Error al editar: datos incompletos.");
       return;
     }
@@ -92,12 +95,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch(`/payment_methods/id/${idAEditar}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newName })
+        body: JSON.stringify({ name: newName, currency: newCurrency })
       });
-
       if (!res.ok) throw new Error("Error al actualizar");
 
-      rowAEditar.querySelector("td").textContent = newName;
+      const cells = rowAEditar.querySelectorAll("td");
+      cells[0].textContent = newName;
+      cells[1].textContent = newCurrency;
       editModal.hide();
     } catch (err) {
       alert("Error al editar: " + err.message);

@@ -1,6 +1,6 @@
 // File: app/static/js/sales_form/productBlock.js
 ////////////////////////////////////////////////////////////////////////////////
-// ProductBlock
+// ProductBlock actualizado para enviar producto_id
 ////////////////////////////////////////////////////////////////////////////////
 import { Autocomplete } from './autocomplete.js';
 import { TotalsCalculator } from './totals.js';
@@ -14,19 +14,29 @@ export class ProductBlock {
     this.bind();
     TotalsCalculator.recalcAll(dom.productos, dom.pagos, dom.totals.venta, dom.totals.pago);
   }
+
+  // Renderiza el bloque de producto con campos necesarios
   render() {
-    const d = document.createElement('div'); d.className = 'producto-block border rounded p-3 mb-3 bg-light';
+    const d = document.createElement('div');
+    d.className = 'producto-block border rounded p-3 mb-3 bg-light';
     d.innerHTML = `
       <div class="mb-2">
         <label class="form-label">Producto</label>
         <div class="autocomplete">
           <input type="text" name="codigo_getoutside" class="form-control autocomplete-input" placeholder="Buscar…" autocomplete="off" required>
+          <input type="hidden" name="producto_id">
           <ul class="autocomplete-list"></ul>
         </div>
       </div>
       <div class="row mb-2">
-        <div class="col"><label class="form-label">Cantidad</label><input type="number" name="cantidad" class="form-control" value="1" min="1"></div>
-        <div class="col"><label class="form-label">Precio</label><input type="number" name="precio_unitario" class="form-control" step="0.01"></div>
+        <div class="col">
+          <label class="form-label">Cantidad</label>
+          <input type="number" name="cantidad" class="form-control" value="1" min="1">
+        </div>
+        <div class="col">
+          <label class="form-label">Precio</label>
+          <input type="number" name="precio_unitario" class="form-control" step="0.01">
+        </div>
       </div>
       <div class="d-flex justify-content-between align-items-center">
         <span>Total: $<span class="subtotal">0.00</span></span>
@@ -34,20 +44,41 @@ export class ProductBlock {
       </div>`;
     return d;
   }
+
+  // Asocia eventos y lógica del bloque
   bind() {
     const inp = this.el.querySelector('.autocomplete-input');
-    const list= this.el.querySelector('.autocomplete-list');
+    const list = this.el.querySelector('.autocomplete-list');
     const precioI = this.el.querySelector("[name='precio_unitario']");
     const qtyI = this.el.querySelector("[name='cantidad']");
-    new Autocomplete(inp, list, this.data, ds => { precioI.value = ds.precio; TotalsCalculator.recalcAll(this.dom.productos, this.dom.pagos, this.dom.totals.venta, this.dom.totals.pago); });
-    [precioI, qtyI].forEach(i => i.addEventListener('input', () => TotalsCalculator.recalcAll(this.dom.productos, this.dom.pagos, this.dom.totals.venta, this.dom.totals.pago)));
-    this.el.querySelector('.btn-quitar-producto').addEventListener('click', () => { this.el.remove(); TotalsCalculator.recalcAll(this.dom.productos, this.dom.pagos, this.dom.totals.venta, this.dom.totals.pago); });
+    const idInput = this.el.querySelector("[name='producto_id']");
+
+    // Autocomplete con selección que guarda ID y precio
+    new Autocomplete(inp, list, this.data, ds => {
+      idInput.value = ds.id;
+      precioI.value = ds.precio_venta;
+      TotalsCalculator.recalcAll(this.dom.productos, this.dom.pagos, this.dom.totals.venta, this.dom.totals.pago);
+    });
+
+    // Recalcula totales al cambiar cantidad o precio
+    [precioI, qtyI].forEach(i =>
+      i.addEventListener('input', () =>
+        TotalsCalculator.recalcAll(this.dom.productos, this.dom.pagos, this.dom.totals.venta, this.dom.totals.pago))
+    );
+
+    // Botón quitar producto
+    this.el.querySelector('.btn-quitar-producto').addEventListener('click', () => {
+      this.el.remove();
+      TotalsCalculator.recalcAll(this.dom.productos, this.dom.pagos, this.dom.totals.venta, this.dom.totals.pago);
+    });
   }
+
+  // Devuelve datos del producto para el backend
   getData() {
     return {
-      codigo_getoutside: this.el.querySelector("[name='codigo_getoutside']").value,
+      producto_id: +this.el.querySelector("[name='producto_id']").value,
       cantidad: +this.el.querySelector("[name='cantidad']").value,
       precio_unitario: +this.el.querySelector("[name='precio_unitario']").value
     };
   }
-}
+} 
