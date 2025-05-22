@@ -1,3 +1,4 @@
+<!-- payment_method_form.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,7 +12,6 @@
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <!-- SPINNER OVERLAY -->
   <div id="overlay">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Cargando…</span>
@@ -24,7 +24,6 @@
     <form id="pmForm" class="d-flex flex-column gap-3">
       <div id="alert-placeholder"></div>
 
-      <!-- Nombre del medio -->
       <div>
         <label for="name" class="form-label visually-hidden">Nombre del medio</label>
         <input
@@ -37,26 +36,9 @@
         >
       </div>
 
-      <!-- Moneda ISO -->
       <div>
         <label for="currency" class="form-label visually-hidden">Moneda (ISO 4217)</label>
-        <select
-          id="currency"
-          name="currency"
-          class="form-select"
-          required
-        >
-          <!-- Top 5 con bandera -->
-          <option value="NZD">🇳🇿 NZD</option>
-          <option value="AUD">🇦🇺 AUD</option>
-          <option value="USD">🇺🇸 USD</option>
-          <option value="EUR">🇪🇺 EUR</option>
-          <option value="ARS">🇦🇷 ARS</option>
-          <!-- Otras monedas alfabéticamente -->
-          {% for code in otras_monedas %}
-            <option value="{{ code }}">{{ code }}</option>
-          {% endfor %}
-        </select>
+        <select id="currency" name="currency" class="form-select" required></select>
       </div>
 
       <button type="submit" class="btn btn-primary">
@@ -69,10 +51,10 @@
     </div>
   </div>
 
+  <script src="/static/js/payment_method_form.js" defer></script>
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     defer
   ></script>
-  <script src="/static/js/payment_method_form.js" defer></script>
 </body>
 </html>

@@ -21,7 +21,6 @@
       <button type="submit" class="btn btn-primary me-2">
         Convertir a 
       </button>
-      
       <select name="target_currency" class="form-select w-auto me-2">
         {% for curr in ["NZD","USD","EUR","AUD"] %}
           <option value="{{ curr }}" {% if curr == target_currency %}selected{% endif %}>
@@ -29,8 +28,13 @@
           </option>
         {% endfor %}
       </select>
-
     </form>
+
+    {% if error_msg %}
+    <div class="alert alert-warning" role="alert">
+      {{ error_msg }}
+    </div>
+    {% endif %}
 
     <!-- Total convertido -->
     <div class="card mb-4 shadow-sm">
@@ -55,7 +59,7 @@
           <tr>
             <td>{{ m.name }}</td>
             <td class="text-end">
-              {{ "{:.2f}".format(m.amount) }} {{ m.currency }}
+              {{ "{:.2f}".format(m.amount) }} {{ m.currency_label }}
             </td>
             <td class="text-end">
               {% if m.converted is not none %}
