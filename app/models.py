@@ -21,18 +21,18 @@ class Producto(Base):
     precio_venta      = Column(DECIMAL(12,2), nullable=False)
     stock_actual      = Column(Integer, nullable=False)
 
-    catalogo = relationship("Catalogo")
-    movimientos      = relationship("InventarioMovimiento", back_populates="producto")
-    detalles_venta   = relationship("DetalleVenta", back_populates="producto")
+    catalogo        = relationship("Catalogo")
+    movimientos     = relationship("InventarioMovimiento", back_populates="producto")
+    detalles_venta  = relationship("DetalleVenta",      back_populates="producto")
 
 class InventarioMovimiento(Base):
     __tablename__ = "inventario_movimientos"
-    id                = Column(Integer, primary_key=True, index=True)
-    codigo_getoutside = Column(String, ForeignKey("productos.codigo_getoutside"), nullable=False)
-    fecha             = Column(DateTime, default=datetime.utcnow)
-    tipo              = Column(Enum(TipoMov), nullable=False)
-    cantidad          = Column(Integer, nullable=False)
-    referencia        = Column(String)
+    id           = Column(Integer, primary_key=True, index=True)
+    producto_id  = Column(Integer, ForeignKey("productos.id"), nullable=False)
+    fecha        = Column(DateTime, default=datetime.utcnow)
+    tipo         = Column(Enum(TipoMov), nullable=False)
+    cantidad     = Column(Integer, nullable=False)
+    referencia   = Column(String)
 
     producto = relationship("Producto", back_populates="movimientos")
 
@@ -43,8 +43,8 @@ class Venta(Base):
     total   = Column(DECIMAL(14,2), nullable=False)
 
     detalles   = relationship("DetalleVenta", back_populates="venta", cascade="all, delete")
-    pagos      = relationship("VentaPago", back_populates="venta", cascade="all, delete")
-    descuentos = relationship("Descuento", back_populates="venta", cascade="all, delete")
+    pagos      = relationship("VentaPago",    back_populates="venta", cascade="all, delete")
+    descuentos = relationship("Descuento",     back_populates="venta", cascade="all, delete")
 
 class Descuento(Base):
     __tablename__ = "descuentos"
@@ -57,21 +57,21 @@ class Descuento(Base):
 
 class DetalleVenta(Base):
     __tablename__ = "venta_detalles"
-    id                = Column(Integer, primary_key=True, index=True)
-    venta_id          = Column(Integer, ForeignKey("ventas.id"), nullable=False)
-    codigo_getoutside = Column(String, ForeignKey("productos.codigo_getoutside"), nullable=False)
-    cantidad          = Column(Integer, nullable=False)
-    precio_unitario   = Column(DECIMAL(12,2), nullable=False)
-    subtotal          = Column(DECIMAL(14,2), nullable=False)
+    id           = Column(Integer, primary_key=True, index=True)
+    venta_id     = Column(Integer, ForeignKey("ventas.id"), nullable=False)
+    producto_id  = Column(Integer, ForeignKey("productos.id"), nullable=False)
+    cantidad     = Column(Integer, nullable=False)
+    precio_unitario = Column(DECIMAL(12,2), nullable=False)
+    subtotal     = Column(DECIMAL(14,2), nullable=False)
 
-    venta    = relationship("Venta", back_populates="detalles")
+    venta    = relationship("Venta",    back_populates="detalles")
     producto = relationship("Producto", back_populates="detalles_venta")
 
 class PaymentMethod(Base):
     __tablename__ = "payment_methods"
     id       = Column(Integer, primary_key=True, index=True)
-    name     = Column(String, unique=True, nullable=False)     # p.ej. "Tarjeta"
-    currency = Column(String(3), nullable=False)               # p.ej. "USD", "EUR"
+    name     = Column(String, unique=True, nullable=False)
+    currency = Column(String(3), nullable=False)
     pagos    = relationship("VentaPago", back_populates="metodo", cascade="all, delete")
 
 class VentaPago(Base):
@@ -90,8 +90,7 @@ class VentaPago(Base):
 
 class Catalogo(Base):
     __tablename__ = "catalogos"
-
-    id = Column(Integer, primary_key=True, index=True)
-    filename = Column(String, nullable=False, unique=True)
-    filepath = Column(String, nullable=False, unique=True)
+    id          = Column(Integer, primary_key=True, index=True)
+    filename    = Column(String, nullable=False, unique=True)
+    filepath    = Column(String, nullable=False, unique=True)
     uploaded_at = Column(DateTime, default=datetime.utcnow)

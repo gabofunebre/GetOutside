@@ -1,20 +1,33 @@
-from pydantic import BaseModel
+# app/schemas.py
+
+from pydantic import BaseModel, ConfigDict, constr
 from datetime import datetime
 from typing import List, Optional
-from pydantic import ConfigDict  # necesario en Pydantic v2
 
-# --- Productos ---
+# --- ESQUEMAS DE PRODUCTOS ---
+
 class ProductoBase(BaseModel):
-    codigo_getoutside: str
-    descripcion: str
-    catalogo_id: int
-    precio_venta: float
+    """
+    Campos base para crear o actualizar un producto.
+    Incluye código único, descripción, catálogo asociado y precio.
+    """
+    codigo_getoutside: str               # Código único legible del producto
+    descripcion: str                     # Descripción textual
+    catalogo_id: int                     # FK a catálogo
+    precio_venta: float                  # Precio de venta unitario
 
 class ProductoCreate(ProductoBase):
-    stock_actual: int
+    """
+    Esquema para creación de producto.
+    Añade campo de stock inicial.
+    """
+    stock_actual: int                    # Stock inicial disponible
 
 class ProductoOut(BaseModel):
-    id: int
+    """
+    Respuesta de producto con todos los datos y su ID.
+    """
+    id: int                              # ID autogenerado en BD
     codigo_getoutside: str
     descripcion: str
     precio_venta: float
@@ -22,71 +35,122 @@ class ProductoOut(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-# --- Ventas / Pagos / Descuentos ---
+# --- ESQUEMAS DE DETALLES, PAGOS Y DESCUENTOS ---
+
 class DetalleVentaIn(BaseModel):
-    codigo_getoutside: str
-    cantidad: int
-    precio_unitario: float
+    """
+    Entrada de detalle de venta: referencia por ID de producto.
+    """
+    producto_id: int                     # ID del producto vendido
+    cantidad: int                        # Cantidad vendida
+    precio_unitario: float               # Precio aplicado por unidad
 
 class DetalleVentaOut(DetalleVentaIn):
-    subtotal: float
+    """
+    Esquema de salida para detalle de venta, con subtotal calculado.
+    """
+    subtotal: float                      # cantidad * precio_unitario
+
     class Config:
         orm_mode = True
 
 class PagoCreate(BaseModel):
-    payment_method_id: int
-    amount: float
+    """
+    Entrada de pago: método y monto.
+    """
+    payment_method_id: int               # ID del medio de pago utilizado
+    amount: float                        # Monto pagado
 
 class PaymentMethodBase(BaseModel):
-    name: str
+    """
+    Campos base para crear o actualizar métodos de pago.
+    """
+    name: str                            # Nombre del medio (p.ej. "Tarjeta")
 
 class PaymentMethodCreate(PaymentMethodBase):
-    currency: str  # ISO 4217 de 3 caracteres
+    """
+    Esquema para creación de método de pago, añade moneda ISO.
+    """
+    currency: constr(min_length=3, max_length=3)  # ISO 4217
 
 class PaymentMethodOut(PaymentMethodBase):
-    id: int
-    currency: str
+    """
+    Salida de método de pago con ID y moneda.
+    """
+    id: int                              # ID autogenerado
+    currency: constr(min_length=3, max_length=3)
+
     class Config:
         orm_mode = True
 
 class PagoOut(PagoCreate):
-    metodo: PaymentMethodOut
+    """
+    Salida de un pago, incluye detalle del medio de pago.
+    """
+    metodo: PaymentMethodOut             # Objeto anidado del medio
+
     class Config:
         orm_mode = True
 
 class DescuentoCreate(BaseModel):
-    concepto: str
-    amount: float
+    """
+    Entrada de descuento aplicado a la venta.
+    """
+    concepto: str                       # Descripción del descuento
+    amount: float                       # Monto descontado
 
 class DescuentoOut(DescuentoCreate):
+    """
+    Salida de descuento.
+    """
     class Config:
         orm_mode = True
+
+# --- ESQUEMAS DE VENTAS COMPLETAS ---
 
 class VentaCreate(BaseModel):
-    detalles: List[DetalleVentaIn]
-    pagos:    List[PagoCreate]
-    descuentos: Optional[List[DescuentoCreate]] = []
+    """
+    Entrada para crear una venta con detalles, pagos y descuentos.
+    """
+    detalles: List[DetalleVentaIn]      # Lista de ítems vendidos
+    pagos:    List[PagoCreate]          # Lista de pagos recibidos
+    descuentos: Optional[List[DescuentoCreate]] = []  # Descuentos opcionales
 
 class VentaOut(BaseModel):
-    id: int
-    fecha: datetime
-    total: float
-    detalles: List[DetalleVentaOut]
-    pagos:    List[PagoOut]
-    descuentos: List[DescuentoOut]
+    """
+    Salida completa de una venta registrada.
+    """
+    id: int                             # ID de la venta
+    fecha: datetime                    # Fecha y hora de la venta
+    total: float                       # Total neto de la venta
+    detalles: List[DetalleVentaOut]    # Detalles con subtotales
+    pagos:    List[PagoOut]            # Pagos detallados
+    descuentos: List[DescuentoOut]     # Descuentos aplicados
+
     class Config:
         orm_mode = True
 
-# --- Catálogos ---
+# --- ESQUEMAS DE CATÁLOGOS ---
+
 class CatalogoBase(BaseModel):
-    filename: str
+    """
+    Campos base para gestión de catálogos PDF.
+    """
+    filename: str                       # Nombre del archivo
 
 class CatalogoCreate(CatalogoBase):
+    """
+    Entrada para subir un nuevo catálogo.
+    """
     pass
 
 class Catalogo(CatalogoBase):
-    id: int
-    filepath: str
-    uploaded_at: datetime
+    """
+    Salida de catálogo con metadatos.
+    """
+    id: int                             # ID autogenerado
+    filepath: str                       # Ruta en servidor
+    uploaded_at: datetime               # Fecha de subida
+
     class Config:
         orm_mode = True

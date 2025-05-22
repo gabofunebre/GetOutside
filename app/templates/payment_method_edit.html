@@ -26,6 +26,7 @@
       <thead>
         <tr>
           <th>Nombre</th>
+          <th>Moneda</th>
           <th class="text-end">Acciones</th>
         </tr>
       </thead>
@@ -33,6 +34,7 @@
         {% for pm in payment_methods %}
         <tr data-id="{{ pm.id }}">
           <td>{{ pm.name }}</td>
+          <td>{{ pm.currency }}</td>
           <td class="text-end">
             <button class="btn btn-sm btn-outline-primary me-2" title="Editar">
               <i class="bi bi-pencil"></i>
@@ -80,8 +82,23 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
           </div>
           <div class="modal-body">
-            <label for="editInput" class="form-label">Nuevo nombre:</label>
-            <input type="text" class="form-control" id="editInput" required>
+            <div class="mb-3">
+              <label for="editNameInput" class="form-label">Nuevo nombre:</label>
+              <input type="text" class="form-control" id="editNameInput" required>
+            </div>
+            <div class="mb-3">
+              <label for="editCurrencySelect" class="form-label">Moneda:</label>
+              <select class="form-select" id="editCurrencySelect" required>
+                <option value="NZD">🇳🇿 NZD</option>
+                <option value="AUD">🇦🇺 AUD</option>
+                <option value="USD">🇺🇸 USD</option>
+                <option value="EUR">🇪🇺 EUR</option>
+                <option value="ARS">🇦🇷 ARS</option>
+                {% for code in otras_monedas %}
+                  <option value="{{ code }}">{{ code }}</option>
+                {% endfor %}
+              </select>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

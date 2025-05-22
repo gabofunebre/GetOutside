@@ -1,28 +1,37 @@
+// app/static/js/producto_api.js
+
+/**
+ * Adjunta un listener al campo de código de producto para verificar si existe en la base.
+ * Si existe, muestra un modal para gestionar actualización de stock;
+ * si no, prepara el formulario para creación.
+ * @param {Object} ctx - Contexto con referencias al DOM y estado interno.
+ */
 export function attachCodigoListener(ctx) {
   const {
-    codigoInput,
-    descripcionInput,
-    catalogoSelect,
-    precioInput,
-    stockInput,
-    stockInfo,
-    stockLabel,
-    stockAgregadoInput,
-    submitButton,
-    modal,
-    aceptarBtn,
-    cancelarBtn
+    codigoInput,        // Input de código identificador de producto
+    descripcionInput,   // Input de descripción del producto
+    catalogoSelect,     // Selector de catálogo asociado
+    precioInput,        // Input de precio de venta
+    stockInput,         // Input de stock inicial para nuevos productos
+    stockInfo,          // Contenedor con información de stock actual
+    stockLabel,         // Etiqueta que muestra stock actual
+    stockAgregadoInput, // Input para cantidad a agregar en edición
+    submitButton,       // Botón de envío del formulario
+    modal               // Instancia del modal para producto existente
   } = ctx;
 
+  // Al perder foco del campo de código, consultamos la API
   codigoInput.addEventListener("blur", async () => {
     const codigo = codigoInput.value.trim();
-    if (!codigo) return;
+    if (!codigo) return; // Si está vacío, no hacemos nada
 
     try {
+      // Llamada a la API que verifica existencia de código
       const res = await fetch(`/productos?codigo=${encodeURIComponent(codigo)}`);
       const data = await res.json();
 
       if (data.exists === false) {
+        // No existe: limpiar estados y campos para creación
         ctx.productoExistente = false;
         ctx.productoId = null;
         ctx.productoTemporal = null;
@@ -46,6 +55,7 @@ export function attachCodigoListener(ctx) {
 
         submitButton.textContent = "Crear Producto";
       } else {
+        // Existe: guardar datos temporales y mostrar modal para aceptar o cancelar
         ctx.productoTemporal = data;
         modal.show();
       }
@@ -54,7 +64,8 @@ export function attachCodigoListener(ctx) {
     }
   });
 
-  aceptarBtn.addEventListener("click", () => {
+  // Cuando se confirme en el modal que el producto existe:
+  ctx.aceptarBtn.addEventListener("click", () => {
     const prod = ctx.productoTemporal;
     if (!prod) return;
 
@@ -82,7 +93,8 @@ export function attachCodigoListener(ctx) {
     modal.hide();
   });
 
-  cancelarBtn.addEventListener("click", () => {
+  // Si se cancela en el modal, restaurar formulario a estado creación:
+  ctx.cancelarBtn.addEventListener("click", () => {
     ctx.productoExistente = false;
     ctx.productoId = null;
     ctx.productoTemporal = null;
@@ -109,6 +121,7 @@ export function attachCodigoListener(ctx) {
     modal.hide();
   });
 
+  // Al escribir código, limpiar estilo de error
   codigoInput.addEventListener("input", () => {
     codigoInput.classList.remove("is-invalid");
   });

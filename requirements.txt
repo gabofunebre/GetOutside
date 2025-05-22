@@ -7,3 +7,4 @@ alembic
 jinja2
 python-multipart
 alembic
+requests

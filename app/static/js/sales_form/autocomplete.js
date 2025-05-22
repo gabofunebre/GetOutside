@@ -1,6 +1,6 @@
 // File: app/static/js/sales_form/autocomplete.js
 ////////////////////////////////////////////////////////////////////////////////
-// Autocomplete (sin dependencias) — filtrado por stock > 0
+// Autocomplete (actualizado para pasar objeto completo del producto)
 ////////////////////////////////////////////////////////////////////////////////
 export class Autocomplete {
   constructor(input, list, items, onSelect) {
@@ -30,11 +30,10 @@ export class Autocomplete {
         p.codigo_getoutside.toLowerCase().includes(filter) ||
         p.descripcion.toLowerCase().includes(filter)
       );
-    this.matches.forEach(p => {
+    this.matches.forEach((p, index) => {
       const li = document.createElement('li');
       li.textContent = `${p.codigo_getoutside} — ${p.descripcion}`;
-      li.dataset.codigo = p.codigo_getoutside;
-      li.dataset.precio = p.precio_venta;
+      li.dataset.index = index; // Usamos índice para referencia interna
       this.list.appendChild(li);
     });
     this.list.style.display = this.matches.length ? 'block' : 'none';
@@ -71,8 +70,10 @@ export class Autocomplete {
   }
 
   select(li) {
-    this.input.value = li.dataset.codigo;
-    this.onSelect(li.dataset);
+    const index = +li.dataset.index;
+    const selectedItem = this.matches[index];
+    this.input.value = selectedItem.codigo_getoutside;
+    this.onSelect(selectedItem); // Pasamos el objeto completo
     this.hide();
   }
 }
