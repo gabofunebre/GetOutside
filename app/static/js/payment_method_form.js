@@ -1,7 +1,26 @@
+// payment_method_form.js
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("pmForm");
   const alertPlaceholder = document.getElementById("alert-placeholder");
   const overlay = document.getElementById("overlay");
+  const currencySelect = document.getElementById("currency");
+
+  async function loadCurrencies() {
+    try {
+      const res = await fetch("/payment_methods/currencies");
+      const data = await res.json();
+      data.forEach(({ code, label }) => {
+        const opt = document.createElement("option");
+        opt.value = code;
+        opt.textContent = label;
+        currencySelect.appendChild(opt);
+      });
+    } catch (err) {
+      console.error("Error cargando monedas:", err);
+    }
+  }
+
+  loadCurrencies();
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -9,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     overlay.style.display = "flex";
 
     const name = form.name.value.trim();
-    const currency = form.currency.value;  // capturamos la moneda seleccionada
+    const currency = form.currency.value;
 
     if (!name) {
       overlay.style.display = "none";
@@ -25,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/payment_methods/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, currency })  // enviamos también currency
+        body: JSON.stringify({ name, currency })
       });
 
       if (!res.ok) {

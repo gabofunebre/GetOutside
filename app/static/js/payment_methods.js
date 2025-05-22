@@ -1,14 +1,11 @@
 // app/static/js/payment_methods.js
-
 document.addEventListener("DOMContentLoaded", () => {
   const table = document.getElementById("payment-methods-body");
 
-  // MODAL ELIMINAR
   const deleteModal = new bootstrap.Modal(document.getElementById("confirmDeleteModal"));
   const modalName = document.getElementById("modal-payment-name");
   const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 
-  // MODAL EDITAR
   const editModal = new bootstrap.Modal(document.getElementById("editModal"));
   const editForm = document.getElementById("editForm");
   const nameInput = document.getElementById("editNameInput");
@@ -19,7 +16,24 @@ document.addEventListener("DOMContentLoaded", () => {
   let idAEditar = null;
   let rowAEditar = null;
 
-  // --- ELIMINAR ---
+  async function loadCurrencies() {
+    try {
+      const res = await fetch("/payment_methods/currencies");
+      const data = await res.json();
+      currencySelect.innerHTML = "";
+      data.forEach(({ code, label }) => {
+        const opt = document.createElement("option");
+        opt.value = code;
+        opt.textContent = label;
+        currencySelect.appendChild(opt);
+      });
+    } catch (err) {
+      console.error("Error cargando monedas:", err);
+    }
+  }
+
+  loadCurrencies();
+
   table.addEventListener("click", (e) => {
     const btn = e.target.closest("button.btn-outline-danger");
     if (!btn) return;
@@ -58,7 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- EDITAR ---
   table.addEventListener("click", (e) => {
     const btn = e.target.closest("button.btn-outline-primary");
     if (!btn) return;

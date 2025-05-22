@@ -27,30 +27,36 @@ def ingresos_overview(
     Muestra los ingresos por método de pago,
     convertidos a la moneda `target_currency` usando Frankfurter API.
     """
-    # Obtener totales originales
     data = crud.get_ingresos(db)
     por_medio = data["por_medio"]
 
-    # Preparar lista de monedas origen (excluyendo la target)
     orig_currencies = {m["currency"] for m in por_medio if m["currency"] != target_currency}
     rates = {}
-    if orig_currencies:
-        # Llamada a Frankfurter: base=target_currency, symbols=origen1,origen2,...
-        params = {"base": target_currency, "symbols": ",".join(orig_currencies)}
-        resp = requests.get("https://api.frankfurter.app/latest", params=params)
-        resp.raise_for_status()
-        rates = resp.json().get("rates", {})
+    error_msg = None
 
-    # Convertir montos y calcular total convertido
+    try:
+        if orig_currencies:
+            params = {"base": target_currency, "symbols": ",".join(orig_currencies)}
+            resp = requests.get("https://api.frankfurter.app/latest", params=params, timeout=5)
+            resp.raise_for_status()
+            rates = resp.json().get("rates", {})
+    except Exception:
+        rates = {}
+        error_msg = "No fue posible obtener los tipos de cambio. Se muestran solo los valores en moneda original."
+
     total_converted = 0.0
     for m in por_medio:
         amt = m["amount"]
         if m["currency"] == target_currency:
             m["converted"] = round(amt, 2)
+            total_converted += m["converted"]
         else:
             rate = rates.get(m["currency"])
-            m["converted"] = round(amt / rate, 2) if rate else None
-        total_converted += m["converted"] or 0.0
+            if rate:
+                m["converted"] = round(amt / rate, 2)
+                total_converted += m["converted"]
+            else:
+                m["converted"] = None
 
     return templates.TemplateResponse(
         "ingresos_overview.html",
@@ -58,6 +64,7 @@ def ingresos_overview(
             "request": request,
             "target_currency": target_currency,
             "total": total_converted,
-            "por_medio": por_medio
+            "por_medio": por_medio,
+            "error_msg": error_msg
         }
     )

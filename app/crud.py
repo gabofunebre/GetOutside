@@ -6,27 +6,26 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from . import models, schemas
+from .core.currencies import CURRENCY_LABELS
 
 PDF_DIR = "app/static/catalogos"
 
 # === PRODUCTOS ===
 
 def get_producto(db: Session, producto_id: int) -> Optional[models.Producto]:
-    """Devuelve un Producto por su ID"""
+    """Devuelve un Producto por su ID."""
     return db.query(models.Producto).filter(models.Producto.id == producto_id).first()
 
-
 def create_producto(db: Session, p: schemas.ProductoCreate) -> models.Producto:
-    """Crea y devuelve un nuevo Producto"""
+    """Crea y devuelve un nuevo Producto."""
     db_p = models.Producto(**p.dict())
     db.add(db_p)
     db.commit()
     db.refresh(db_p)
     return db_p
 
-
 def agregar_stock(db: Session, producto: models.Producto, stock_agregado: int) -> models.Producto:
-    """Aumenta stock_actual de un Producto existente"""
+    """Aumenta el stock_actual de un Producto existente."""
     producto.stock_actual += stock_agregado
     db.commit()
     db.refresh(producto)
@@ -35,7 +34,7 @@ def agregar_stock(db: Session, producto: models.Producto, stock_agregado: int) -
 # === STOCK / INVENTARIO ===
 
 def update_stock(db: Session, producto_id: int, delta: int, referencia: str) -> models.Producto:
-    """Crea un InventarioMovimiento y ajusta el stock del Producto"""
+    """Crea un movimiento de inventario y ajusta el stock del Producto."""
     prod = get_producto(db, producto_id)
     prod.stock_actual += delta
     mov = models.InventarioMovimiento(
@@ -51,10 +50,7 @@ def update_stock(db: Session, producto_id: int, delta: int, referencia: str) -> 
 # === MÉTODOS DE PAGO ===
 
 def create_payment_method(db: Session, pm: schemas.PaymentMethodCreate):
-    """
-    Crea un nuevo medio de pago con nombre y currency.
-    Valida unicidad (case-insensitive).
-    """
+    """Crea un nuevo medio de pago validando unicidad (case-insensitive)."""
     existente = db.query(models.PaymentMethod).filter(
         func.lower(models.PaymentMethod.name) == pm.name.lower()
     ).first()
@@ -72,11 +68,11 @@ def create_payment_method(db: Session, pm: schemas.PaymentMethodCreate):
     return pm_obj
 
 def get_payment_methods(db: Session):
-    """Recupera todos los medios de pago"""
+    """Recupera todos los métodos de pago registrados."""
     return db.query(models.PaymentMethod).all()
 
 def delete_payment_method_by_id(db: Session, id: int) -> bool:
-    """Elimina un medio si no ha sido usado en ventas"""
+    """Elimina un método si no está referenciado en ventas."""
     usado = db.query(models.VentaPago).filter_by(payment_method_id=id).first()
     if usado:
         raise ValueError("No se puede eliminar: el medio fue utilizado en ventas.")
@@ -95,15 +91,11 @@ def update_payment_method_by_id(
     new_name: str,
     new_currency: str
 ) -> models.PaymentMethod | None:
-    """
-    Actualiza el nombre y la currency de un medio de pago por su ID,
-    validando unicidad del nombre.
-    """
+    """Actualiza nombre y moneda de un método de pago, validando unicidad."""
     pm = db.query(models.PaymentMethod).filter(models.PaymentMethod.id == id).first()
     if not pm:
         return None
 
-    # Verificar que no exista otro con el mismo nombre
     existente = db.query(models.PaymentMethod).filter(
         func.lower(models.PaymentMethod.name) == new_name.lower(),
         models.PaymentMethod.id != id
@@ -120,7 +112,7 @@ def update_payment_method_by_id(
 # === CATÁLOGOS ===
 
 def create_catalogo(db: Session, file: UploadFile) -> models.Catalogo:
-    """Guarda un archivo y crea un registro de Catalogo"""
+    """Guarda un archivo PDF y registra un nuevo catálogo."""
     existing = db.query(models.Catalogo).filter_by(filename=file.filename).first()
     if existing:
         raise ValueError(f"Ya existe un catálogo con el nombre '{file.filename}'.")
@@ -134,20 +126,18 @@ def create_catalogo(db: Session, file: UploadFile) -> models.Catalogo:
     db.refresh(db_obj)
     return db_obj
 
-
 def get_catalogos(db: Session) -> list[models.Catalogo]:
-    """Recupera todos los catálogos ordenados por fecha"""
+    """Recupera todos los catálogos ordenados por fecha descendente."""
     return db.query(models.Catalogo).order_by(models.Catalogo.uploaded_at.desc()).all()
 
-
 def get_catalogo(db: Session, catalogo_id: int) -> Optional[models.Catalogo]:
-    """Recupera un catálogo por su ID"""
+    """Recupera un catálogo por su ID."""
     return db.query(models.Catalogo).filter(models.Catalogo.id == catalogo_id).first()
 
 # === VENTAS Y PAGOS ===
 
 def create_venta(db: Session, v: schemas.VentaCreate) -> models.Venta:
-    """Valida y registra venta, detalles, pagos, descuentos y actualiza stock"""
+    """Valida y registra una venta con sus detalles, pagos y descuentos."""
     total_detalles = sum(item.cantidad * item.precio_unitario for item in v.detalles)
     total_descuentos = sum(d.amount for d in v.descuentos or [])
     total_venta = total_detalles - total_descuentos
@@ -157,7 +147,6 @@ def create_venta(db: Session, v: schemas.VentaCreate) -> models.Venta:
     venta = models.Venta(total=total_venta)
     db.add(venta)
     db.flush()
-    # Detalles de venta
     for item in v.detalles:
         prod = get_producto(db, item.producto_id)
         if prod.stock_actual < item.cantidad:
@@ -176,14 +165,12 @@ def create_venta(db: Session, v: schemas.VentaCreate) -> models.Venta:
             cantidad=item.cantidad,
             referencia=f"Venta #{venta.id}"
         ))
-    # Pagos
     for p in v.pagos:
         db.add(models.VentaPago(
             venta_id=venta.id,
             payment_method_id=p.payment_method_id,
             amount=p.amount
         ))
-    # Descuentos
     for d in v.descuentos or []:
         db.add(models.Descuento(
             venta_id=venta.id,
@@ -194,18 +181,14 @@ def create_venta(db: Session, v: schemas.VentaCreate) -> models.Venta:
     db.refresh(venta)
     return venta
 
-
 def get_ingresos(db: Session):
     """
-    Suma pagos por cada medio e incluye su moneda.
-    Devuelve un dict con:
-      - total: total global (float)
-      - por_medio: lista de dicts con id, name, currency, amount
+    Devuelve ingresos agrupados por medio de pago con:
+    - total: suma total de pagos
+    - por_medio: lista de dicts con id, name, currency, currency_label y amount
     """
-    # Total global de todos los pagos
     total = db.query(func.sum(models.VentaPago.amount)).scalar() or 0
 
-    # Agrupado por medio de pago: id, nombre, currency y monto
     rows = (
         db.query(
             models.PaymentMethod.id,
@@ -222,19 +205,18 @@ def get_ingresos(db: Session):
         .all()
     )
 
-    # Construir lista de resultados
     por_medio = [
         {
             "id": pm_id,
             "name": name,
             "currency": currency,
+            "currency_label": CURRENCY_LABELS.get(currency, currency),
             "amount": float(amount)
         }
         for pm_id, name, currency, amount in rows
     ]
 
     return {"total": float(total), "por_medio": por_medio}
-
 
 def get_ventas(
     db: Session,
@@ -243,7 +225,7 @@ def get_ventas(
     payment_method_id: Optional[int] = None,
     producto_id: Optional[int] = None,
 ) -> list[models.Venta]:
-    """Recupera ventas con filtros opcionales de rango, método y producto"""
+    """Recupera ventas con filtros opcionales de fecha, método y producto."""
     query = db.query(models.Venta)
     if start:
         query = query.filter(models.Venta.fecha >= start)
@@ -258,7 +240,6 @@ def get_ventas(
         joinedload(models.Venta.pagos).joinedload(models.VentaPago.metodo)
     ).order_by(models.Venta.fecha.desc()).all()
 
-
 def get_product_ranking(
     db: Session,
     start: Optional[datetime] = None,
@@ -267,7 +248,7 @@ def get_product_ranking(
     proceso_aplicado: Optional[str] = None,
     diseno_aplicado: Optional[str] = None,
 ) -> list:
-    """Calcula ranking de productos por cantidad vendida con filtros opcionales"""
+    """Devuelve ranking de productos por cantidad vendida con filtros opcionales."""
     query = db.query(
         models.Producto.id,
         models.Producto.codigo_getoutside,
