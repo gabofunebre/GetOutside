@@ -18,16 +18,18 @@
 
     <!-- Selector de moneda destino -->
     <form method="get" class="d-flex justify-content-end mb-3">
+      <button type="submit" class="btn btn-primary me-2">
+        Convertir a 
+      </button>
+      
       <select name="target_currency" class="form-select w-auto me-2">
-        {% for curr in ["NZD","USD","EUR","ARS","AUD"] %}
+        {% for curr in ["NZD","USD","EUR","AUD"] %}
           <option value="{{ curr }}" {% if curr == target_currency %}selected{% endif %}>
             {{ curr }}
           </option>
         {% endfor %}
       </select>
-      <button type="submit" class="btn btn-secondary">
-        Convertir a {{ target_currency }}
-      </button>
+
     </form>
 
     <!-- Total convertido -->

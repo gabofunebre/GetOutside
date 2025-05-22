@@ -11,6 +11,7 @@ from ..core.templates import templates
 
 router = APIRouter(prefix="/productos", tags=["Productos"])
 
+
 # === DEPENDENCIA: Sesión de DB ===
 
 def get_db():
@@ -21,10 +22,12 @@ def get_db():
     finally:
         db.close()
 
+
 # === MODELO AUXILIAR para actualizaciones parciales ===
 
 class StockUpdate(BaseModel):
     stock_agregado: int  # cantidad a sumar o restar al stock_actual
+
 
 # === CREACIÓN DE PRODUCTOS ===
 
@@ -32,6 +35,7 @@ class StockUpdate(BaseModel):
 def create_producto(p: schemas.ProductoCreate, db: Session = Depends(get_db)):
     """Crea un nuevo producto y lo devuelve"""
     return crud.create_producto(db, p)
+
 
 # === FORMULARIO HTML ===
 
@@ -44,6 +48,7 @@ def new_product_form(request: Request, db: Session = Depends(get_db)):
         {"request": request, "catalogos": catalogos}
     )
 
+
 # === CONSULTA DE PRODUCTOS POR ID ===
 
 @router.get("/id/{producto_id}", response_model=schemas.ProductoOut)
@@ -53,6 +58,7 @@ def read_producto_by_id(producto_id: int, db: Session = Depends(get_db)):
     if not prod:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return prod
+
 
 # === ACTUALIZAR STOCK POR ID ===
 
@@ -64,27 +70,33 @@ def update_stock_by_id(producto_id: int, data: StockUpdate, db: Session = Depend
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return crud.agregar_stock(db, prod, data.stock_agregado)
 
-# === LISTADO DE PRODUCTOS ===
 
-@router.get("/", response_model=list[schemas.ProductoOut])  # ajusta vista/modelo si es necesario
+# === LISTADO DE PRODUCTOS COMPLETO ===
+
+@router.get("/", response_model=list[schemas.ProductoOut])
 def list_productos(db: Session = Depends(get_db)):
     """Devuelve todos los productos registrados"""
     return db.query(models.Producto).all()
 
-# === RUTAS LEGACY (basadas en código), pueden eliminarse si no se usan ===
 
-# @router.get("/{codigo}", response_model=schemas.ProductoOut)
-# def read_producto_by_codigo(codigo: str, db: Session = Depends(get_db)):
-#     """(Obsoleto) Devuelve un producto por su código (deprecated)"""
-#     prod = crud.get_producto(db, producto_id=None)  # ya no funciona: refactorizar
-#     if not prod:
-#         raise HTTPException(status_code=404, detail="Producto no encontrado")
-#     return prod
+# === VALIDACIÓN POR CÓDIGO (para frontend) ===
 
-# @router.put("/{codigo}", response_model=schemas.ProductoOut)
-# def update_stock_by_codigo(codigo: str, data: StockUpdate, db: Session = Depends(get_db)):
-#     """(Obsoleto) Ajusta stock por código de producto (deprecated)"""
-#     prod = db.query(models.Producto).filter(models.Producto.codigo_getoutside == codigo).first()
-#     if not prod:
-#         raise HTTPException(status_code=404, detail="Producto no encontrado")
-#     return crud.agregar_stock(db, prod, data.stock_agregado)
+@router.get("", response_model=dict, include_in_schema=False)
+def producto_existe_por_codigo(codigo: Optional[str] = None, db: Session = Depends(get_db)):
+    """Consulta si un producto existe por código. Devuelve 'exists' y datos mínimos si aplica"""
+    if not codigo:
+        raise HTTPException(status_code=400, detail="Código no proporcionado")
+
+    prod = db.query(models.Producto).filter(models.Producto.codigo_getoutside == codigo).first()
+    if not prod:
+        return {"exists": False}
+
+    return {
+        "exists": True,
+        "id": prod.id,
+        "codigo_getoutside": prod.codigo_getoutside,
+        "descripcion": prod.descripcion,
+        "catalogo_id": prod.catalogo_id,
+        "precio_venta": float(prod.precio_venta),
+        "stock_actual": prod.stock_actual
+    }
