@@ -141,9 +141,7 @@ def create_venta(db: Session, v: schemas.VentaCreate) -> models.Venta:
     total_detalles = sum(item.cantidad * item.precio_unitario for item in v.detalles)
     total_descuentos = sum(d.amount for d in v.descuentos or [])
     total_venta = total_detalles - total_descuentos
-    total_pagos = sum(p.amount for p in v.pagos)
-    if total_pagos != total_venta:
-        raise ValueError("La suma de pagos debe coincidir con el total neto de la venta")
+    # Ya no se valida que total_pagos == total_venta
     venta = models.Venta(total=total_venta)
     db.add(venta)
     db.flush()

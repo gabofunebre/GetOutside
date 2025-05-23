@@ -27,10 +27,20 @@ def get_db():
 def new_sale_form(request: Request, db: Session = Depends(get_db)):
     """Renderiza el formulario con productos y métodos de pago disponibles"""
     productos_raw = db.query(models.Producto).all()
-    # Serializar productos para el template
     productos = [schemas.ProductoOut.from_orm(p).model_dump() for p in productos_raw]
+
     medios_raw = db.query(models.PaymentMethod).all()
-    medios = [{"id": m.id, "name": m.name} for m in medios_raw]
+    from ..core.currencies import CURRENCY_LABELS
+    medios = [
+        {
+            "id": m.id,
+            "name": m.name,
+            "currency": m.currency,
+            "currency_label": CURRENCY_LABELS.get(m.currency, m.currency)
+        }
+        for m in medios_raw
+    ]
+
     return templates.TemplateResponse(
         "sales_form.html",
         {"request": request, "productos": productos, "medios": medios}
