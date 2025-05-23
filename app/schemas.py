@@ -1,8 +1,38 @@
-# app/schemas.py
-
 from pydantic import BaseModel, ConfigDict, constr
 from datetime import datetime
 from typing import List, Optional
+
+# --- ESQUEMAS DE CATÁLOGOS ---
+
+class CatalogoBase(BaseModel):
+    """
+    Campos base para gestión de catálogos PDF.
+    """
+    filename: str                       # Nombre del archivo
+
+class CatalogoCreate(CatalogoBase):
+    """
+    Entrada para subir un nuevo catálogo.
+    """
+    pass
+
+class Catalogo(BaseModel):
+    """
+    Salida de catálogo con metadatos.
+    """
+    id: int                             # ID autogenerado
+    filepath: str                       # Ruta en servidor
+    uploaded_at: datetime               # Fecha de subida
+
+    class Config:
+        orm_mode = True
+
+class CatalogoOut(BaseModel):
+    id: int
+    filename: str
+
+    class Config:
+        orm_mode = True
 
 # --- ESQUEMAS DE PRODUCTOS ---
 
@@ -27,11 +57,13 @@ class ProductoOut(BaseModel):
     """
     Respuesta de producto con todos los datos y su ID.
     """
-    id: int                              # ID autogenerado en BD
+    id: int
     codigo_getoutside: str
     descripcion: str
     precio_venta: float
     stock_actual: int
+    catalogo_id: int
+    catalogo: Optional[CatalogoOut] = None  # ← Relación con nombre del catálogo
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -126,31 +158,6 @@ class VentaOut(BaseModel):
     detalles: List[DetalleVentaOut]    # Detalles con subtotales
     pagos:    List[PagoOut]            # Pagos detallados
     descuentos: List[DescuentoOut]     # Descuentos aplicados
-
-    class Config:
-        orm_mode = True
-
-# --- ESQUEMAS DE CATÁLOGOS ---
-
-class CatalogoBase(BaseModel):
-    """
-    Campos base para gestión de catálogos PDF.
-    """
-    filename: str                       # Nombre del archivo
-
-class CatalogoCreate(CatalogoBase):
-    """
-    Entrada para subir un nuevo catálogo.
-    """
-    pass
-
-class Catalogo(CatalogoBase):
-    """
-    Salida de catálogo con metadatos.
-    """
-    id: int                             # ID autogenerado
-    filepath: str                       # Ruta en servidor
-    uploaded_at: datetime               # Fecha de subida
 
     class Config:
         orm_mode = True

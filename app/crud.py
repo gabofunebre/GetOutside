@@ -31,6 +31,39 @@ def agregar_stock(db: Session, producto: models.Producto, stock_agregado: int) -
     db.refresh(producto)
     return producto
 
+
+def update_producto_completo(db: Session, producto_id: int, data: schemas.ProductoCreate) -> models.Producto:
+    """
+    Actualiza completamente un producto existente:
+    - Cambia código, descripción, precio, stock y catálogo.
+    - Valida que el nuevo código no esté en uso por otro producto.
+    """
+    # Buscar producto por ID
+    prod = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
+    if not prod:
+        raise ValueError("Producto no encontrado")
+
+    # Validar unicidad del código GetOutside, excluyendo el mismo producto
+    duplicado = db.query(models.Producto).filter(
+        models.Producto.codigo_getoutside == data.codigo_getoutside,
+        models.Producto.id != producto_id
+    ).first()
+    if duplicado:
+        raise ValueError("Código GetOutside ya en uso por otro producto.")
+
+    # Asignar nuevos valores
+    prod.codigo_getoutside = data.codigo_getoutside
+    prod.descripcion = data.descripcion
+    prod.precio_venta = data.precio_venta
+    prod.stock_actual = data.stock_actual
+    prod.catalogo_id = data.catalogo_id
+
+    # Guardar cambios
+    db.commit()
+    db.refresh(prod)
+
+    return prod
+
 # === STOCK / INVENTARIO ===
 
 def update_stock(db: Session, producto_id: int, delta: int, referencia: str) -> models.Producto:

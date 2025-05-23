@@ -2,6 +2,10 @@
 
 import { resetFormularioVisual } from './form_utils.js';
 
+/**
+ * Configura el comportamiento del formulario de producto,
+ * diferenciando entre creación de nuevo producto o agregado de stock.
+ */
 export function setupFormBehavior(ctx) {
   const {
     form, overlay, alertPlaceholder,
@@ -14,7 +18,7 @@ export function setupFormBehavior(ctx) {
     alertPlaceholder.innerHTML = "";
     overlay.style.display = "flex";
 
-    // Seguridad: asegurarse que solo el campo activo sea enviado
+    // Seguridad: asegura que solo el campo activo sea enviado
     if (ctx.productoExistente) {
       descripcionInput.removeAttribute("required");
       precioInput.removeAttribute("required");
@@ -27,12 +31,12 @@ export function setupFormBehavior(ctx) {
       let res;
 
       if (ctx.productoExistente && ctx.productoId) {
-        // === AGREGAR STOCK ===
+        // === AGREGAR STOCK A PRODUCTO EXISTENTE ===
         const payload = {
           stock_agregado: Number(stockAgregadoInput.value)
         };
 
-        res = await fetch(`/productos/id/${ctx.productoId}`, {
+        res = await fetch(`/productos/id/${ctx.productoId}/stock`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
@@ -70,7 +74,7 @@ export function setupFormBehavior(ctx) {
           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>`;
 
-      resetFormularioVisual(ctx); // 👈 función reutilizada
+      resetFormularioVisual(ctx);
       ctx.productoExistente = false;
       ctx.productoId = null;
       ctx.productoTemporal = null;

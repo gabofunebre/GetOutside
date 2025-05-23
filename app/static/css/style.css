@@ -1,13 +1,15 @@
 /* ==========================================================================
    Global Body Styles
-   ========================================================================== */
+   ==========================================================================
+*/
 body {
   background-color: #f8f9fa;
 }
 
 /* ==========================================================================
    Block Components: Product, Payment, Discount
-   ========================================================================== */
+   ==========================================================================
+*/
 .producto-block,
 .pago-block,
 .descuento-block {
@@ -31,7 +33,8 @@ body {
 
 /* ==========================================================================
    Action Buttons: Remove
-   ========================================================================== */
+   ==========================================================================
+*/
 .btn-quitar-producto,
 .btn-quitar-pago,
 .btn-quitar-descuento {
@@ -47,14 +50,16 @@ body {
 
 /* ==========================================================================
    Alert Placeholder
-   ========================================================================== */
+   ==========================================================================
+*/
 #alert-placeholder .alert {
   margin-top: 1rem;
 }
 
 /* ==========================================================================
    Buttons Container (Generic)
-   ========================================================================== */
+   ==========================================================================
+*/
 .buttons-container {
   width: 315px;
   margin: 0 auto;
@@ -73,7 +78,8 @@ body {
 
 /* ==========================================================================
    Payment Form Layout
-   ========================================================================== */
+   ==========================================================================
+*/
 .payment-form {
   display: flex;
   flex-direction: column;
@@ -105,7 +111,8 @@ body {
 
 /* ==========================================================================
    Catalog Upload Form
-   ========================================================================== */
+   ==========================================================================
+*/
 .catalogo-form {
   display: flex;
   flex-direction: column;
@@ -126,7 +133,8 @@ body {
 
 /* ==========================================================================
    Final Buttons Layout
-   ========================================================================== */
+   ==========================================================================
+*/
 .final-buttons {
   display: flex;
   flex-direction: column;
@@ -146,7 +154,8 @@ body {
 
 /* ==========================================================================
    Payment & Discount Action Buttons
-   ========================================================================== */
+   ==========================================================================
+*/
 #add-payment,
 #add-discount {
   width: 200px;
@@ -160,7 +169,8 @@ body {
 
 /* ==========================================================================
    Spinner Overlay
-   ========================================================================== */
+   ==========================================================================
+*/
 #overlay {
   position: fixed;
   top: 0;
@@ -168,7 +178,7 @@ body {
   width: 100vw;
   height: 100vh;
   background: rgba(255, 255, 255, 0.7);
-  display: none; /* Hidden by default */
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 9999;
@@ -176,85 +186,71 @@ body {
 
 /* ==========================================================================
    Autocomplete List — estilos alternos para distinguir filas
-   ========================================================================== */
+   ==========================================================================
+*/
 .autocomplete-list li {
   padding: 0.5rem 1rem;
   cursor: pointer;
 }
 
-/* Fondo claro en filas impares */
 .autocomplete-list li:nth-child(odd) {
   background-color: #ffffff;
 }
 
-/* Fondo gris muy suave en filas pares */
 .autocomplete-list li:nth-child(even) {
   background-color: #f1f1f1;
 }
 
-/* Hover para resaltar la fila activa o al pasar el ratón */
 .autocomplete-list li:hover,
 .autocomplete-list li.active {
   background-color: #d9d9d9;
 }
 
-/* ────────────────────────────────────────────────────────────────────────────
-   Autocomplete: dropdown a la misma anchura y estilo que el input,
-   sin viñetas y con bordes integrados
-   ──────────────────────────────────────────────────────────────────────────── */
 .autocomplete {
   position: relative;
 }
+
 .autocomplete-list {
   position: absolute;
   top: 100%;
   left: 0;
-  right: 0;                    /* ajusta al ancho del input */
+  right: 0;
   max-height: 200px;
   overflow-y: auto;
-  margin: 0;                   /* elimina márgenes por defecto */
-  padding: 0;                  /* elimina padding por defecto */
-  list-style: none;            /* quita los puntos */
-  border: 1px solid #ced4da;   /* mismo borde que Bootstrap */
-  border-top: none;            /* sin doble borde con el input */
-  border-radius: 0 0 .25rem .25rem; /* redondea solo esquinas inferiores */
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid #ced4da;
+  border-top: none;
+  border-radius: 0 0 .25rem .25rem;
   background: #fff;
   z-index: 1000;
 }
-.autocomplete-list li {
-  padding: .5rem 1rem;
-  cursor: pointer;
-}
-/* hover y fila activa */
-.autocomplete-list li:hover,
-.autocomplete-list li.active {
-  background-color: #e9ecef;
-}
 
-/* ========================================================================== */
-/* Estilos para Totales En registrar ventas                                   */
-/* ========================================================================== */
-
+/* ==========================================================================
+   Estilos para Totales En registrar ventas
+   ==========================================================================
+*/
 #total-venta {
-  color: #0d6efd; /* Azul Bootstrap */
+  color: #0d6efd;
 }
 
 #total-descuentos {
-  color: #198754; /* Verde Bootstrap */
+  color: #198754;
 }
 
 #total-pago {
-  color: #000; /* Negro */
+  color: #000;
 }
 
 #total-faltante {
-  color: #dc3545; /* Rojo Bootstrap */
+  color: #dc3545;
 }
 
-/* ========================================================================== */
-/* Estilo tipo ticket para resumen de venta en el modal                      */
-/* ========================================================================== */
-
+/* ==========================================================================
+   Estilo tipo ticket para resumen de venta en el modal
+   ==========================================================================
+*/
 #resumen-texto {
   font-family: 'Courier New', monospace;
   font-size: 1rem;
@@ -265,11 +261,76 @@ body {
   border: 1px dashed #ccc;
   border-radius: 6px;
 }
-/* Totales más visibles */
+
 #total-venta,
 #total-descuentos,
 #total-pago,
 #total-faltante {
   font-size: 1.25rem;
   font-weight: 600;
+}
+
+/* ==========================================================================
+   Tabla ordenable genérica
+   ==========================================================================
+*/
+.tabla-ordenable {
+  font-size: 0.95rem;
+}
+
+.tabla-ordenable th {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 20px;
+}
+
+.tabla-ordenable tbody tr:hover {
+  background-color: #f1f1f1;
+  transition: background-color 0.2s ease;
+}
+
+.tabla-ordenable th::after {
+  content: "⇅";
+  font-size: 0.75em;
+  color: #aaa;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tabla-ordenable th.sort-up::after {
+  content: "▲";
+}
+
+.tabla-ordenable th.sort-down::after {
+  content: "▼";
+}
+
+/* ==========================================================================
+   Modal edición producto
+   ==========================================================================
+*/
+.modal .form-label {
+  font-weight: 500;
+}
+
+.modal .form-control {
+  font-size: 1rem;
+}
+
+/* Botón eliminar producto */
+#btn-eliminar {
+  background-color: #dc3545;
+  color: white;
+}
+
+#btn-eliminar:hover {
+  background-color: #bb2d3b;
+}
+
+/* Validación de input duplicado */
+input.is-invalid {
+  border-color: #dc3545;
 }
