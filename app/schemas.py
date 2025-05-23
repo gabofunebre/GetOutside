@@ -34,6 +34,12 @@ class CatalogoOut(BaseModel):
     class Config:
         orm_mode = True
 
+class CatalogoUpdate(BaseModel):
+    """
+    Entrada para editar el nombre de un catálogo existente.
+    """
+    filename: str
+
 # --- ESQUEMAS DE PRODUCTOS ---
 
 class ProductoBase(BaseModel):

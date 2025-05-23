@@ -144,15 +144,18 @@ def update_payment_method_by_id(
 
 # === CATÁLOGOS ===
 
+
 def create_catalogo(db: Session, file: UploadFile) -> models.Catalogo:
     """Guarda un archivo PDF y registra un nuevo catálogo."""
     existing = db.query(models.Catalogo).filter_by(filename=file.filename).first()
     if existing:
         raise ValueError(f"Ya existe un catálogo con el nombre '{file.filename}'.")
+
     os.makedirs(PDF_DIR, exist_ok=True)
     dest_path = os.path.join(PDF_DIR, file.filename)
     with open(dest_path, "wb") as out:
         out.write(file.file.read())
+
     db_obj = models.Catalogo(filename=file.filename, filepath=dest_path)
     db.add(db_obj)
     db.commit()
@@ -167,6 +170,39 @@ def get_catalogo(db: Session, catalogo_id: int) -> Optional[models.Catalogo]:
     """Recupera un catálogo por su ID."""
     return db.query(models.Catalogo).filter(models.Catalogo.id == catalogo_id).first()
 
+def update_catalogo(db: Session, catalogo_id: int, nuevo_nombre: str) -> models.Catalogo:
+    """Actualiza el nombre de un catálogo existente."""
+    catalogo = get_catalogo(db, catalogo_id)
+    if not catalogo:
+        raise ValueError("Catálogo no encontrado")
+
+    # Verifica unicidad del nuevo nombre
+    duplicado = db.query(models.Catalogo).filter(
+        func.lower(models.Catalogo.filename) == nuevo_nombre.lower(),
+        models.Catalogo.id != catalogo_id
+    ).first()
+    if duplicado:
+        raise ValueError("Ya existe un catálogo con ese nombre.")
+
+    catalogo.filename = nuevo_nombre
+    db.commit()
+    db.refresh(catalogo)
+    return catalogo
+
+def delete_catalogo(db: Session, catalogo_id: int) -> bool:
+    """Elimina un catálogo si no está vinculado a productos."""
+    catalogo = get_catalogo(db, catalogo_id)
+    if not catalogo:
+        raise ValueError("Catálogo no encontrado")
+
+    en_uso = db.query(models.Producto).filter_by(catalogo_id=catalogo.id).first()
+    if en_uso:
+        raise ValueError("Catálogo en uso por productos.")
+
+    db.delete(catalogo)
+    db.commit()
+    return True
+    
 # === VENTAS Y PAGOS ===
 
 def create_venta(db: Session, v: schemas.VentaCreate) -> models.Venta:
