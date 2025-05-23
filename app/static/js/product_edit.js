@@ -1,13 +1,20 @@
 // static/js/product_edit.js
 
-// Variables globales de referencia a elementos DOM y datos
 let productos = [];
 let catalogos = [];
+
 let modal, form, idInput, codigoInput, descripcionInput, precioInput, stockInput, catalogoSelect, btnEliminar;
+let modalConfirmar, modalError, overlay, confirmarEliminarBtn;
+
+let idPendienteEliminar = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // Inicialización de referencias a elementos del formulario
+  // Referencias a elementos DOM
   modal = new bootstrap.Modal(document.getElementById("modal-editar"));
+  modalConfirmar = new bootstrap.Modal(document.getElementById("modal-confirmar-eliminar"));
+  modalError = new bootstrap.Modal(document.getElementById("modal-error"));
+
+  overlay = document.getElementById("overlay");
   form = document.getElementById("form-editar");
 
   idInput = document.getElementById("producto-id");
@@ -17,37 +24,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   stockInput = document.getElementById("stock");
   catalogoSelect = document.getElementById("catalogo");
   btnEliminar = document.getElementById("btn-eliminar");
+  confirmarEliminarBtn = document.getElementById("confirmar-eliminar");
 
-  // Cargar datos iniciales: catálogos y productos
+  // Carga inicial
   await cargarCatalogos();
   await cargarProductos();
 
-  // Listeners para formulario y botones
+  // Eventos
   form.addEventListener("submit", handleFormSubmit);
-  btnEliminar.addEventListener("click", handleEliminar);
+  btnEliminar.addEventListener("click", prepararEliminar);
+  confirmarEliminarBtn.addEventListener("click", confirmarEliminar);
   codigoInput.addEventListener("blur", validarCodigoUnico);
 });
 
-/**
- * Carga todos los productos y los muestra en la tabla.
- */
 async function cargarProductos() {
   try {
     const res = await fetch("/productos/");
     if (!res.ok) throw new Error("Error al obtener productos");
-
     productos = await res.json();
 
     const tabla = document.querySelector(".tabla-ordenable");
-    if (!tabla) {
-      console.error("No se encontró la tabla con clase 'tabla-ordenable'");
-      return;
-    }
     const tbody = tabla.querySelector("tbody");
-    if (!tbody) {
-      console.error("Error: tbody es null");
-      return;
-    }
     tbody.innerHTML = "";
 
     for (const p of productos) {
@@ -67,21 +64,17 @@ async function cargarProductos() {
 
   } catch (error) {
     console.error("Error cargando productos:", error.message);
-    alert("Error cargando productos: " + error.message);
+    mostrarError("Error cargando productos: " + error.message);
   }
 }
 
-/**
- * Carga los catálogos disponibles en el <select> del formulario.
- */
 async function cargarCatalogos() {
   try {
     const res = await fetch("/catalogos/api");
     if (!res.ok) throw new Error("Error al obtener catálogos");
-
     catalogos = await res.json();
-    catalogoSelect.innerHTML = "";
 
+    catalogoSelect.innerHTML = "";
     for (const c of catalogos) {
       const option = document.createElement("option");
       option.value = c.id;
@@ -90,13 +83,10 @@ async function cargarCatalogos() {
     }
   } catch (error) {
     console.error("Error cargando catálogos:", error.message);
-    alert("Error cargando catálogos: " + error.message);
+    mostrarError("Error cargando catálogos: " + error.message);
   }
 }
 
-/**
- * Abre el modal con los datos del producto seleccionado.
- */
 function abrirModal(p) {
   idInput.value = p.id;
   codigoInput.value = p.codigo_getoutside;
@@ -108,13 +98,11 @@ function abrirModal(p) {
   modal.show();
 }
 
-/**
- * Maneja el envío del formulario para actualizar producto.
- */
 async function handleFormSubmit(e) {
   e.preventDefault();
-  const id = idInput.value;
+  overlay.style.display = "flex";
 
+  const id = idInput.value;
   const payload = {
     codigo_getoutside: codigoInput.value,
     descripcion: descripcionInput.value,
@@ -129,27 +117,11 @@ async function handleFormSubmit(e) {
     body: JSON.stringify(payload)
   });
 
+  overlay.style.display = "none";
+
   if (!res.ok) {
     const error = await res.json();
-    alert("Error al actualizar producto: " + error.detail);
-    return;
-  }
-
-  modal.hide();
-  await cargarProductos(); // Refresca tabla
-}
-
-/**
- * Intenta eliminar el producto si no tiene ventas.
- */
-async function handleEliminar() {
-  const id = idInput.value;
-  if (!confirm("¿Eliminar este producto? Esta acción no se puede deshacer.")) return;
-
-  const res = await fetch(`/productos/id/${id}`, { method: "DELETE" });
-  if (!res.ok) {
-    const error = await res.json();
-    alert("No se pudo eliminar: " + error.detail);
+    mostrarError("Error al actualizar producto: " + error.detail);
     return;
   }
 
@@ -157,9 +129,34 @@ async function handleEliminar() {
   await cargarProductos();
 }
 
-/**
- * Valida que el código ingresado no esté repetido en otro producto.
- */
+function prepararEliminar() {
+  idPendienteEliminar = idInput.value;
+  modalConfirmar.show();
+}
+
+async function confirmarEliminar() {
+  if (!idPendienteEliminar) return;
+
+  const res = await fetch(`/productos/id/${idPendienteEliminar}`, { method: "DELETE" });
+  idPendienteEliminar = null;
+  if (!res.ok) {
+    const error = await res.json();
+    modalConfirmar.hide();
+    mostrarError("No se pudo eliminar: " + error.detail);
+    return;
+  }
+
+  modalConfirmar.hide();
+  modal.hide();
+  await cargarProductos();
+}
+
+function mostrarError(mensaje) {
+  const mensajeEl = document.getElementById("modal-error-mensaje");
+  if (mensajeEl) mensajeEl.textContent = mensaje;
+  modalError.show();
+}
+
 function validarCodigoUnico() {
   const nuevoCodigo = codigoInput.value.trim();
   const id = parseInt(idInput.value);
