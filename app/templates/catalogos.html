@@ -14,12 +14,10 @@
   <div class="container mt-5">
     <h2 class="text-center mb-4">Catálogos Disponibles</h2>
     <ul class="list-group">
-      {% for c in request.app.dependency_overrides.get_db().__wrapped__().query(models.Catalogo).all() %}
-      {% endfor %}
       {% for cat in catalogos %}
       <li class="list-group-item d-flex justify-content-between align-items-center">
         {{ cat.filename }}
-        <a href="{{ cat.filepath }}" target="_blank" class="btn btn-sm btn-outline-primary">
+        <a href="/catalogos/download/{{ cat.id }}" target="_blank" class="btn btn-sm btn-outline-primary">
           Ver / Descargar
         </a>
       </li>
