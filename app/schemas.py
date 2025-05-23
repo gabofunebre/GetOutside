@@ -24,15 +24,15 @@ class Catalogo(BaseModel):
     filepath: str                       # Ruta en servidor
     uploaded_at: datetime               # Fecha de subida
 
-    class Config:
-        orm_mode = True
+    # para poder usar .from_orm en Pydantic V2
+    model_config = ConfigDict(from_attributes=True)
 
 class CatalogoOut(BaseModel):
     id: int
     filename: str
 
-    class Config:
-        orm_mode = True
+    # para poder usar .from_orm en Pydantic V2
+    model_config = ConfigDict(from_attributes=True)
 
 class CatalogoUpdate(BaseModel):
     """
@@ -89,8 +89,8 @@ class DetalleVentaOut(DetalleVentaIn):
     """
     subtotal: float                      # cantidad * precio_unitario
 
-    class Config:
-        orm_mode = True
+    # si alguna vez lo validas desde ORM
+    model_config = ConfigDict(from_attributes=True)
 
 class PagoCreate(BaseModel):
     """
@@ -118,8 +118,7 @@ class PaymentMethodOut(PaymentMethodBase):
     id: int                              # ID autogenerado
     currency: constr(min_length=3, max_length=3)
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class PagoOut(PagoCreate):
     """
@@ -127,8 +126,7 @@ class PagoOut(PagoCreate):
     """
     metodo: PaymentMethodOut             # Objeto anidado del medio
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class DescuentoCreate(BaseModel):
     """
@@ -141,8 +139,7 @@ class DescuentoOut(DescuentoCreate):
     """
     Salida de descuento.
     """
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 # --- ESQUEMAS DE VENTAS COMPLETAS ---
 
@@ -165,5 +162,4 @@ class VentaOut(BaseModel):
     pagos:    List[PagoOut]            # Pagos detallados
     descuentos: List[DescuentoOut]     # Descuentos aplicados
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
