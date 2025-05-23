@@ -1,29 +1,24 @@
 // File: app/static/js/sales_form/paymentBlock.js
 ////////////////////////////////////////////////////////////////////////////////
-// PaymentBlock
-// Maneja un bloque de pago: selector de medio y monto
+// PaymentBlock con TotalsCalculator.recalcFromDom
 ////////////////////////////////////////////////////////////////////////////////
+
 import { TotalsCalculator } from './totals.js';
 
 export class PaymentBlock {
-  /**
-   * @param {Array} mediosData - lista de medios de pago
-   * @param {Object} dom - referencias DOM para recálculo
-   */
   constructor(mediosData, dom) {
     this.mediosData = mediosData;
     this.dom = dom;
     this.el = this.render();
     dom.pagos.appendChild(this.el);
     this.bindEvents();
-    // Inicializar recálculo
-    TotalsCalculator.recalcAll(dom.productos, dom.pagos, dom.totals.venta, dom.totals.pago);
+    this.recalc();
   }
 
   /** Genera el HTML del bloque */
   render() {
     const options = this.mediosData
-      .map(m => `<option value="${m.id}">${m.name}</option>`)
+      .map(m => `<option value="${m.id}">${m.name} - ${m.currency_label}</option>`)
       .join('');
     const div = document.createElement('div');
     div.className = 'pago-block border rounded p-3 mb-3 bg-light';
@@ -46,31 +41,23 @@ export class PaymentBlock {
     return div;
   }
 
-  /** Asocia eventos de monto, selector y quitar */
+  /** Asocia eventos para recalcular totales dinámicamente */
   bindEvents() {
     const select = this.el.querySelector('select');
     const amount = this.el.querySelector("[name='amount']");
-    select.addEventListener('input', () => TotalsCalculator.recalcAll(
-      this.dom.productos,
-      this.dom.pagos,
-      this.dom.totals.venta,
-      this.dom.totals.pago
-    ));
-    amount.addEventListener('input', () => TotalsCalculator.recalcAll(
-      this.dom.productos,
-      this.dom.pagos,
-      this.dom.totals.venta,
-      this.dom.totals.pago
-    ));
+
+    select.addEventListener('input', () => this.recalc());
+    amount.addEventListener('input', () => this.recalc());
+
     this.el.querySelector('.btn-quitar-pago').addEventListener('click', () => {
       this.el.remove();
-      TotalsCalculator.recalcAll(
-        this.dom.productos,
-        this.dom.pagos,
-        this.dom.totals.venta,
-        this.dom.totals.pago
-      );
+      this.recalc();
     });
+  }
+
+  /** Recalcula todos los totales */
+  recalc() {
+    TotalsCalculator.recalcFromDom(this.dom);
   }
 
   /** Devuelve datos para el envío */

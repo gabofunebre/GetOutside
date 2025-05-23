@@ -1,8 +1,9 @@
 // File: app/static/js/sales_form/discountBlock.js
 ////////////////////////////////////////////////////////////////////////////////
-// DiscountBlock
-// Maneja un bloque de descuento: concepto y monto
+// DiscountBlock con recálculo dinámico usando TotalsCalculator.recalcFromDom
 ////////////////////////////////////////////////////////////////////////////////
+
+import { TotalsCalculator } from './totals.js';
 
 export class DiscountBlock {
   /**
@@ -13,6 +14,7 @@ export class DiscountBlock {
     this.el = this.render();
     dom.descuentos.appendChild(this.el);
     this.bind();
+    this.recalc();
   }
 
   /** Genera el HTML del bloque */
@@ -38,9 +40,20 @@ export class DiscountBlock {
     return div;
   }
 
-  /** Asocia evento quitar */
+  /** Asocia evento de cambio y quitar */
   bind() {
-    this.el.querySelector('.btn-quitar-descuento').addEventListener('click', () => this.el.remove());
+    const amountInput = this.el.querySelector("[name='amount']");
+    amountInput.addEventListener('input', () => this.recalc());
+
+    this.el.querySelector('.btn-quitar-descuento').addEventListener('click', () => {
+      this.el.remove();
+      this.recalc();
+    });
+  }
+
+  /** Recalcula todos los totales */
+  recalc() {
+    TotalsCalculator.recalcFromDom(this.dom);
   }
 
   /** Devuelve datos para el envío */

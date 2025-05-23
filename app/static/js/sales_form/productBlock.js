@@ -1,7 +1,8 @@
 // File: app/static/js/sales_form/productBlock.js
 ////////////////////////////////////////////////////////////////////////////////
-// ProductBlock actualizado para enviar producto_id
+// ProductBlock actualizado con TotalsCalculator.recalcFromDom
 ////////////////////////////////////////////////////////////////////////////////
+
 import { Autocomplete } from './autocomplete.js';
 import { TotalsCalculator } from './totals.js';
 
@@ -12,7 +13,7 @@ export class ProductBlock {
     this.el = this.render();
     dom.productos.appendChild(this.el);
     this.bind();
-    TotalsCalculator.recalcAll(dom.productos, dom.pagos, dom.totals.venta, dom.totals.pago);
+    this.recalc();
   }
 
   // Renderiza el bloque de producto con campos necesarios
@@ -53,24 +54,25 @@ export class ProductBlock {
     const qtyI = this.el.querySelector("[name='cantidad']");
     const idInput = this.el.querySelector("[name='producto_id']");
 
-    // Autocomplete con selección que guarda ID y precio
     new Autocomplete(inp, list, this.data, ds => {
       idInput.value = ds.id;
       precioI.value = ds.precio_venta;
-      TotalsCalculator.recalcAll(this.dom.productos, this.dom.pagos, this.dom.totals.venta, this.dom.totals.pago);
+      this.recalc();
     });
 
-    // Recalcula totales al cambiar cantidad o precio
     [precioI, qtyI].forEach(i =>
-      i.addEventListener('input', () =>
-        TotalsCalculator.recalcAll(this.dom.productos, this.dom.pagos, this.dom.totals.venta, this.dom.totals.pago))
+      i.addEventListener('input', () => this.recalc())
     );
 
-    // Botón quitar producto
     this.el.querySelector('.btn-quitar-producto').addEventListener('click', () => {
       this.el.remove();
-      TotalsCalculator.recalcAll(this.dom.productos, this.dom.pagos, this.dom.totals.venta, this.dom.totals.pago);
+      this.recalc();
     });
+  }
+
+  // Recalcula usando helper
+  recalc() {
+    TotalsCalculator.recalcFromDom(this.dom);
   }
 
   // Devuelve datos del producto para el backend
@@ -81,4 +83,4 @@ export class ProductBlock {
       precio_unitario: +this.el.querySelector("[name='precio_unitario']").value
     };
   }
-} 
+}

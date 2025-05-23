@@ -230,3 +230,46 @@ body {
 .autocomplete-list li.active {
   background-color: #e9ecef;
 }
+
+/* ========================================================================== */
+/* Estilos para Totales En registrar ventas                                   */
+/* ========================================================================== */
+
+#total-venta {
+  color: #0d6efd; /* Azul Bootstrap */
+}
+
+#total-descuentos {
+  color: #198754; /* Verde Bootstrap */
+}
+
+#total-pago {
+  color: #000; /* Negro */
+}
+
+#total-faltante {
+  color: #dc3545; /* Rojo Bootstrap */
+}
+
+/* ========================================================================== */
+/* Estilo tipo ticket para resumen de venta en el modal                      */
+/* ========================================================================== */
+
+#resumen-texto {
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+}
+/* Totales más visibles */
+#total-venta,
+#total-descuentos,
+#total-pago,
+#total-faltante {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
