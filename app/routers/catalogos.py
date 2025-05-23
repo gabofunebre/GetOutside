@@ -1,8 +1,8 @@
-# app/routers/catalogos.py
-
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Request
 from fastapi.responses import RedirectResponse, FileResponse, HTMLResponse
 from sqlalchemy.orm import Session
+from typing import List
+
 from .. import database, models, schemas, crud
 from ..core.templates import templates
 
@@ -24,7 +24,9 @@ def get_db():
 @router.get("/", response_class=HTMLResponse)
 def catalogos_html(request: Request, db: Session = Depends(get_db)):
     catalogos = crud.get_catalogos(db)
-    return templates.TemplateResponse("catalogos.html", {"request": request, "catalogos": catalogos})
+    return templates.TemplateResponse(
+        "catalogos.html", {"request": request, "catalogos": catalogos}
+    )
 
 # =============================================
 # 2. Vista HTML para edición de catálogos
@@ -32,7 +34,9 @@ def catalogos_html(request: Request, db: Session = Depends(get_db)):
 @router.get("/edit", response_class=HTMLResponse)
 def catalogos_edit_view(request: Request, db: Session = Depends(get_db)):
     catalogos = crud.get_catalogos(db)
-    return templates.TemplateResponse("catalogos_edit.html", {"request": request, "catalogos": catalogos})
+    return templates.TemplateResponse(
+        "catalogos_edit.html", {"request": request, "catalogos": catalogos}
+    )
 
 # =============================================
 # 3. Subida de nuevo catálogo (formulario y API)
@@ -42,14 +46,22 @@ def new_catalogo_form(request: Request):
     return templates.TemplateResponse("catalogo_upload.html", {"request": request})
 
 @router.post("/", status_code=303)
-async def upload_catalogo(file: UploadFile = File(..., media_type="application/pdf"), db: Session = Depends(get_db), request: Request = None):
+async def upload_catalogo(
+    file: UploadFile = File(..., media_type="application/pdf"),
+    db: Session = Depends(get_db),
+    request: Request = None,
+):
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Solo se admiten archivos PDF")
     try:
         crud.create_catalogo(db, file)
         return RedirectResponse(url="/catalogos", status_code=303)
     except ValueError as e:
-        return templates.TemplateResponse("catalogo_upload.html", {"request": request, "error": str(e)}, status_code=400)
+        return templates.TemplateResponse(
+            "catalogo_upload.html",
+            {"request": request, "error": str(e)},
+            status_code=400,
+        )
 
 # =============================================
 # 4. Descarga de catálogo por ID
@@ -62,24 +74,29 @@ def download_catalogo(catalogo_id: int, db: Session = Depends(get_db)):
     return FileResponse(
         path=catalogo.filepath,
         media_type="application/pdf",
-        headers={"Content-Disposition": f'inline; filename="{catalogo.filename}"'}
+        headers={"Content-Disposition": f'inline; filename="{catalogo.filename}"'},
     )
 
 # =============================================
 # 5. API JSON de catálogos (frontend consumo)
 # =============================================
-@router.get("/api", response_model=list[schemas.CatalogoOut])
+@router.get("/api", response_model=List[schemas.CatalogoOut])
 def catalogos_json(db: Session = Depends(get_db)):
-    return crud.get_catalogos(db)
+    raw = crud.get_catalogos(db)
+    # Forzamos la conversión ORM → Pydantic para cada catálogo
+    return [schemas.CatalogoOut.from_orm(c) for c in raw]
 
 # =============================================
 # 6. Actualización de nombre de catálogo
 # =============================================
 @router.put("/id/{catalogo_id}", response_model=schemas.CatalogoOut)
-def actualizar_catalogo(catalogo_id: int, payload: schemas.CatalogoUpdate, db: Session = Depends(get_db)):
+def actualizar_catalogo(
+    catalogo_id: int, payload: schemas.CatalogoUpdate, db: Session = Depends(get_db)
+):
     try:
-        catalogo = crud.update_catalogo(db, catalogo_id, payload.filename)
-        return catalogo
+        updated = crud.update_catalogo(db, catalogo_id, payload.filename)
+        # Convertimos explícitamente a CatalogoOut
+        return schemas.CatalogoOut.from_orm(updated)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
