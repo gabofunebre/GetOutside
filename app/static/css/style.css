@@ -334,3 +334,12 @@ input.is-invalid {
   color: #842029;
   font-weight: 500;
 }
+/* === Bloques visuales para productos, descuentos y pagos === */
+.producto-block,
+.descuento-block,
+.pago-block {
+  background-color: #fefefe;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+}
