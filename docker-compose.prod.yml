@@ -3,6 +3,7 @@ version: "3.8"
 services:
   db:
     image: postgres:15
+    container_name: getoutside_stock-db
     ports:
       - "5432:5432"
     env_file:
@@ -11,10 +12,11 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-      TZ: Pacific/Auckland
+      TZ: Pacific/Auckland           # Afecta el sistema del contenedor
+      PGTZ: Pacific/Auckland         # Sugerido: asegura que PostgreSQL use ese timezone
     volumes:
       - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/DataBase:/var/lib/postgresql/data
-      - /etc/localtime:/etc/localtime:ro
+      - /etc/localtime:/etc/localtime:ro  # Opcional pero útil
     networks:
       - getoutside-net
 
@@ -29,8 +31,7 @@ services:
     environment:
       - TZ=Pacific/Auckland
     volumes:
-      - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/Uploads:/app/static/catalogos
-      - /etc/localtime:/etc/localtime:ro
+      - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/Uploads:/app/static/uploads
     networks:
       - getoutside-net
 

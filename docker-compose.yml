@@ -11,8 +11,7 @@ services:
       - TZ=Pacific/Auckland
     volumes:
       - .:/app
-      - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/Uploads:/app/static/catalogos
-      - /etc/localtime:/etc/localtime:ro
+      - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/Uploads:/app/static/uploads
     networks:
       - getoutside-net
     depends_on: []
