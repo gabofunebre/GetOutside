@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session, joinedload
 from . import models, schemas
 from .core.currencies import CURRENCY_LABELS
 
-PDF_DIR = "app/static/catalogos"
+UPLOADS_DIR = "/app/static/uploads"
 
 # === PRODUCTOS ===
 
@@ -146,16 +146,12 @@ def update_payment_method_by_id(
 
 
 def create_catalogo(db: Session, file: UploadFile) -> models.Catalogo:
-    """Guarda un archivo PDF y registra un nuevo catálogo."""
-    existing = db.query(models.Catalogo).filter_by(filename=file.filename).first()
-    if existing:
-        raise ValueError(f"Ya existe un catálogo con el nombre '{file.filename}'.")
-
-    os.makedirs(PDF_DIR, exist_ok=True)
-    dest_path = os.path.join(PDF_DIR, file.filename)
+    catalogos_dir = os.path.join(UPLOADS_DIR, "catalogos")
+    os.makedirs(catalogos_dir, exist_ok=True)
+    dest_path = os.path.join(catalogos_dir, file.filename)
+    print("DEBUG - Voy a guardar en:", dest_path)
     with open(dest_path, "wb") as out:
         out.write(file.file.read())
-
     db_obj = models.Catalogo(filename=file.filename, filepath=dest_path)
     db.add(db_obj)
     db.commit()
