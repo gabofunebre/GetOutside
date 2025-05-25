@@ -61,9 +61,9 @@ def ventas_filter(request: Request, db: Session = Depends(get_db)):
 def ventas_list(
     request: Request,
     start: Optional[str] = Query(None),
-    end:   Optional[str] = Query(None),
+    end: Optional[str] = Query(None),
     payment_method_id: Optional[str] = Query(None),
-    producto_id: Optional[int] = Query(None),
+    codigo_getoutside: Optional[str] = Query(None),
     db: Session = Depends(get_db)
 ):
     """Aplica filtros y renderiza la lista de ventas"""
@@ -71,14 +71,22 @@ def ventas_list(
     start_dt = datetime.fromisoformat(start) if start and start.strip() else None
     end_dt   = datetime.fromisoformat(end)   if end and end.strip() else None
     metodo_id = int(payment_method_id) if payment_method_id and payment_method_id.isdigit() else None
+
+    # Obtener lista de productos si se aplica filtro por código
+    producto_ids = None
+    if codigo_getoutside:
+        productos = db.query(models.Producto).filter(models.Producto.codigo_getoutside.ilike(f"%{codigo_getoutside}%")).all()
+        producto_ids = [p.id for p in productos] if productos else []
+
     # Obtener ventas con crud.get_ventas
     ventas = crud.get_ventas(
         db,
         start=start_dt,
         end=end_dt,
         payment_method_id=metodo_id,
-        producto_id=producto_id
+        producto_ids=producto_ids
     )
+
     # Obtener nombre del medio filtrado
     metodo_pago_nombre = None
     if metodo_id and ventas:
@@ -89,6 +97,7 @@ def ventas_list(
                     break
             if metodo_pago_nombre:
                 break
+
     return templates.TemplateResponse(
         "ventas_list.html",
         {
@@ -97,11 +106,11 @@ def ventas_list(
             "start": start,
             "end": end,
             "payment_method_id": metodo_id,
-            "producto_id": producto_id,
+            "codigo_getoutside": codigo_getoutside,
             "metodo_pago_nombre": metodo_pago_nombre
         }
     )
-
+    
 # === 4) API JSON para crear una venta ===
 @router.post("/", response_model=schemas.VentaOut)
 def create_venta_api(v: schemas.VentaCreate, db: Session = Depends(get_db)):

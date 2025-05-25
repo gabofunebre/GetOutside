@@ -290,9 +290,9 @@ def get_ventas(
     start: Optional[datetime] = None,
     end: Optional[datetime] = None,
     payment_method_id: Optional[int] = None,
-    producto_id: Optional[int] = None,
+    producto_ids: Optional[list[int]] = None,
 ) -> list[models.Venta]:
-    """Recupera ventas con filtros opcionales de fecha, método y producto."""
+    """Recupera ventas con filtros opcionales de fecha, método y lista de productos."""
     query = db.query(models.Venta)
     if start:
         query = query.filter(models.Venta.fecha >= start)
@@ -300,12 +300,13 @@ def get_ventas(
         query = query.filter(models.Venta.fecha <= end)
     if payment_method_id:
         query = query.join(models.VentaPago).filter(models.VentaPago.payment_method_id == payment_method_id)
-    if producto_id:
-        query = query.join(models.DetalleVenta).filter(models.DetalleVenta.producto_id == producto_id)
+    if producto_ids:
+        query = query.join(models.DetalleVenta).filter(models.DetalleVenta.producto_id.in_(producto_ids))
     return query.options(
         joinedload(models.Venta.detalles).joinedload(models.DetalleVenta.producto),
         joinedload(models.Venta.pagos).joinedload(models.VentaPago.metodo)
     ).order_by(models.Venta.fecha.desc()).all()
+
 
 def get_product_ranking(
     db: Session,
