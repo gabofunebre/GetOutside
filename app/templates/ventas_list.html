@@ -4,72 +4,55 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Listado de Ventas</title>
-  <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    crossorigin="anonymous"
-  >
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <div class="container mt-5">
-    <h1 class="text-center mb-4">Listado de Ventas</h1>
-    <div class="text-center mb-3">
-      <a href="/ventas" class="btn btn-secondary">← Volver a filtros</a>
-    </div>
+  <div class="container my-5">
+    <h2 class="text-center mb-4">Ventas Registradas</h2>
 
-    <!-- Resumen de filtros -->
-    <div class="mb-4">
-      <div class="alert alert-info">
-        <strong><u>Filtros aplicados:</u></strong><br>
-        <span class="me-4"><strong><em>Desde:</em></strong> {{ start if start else "Inicio" }}</span>
-        <span class="me-4"><strong><em>Hasta:</em></strong> {{ end if end else "Hoy" }}</span><br>
-        <span class="me-4"><strong><em>Cód. GetOutside:</em></strong> {{ codigo_getoutside if codigo_getoutside else "Todos" }}</span>
-        <span><strong><em>Método de pago:</em></strong> {{ metodo_pago_nombre if metodo_pago_nombre else "Todos" }}</span>
-      </div>
-
-    <!-- Tabla de resultados -->
     <div class="table-responsive">
-      <table class="table table-striped table-hover align-middle">
-        <thead class="table-dark">
+      <table class="table table-striped table-hover table-bordered align-middle tabla-ordenable" id="tabla-ordenable">
+        <thead class="table-primary text-center">
           <tr>
-            <th>Fecha</th>
-            <th>Total</th>
-            <th style="width: 45%;">Productos</th>
-            <th style="width: 20%;">Pago</th>
+            <th class="sort" style="width: 110px;">Fecha</th>
+            <th>Productos</th>
+            <th style="width: 90px;" class="text-end">Total</th>
           </tr>
         </thead>
         <tbody>
-        {% for v in ventas %}
-          <tr style="cursor: pointer;" onclick="window.location.href='/ventas/{{ v.id }}'">
-            <td>{{ v.fecha.strftime("%Y-%m-%d %H:%M:%S") }}</td>
-            <td>{{ "{:.2f}".format(v.total) }}</td>
-            <td style="width: 45%;">
+          {% for v in ventas %}
+          <tr onclick="location.href='/ventas/{{ v.id }}'" style="cursor: pointer;">
+            <td class="text-center">{{ v.fecha.strftime('%d-%m-%y') }}</td>
+            <td>
               {% for d in v.detalles %}
-                {{ d.codigo_getoutside }} - {{ d.producto.descripcion }} (x{{ d.cantidad }})<br>
+                <span>
+                  {{ d.producto.codigo_getoutside }}
+                  <span class="d-none d-md-inline"> - {{ d.producto.descripcion }}</span>
+                </span>{% if not loop.last %}, {% endif %}
               {% endfor %}
             </td>
-            <td style="width: 20%;">
-              {% for p in v.pagos %}
-                {{ p.metodo.name }}: {{ "{:.2f}".format(p.amount) }}<br>
-              {% endfor %}
-            </td>
+            <td class="text-end">${{ '{:.2f}'.format(v.total) }}</td>
           </tr>
-        {% endfor %}
+          {% endfor %}
         </tbody>
       </table>
     </div>
 
-    <div class="text-center mt-4">
-      <a href="/" class="text-muted">&larr; Volver al Dashboard</a>
+    <div class="d-flex justify-content-between mt-4">
+      <a href="/ventas" class="btn btn-outline-secondary">&larr; Volver a filtros</a>
+      <a href="/" class="text-decoration-none">&larr; Ir al Dashboard</a>
     </div>
   </div>
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-    crossorigin="anonymous"
-    defer
-  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous" defer></script>
+  <script src="https://unpkg.com/tablesort@5.2.1/dist/tablesort.min.js" defer></script>
+  <script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+      const table = document.getElementById("tabla-ordenable");
+      if (table) new Tablesort(table, { descending: true });
+    });
+  </script>
+  <script src="/static/js/venta_detallada.js" defer></script>
 </body>
 </html>
