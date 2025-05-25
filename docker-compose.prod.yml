@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   db:
@@ -11,8 +11,10 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+      TZ: Pacific/Auckland
     volumes:
       - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/DataBase:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
     networks:
       - getoutside-net
 
@@ -24,8 +26,11 @@ services:
       - db
     env_file:
       - .env
+    environment:
+      - TZ=Pacific/Auckland
     volumes:
       - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/Uploads:/app/static/catalogos
+      - /etc/localtime:/etc/localtime:ro
     networks:
       - getoutside-net
 
