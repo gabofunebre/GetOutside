@@ -430,3 +430,40 @@ input.is-invalid {
     max-width: 48%;
   }
 }
+
+/* ==========================================================================
+   Tabla con scroll vertical limitado según pantalla
+   ========================================================================== */
+.tabla-scroll {
+  overflow-y: auto;
+  display: block;
+}
+
+/* Altura visible para 15 filas en desktop (aprox 1.5rem + padding por fila) */
+@media (min-width: 768px) {
+  .tabla-scroll {
+    max-height: calc(2.5rem * 13); /* ajustá si tus filas son más altas o bajas */
+  }
+}
+
+/* Altura visible para 5 filas en móvil */
+@media (max-width: 767.98px) {
+  .tabla-scroll {
+    max-height: calc(2.5rem * 5); /* igual: ajustá según altura real de tus filas */
+  }
+}
+
+/* Opcional: sombreado inferior para sugerir que hay más contenido scrolleable */
+.tabla-scroll {
+  box-shadow: inset 0 -10px 10px -10px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================================================
+   Fijar encabezado de tabla al hacer scroll (dashboard)
+   ========================================================================== */
+.tabla-scroll thead th {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 1;
+}

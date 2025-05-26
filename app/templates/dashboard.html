@@ -21,17 +21,18 @@
 
     <!-- 🔷 BLOQUE 1: Últimos movimientos -->
     <div class="mb-4">
-
       <!-- Subtítulo sobre la tabla -->
       <h5 class="mb-2">Últimos movimientos</h5>
 
-      <div class="table-responsive">
+      <!-- 🔸 Tabla con scroll vertical y columnas adaptativas -->
+      <div class="table-responsive tabla-scroll w-100 d-block">
         <table class="table table-sm align-middle mb-2">
           <thead>
             <tr>
               <th style="width: 95px;">Fecha</th>
               <th style="width: auto;">Concepto</th>
-              <th style="width: 100px;" class="text-end">Monto</th>
+              <th class="text-center d-none d-md-table-cell" style="width: 80px;">Moneda</th>
+              <th style="width: 100px;" class="text-start">Monto</th>
             </tr>
           </thead>
           <tbody id="tabla-movimientos">
@@ -51,12 +52,12 @@
         <button class="btn btn-outline-danger btn-movimiento" data-bs-toggle="modal" data-bs-target="#modalIngreso" data-tipo="EGRESO">+Egreso</button>
       </div>
     </div>
+
     <!-- 🔻 Línea divisoria -->
-    <hr class="my-5 mx-3">
+    <hr class="my-4 mx-3">
 
     <!-- 🔷 BLOQUE 2: Acciones rápidas -->
     <div class="botonera-dashboard mt-4 d-flex flex-wrap justify-content-center gap-3 px-2">
-
       <a href="/ventas/new" class="btn-dashboard text-primary">
         <i class="bi bi-cart-plus fs-4 me-1"></i>
         <span class="label">Add Ventas</span>
@@ -76,10 +77,9 @@
         <i class="bi bi-graph-up-arrow fs-4 me-1"></i>
         <span class="label">Métricas</span>
       </a>
-
     </div>
-
   </div>
+
   <!-- 🟢 MODAL DE INGRESO -->
   <div class="modal fade" id="modalIngreso" tabindex="-1" aria-labelledby="modalIngresoLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -89,7 +89,6 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
-
           <div class="mb-3">
             <label for="fecha" class="form-label">Fecha</label>
             <input type="date" class="form-control" id="fecha" name="fecha" required>
@@ -109,19 +108,20 @@
             <label for="metodo_pago" class="form-label">Medio de pago</label>
             <select class="form-select" id="metodo_pago" name="payment_method_id" required></select>
           </div>
-
         </div>
-          <div class="modal-footer d-flex justify-content-between">
-            <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" data-bs-dismiss="modal">
-              <i class="bi bi-x-circle me-1"></i> Cancelar
-            </button>
+
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle me-1"></i> Cancelar
+          </button>
           <button type="submit" class="btn btn-success btn-guardar px-4 rounded-pill shadow-sm">
             <i class="bi bi-check-circle me-1"></i> Guardar
           </button>
-          </div>
+        </div>
       </form>
     </div>
   </div>
+
   <!-- Overlay Spinner -->
   <div id="overlay">
     <div class="spinner-border text-success" role="status">
@@ -129,12 +129,9 @@
     </div>
   </div>
 
-
-  <!-- JS que carga los últimos movimientos -->
+  <!-- JS -->
   <script src="/static/js/dashboard.js"></script>
   <script src="/static/js/dashboard_movimientos.js"></script>
-  <!-- Bootstrap JS (requerido para que funcione el modal) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
