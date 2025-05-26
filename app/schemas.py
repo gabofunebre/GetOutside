@@ -2,6 +2,12 @@ from pydantic import BaseModel, ConfigDict, constr
 from datetime import datetime
 from typing import List, Optional
 
+from enum import Enum
+
+class TipoMovimientoDinero(str, Enum):
+    INGRESO = "INGRESO"
+    EGRESO  = "EGRESO"
+
 # --- ESQUEMAS DE CATÁLOGOS ---
 
 class CatalogoBase(BaseModel):
@@ -161,5 +167,24 @@ class VentaOut(BaseModel):
     detalles: List[DetalleVentaOut]    # Detalles con subtotales
     pagos:    List[PagoOut]            # Pagos detallados
     descuentos: List[DescuentoOut]     # Descuentos aplicados
+
+    model_config = ConfigDict(from_attributes=True)
+
+# --- ESQUEMAS DE MOVIMIENTOS DE DINERO ---
+
+class MovimientoDineroBase(BaseModel):
+    fecha: datetime
+    concepto: str
+    importe: float
+    tipo: TipoMovimientoDinero
+    payment_method_id: int
+
+class MovimientoDineroCreate(MovimientoDineroBase):
+    pass
+
+class MovimientoDineroOut(MovimientoDineroBase):
+    id: int
+    creado_en: datetime
+    metodo_pago: PaymentMethodOut
 
     model_config = ConfigDict(from_attributes=True)

@@ -343,3 +343,89 @@ input.is-invalid {
   border-radius: 8px;
   padding: 1rem;
 }
+
+/* Columnas ajustadas para tabla de movimientos */
+.col-fecha {
+  width: 95px;     /* Suficiente para "31/12/99" + ícono de orden */
+  white-space: nowrap;
+}
+
+.col-moneda {
+  width: 70px;
+  text-align: center;
+}
+
+.col-importe {
+  width: 100px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.col-concepto {
+  width: auto;
+}
+
+.col-moneda, .col-importe {
+  white-space: nowrap;
+}
+
+/* BOTONES DASHBOARD*/
+.btn-soft {
+  background-color: #fefefe;
+  border: 1px solid #ddd;
+  transition: all 0.2s ease;
+}
+.btn-soft:hover {
+  background-color: #f1f1f1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.botonera-dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* Estilo base de cada botón */
+.botonera-dashboard a.btn-dashboard {
+  margin: 0 0.5rem; /* margen izquierdo y derecho */
+  flex: 0 0 20%;
+  max-width: 20%;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0.75rem;
+  padding: 1rem 0.5rem;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 500;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
+}
+
+.botonera-dashboard a.btn-dashboard:hover {
+  background-color: #f8f8f8;
+  transform: translateY(-2px);
+}
+
+.btn-movimiento {
+  padding: 0.4rem 1.2rem;
+  font-size: 1rem;
+  
+  min-width: 18%;
+  min-height: 55px;
+  text-align: center;
+}
+
+/* Mobile: botones 100% y sin texto */
+@media (max-width: 576px) {
+  .botonera-dashboard a.btn-dashboard {
+    /* .botonera-dashboard .label { display: none !important; } */
+    margin: 0 0rem; /* margen izquierdo y derecho */
+    flex: 0 0 60%;
+    max-width: 46%;
+  }
+  .btn-movimiento {
+    flex: 0 0 48%;
+    max-width: 48%;
+  }
+}

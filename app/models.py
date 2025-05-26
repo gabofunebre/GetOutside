@@ -11,6 +11,10 @@ class TipoMov(enum.Enum):
     ENTRADA = "ENTRADA"
     SALIDA  = "SALIDA"
 
+class TipoMovimientoDinero(enum.Enum):
+    INGRESO = "INGRESO"
+    EGRESO  = "EGRESO"
+
 class Producto(Base):
     __tablename__ = "productos"
 
@@ -94,3 +98,16 @@ class Catalogo(Base):
     filename    = Column(String, nullable=False, unique=True)
     filepath    = Column(String, nullable=False, unique=True)
     uploaded_at = Column(DateTime, default=datetime.utcnow)
+
+class MovimientoDinero(Base):
+    __tablename__ = "movimientos_dinero"
+
+    id               = Column(Integer, primary_key=True, index=True)
+    fecha            = Column(DateTime, nullable=False)
+    creado_en        = Column(DateTime, default=datetime.utcnow)
+    concepto         = Column(String, nullable=False)
+    importe          = Column(DECIMAL(14, 2), nullable=False)
+    tipo             = Column(Enum(TipoMovimientoDinero), nullable=False)
+    payment_method_id = Column(Integer, ForeignKey("payment_methods.id"), nullable=False)
+
+    metodo_pago = relationship("PaymentMethod", backref="movimientos_dinero")
