@@ -167,7 +167,8 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(240, 240, 240, 0.6);
+  backdrop-filter: blur(2px); /* opcional si querés difuminar */
   display: none;
   align-items: center;
   justify-content: center;
@@ -423,7 +424,7 @@ input.is-invalid {
     margin: 0 0rem; /* margen izquierdo y derecho */
     flex: 0 0 60%;
     max-width: 46%;
-  }
+  } 
   .btn-movimiento {
     flex: 0 0 48%;
     max-width: 48%;

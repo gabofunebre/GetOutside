@@ -26,3 +26,4 @@ docker-compose.override.yml
 dist/
 build/
 *.egg
+app/static/Uploads
