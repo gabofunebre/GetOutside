@@ -30,25 +30,31 @@ function renderTablaDashboard(data) {
   const tbody = document.getElementById("tabla-movimientos");
   tbody.innerHTML = "";
 
+  const isMobile = window.innerWidth < 768;
+
   data.forEach(m => {
     const tr = document.createElement("tr");
 
-    // Fecha en formato DD/MM/AA
     const fecha = `<td>${formatearFecha(m.fecha)}</td>`;
-
-    // Concepto con estilo diferente según tipo
     const concepto = m.tipo === "INGRESO"
       ? `<td class="text-start">${m.concepto}</td>`
       : `<td class="fst-italic ps-3">${m.concepto}</td>`;
 
-    // Monto como número entero + moneda (ej: 1500ARS)
-    const monto = Math.round(m.importe) + m.metodo_pago.currency;
-    const importe = `<td class="text-end fw-bold">${monto}</td>`;
+    if (isMobile) {
+      const montoMoneda = `${Math.round(m.importe)}${m.metodo_pago.currency}`;
+      const importe = `<td class="text-end fw-bold">${montoMoneda}</td>`;
+      tr.innerHTML = fecha + concepto + importe;
+    } else {
+      const moneda = `<td class="text-center d-none d-md-table-cell">${m.metodo_pago.currency}</td>`;
+      const importe = `<td class="fw-bold">${Math.round(m.importe)}</td>`;
 
-    tr.innerHTML = fecha + concepto + importe;
+      tr.innerHTML = fecha + concepto + moneda + importe;
+    }
+
     tbody.appendChild(tr);
   });
 }
+
 
 // 🔁 Cargar la tabla inicial al abrir la página
 cargarMovimientos();
