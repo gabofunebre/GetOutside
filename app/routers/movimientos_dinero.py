@@ -1,8 +1,11 @@
-from fastapi import APIRouter, Request, Depends
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Request, Depends, status
+from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app import crud
+from app.schemas import MovimientoDineroCreate
+from app.models import TipoMovimientoDinero
+
 
 from fastapi.templating import Jinja2Templates
 
@@ -46,3 +49,17 @@ def listar_movimientos_dinero(limit: int = 30, db: Session = Depends(get_db)):
     )
     return movimientos
 
+@router.post("/api/movimientos-dinero", status_code=201)
+def crear_movimiento_dinero_api(
+    movimiento: MovimientoDineroCreate,
+    db: Session = Depends(get_db)
+):
+    nuevo = crud.crear_movimiento_dinero(
+        db=db,
+        tipo=movimiento.tipo,
+        fecha=movimiento.fecha,
+        concepto=movimiento.concepto,
+        importe=movimiento.importe,
+        metodo_pago_id=movimiento.payment_method_id
+    )
+    return JSONResponse(content={"id": nuevo.id}, status_code=status.HTTP_201_CREATED)

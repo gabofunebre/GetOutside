@@ -334,3 +334,23 @@ def get_product_ranking(
         models.Producto.codigo_getoutside,
         models.Producto.descripcion
     ).order_by(func.sum(models.DetalleVenta.cantidad).desc()).all()
+
+def crear_movimiento_dinero(
+    db: Session,
+    tipo: models.TipoMovimientoDinero,
+    fecha: datetime,
+    concepto: str,
+    importe: float,
+    metodo_pago_id: int
+) -> models.MovimientoDinero:
+    nuevo = models.MovimientoDinero(
+        tipo=tipo,
+        fecha=fecha,
+        concepto=concepto,
+        importe=importe,
+        payment_method_id=metodo_pago_id
+    )
+    db.add(nuevo)
+    db.commit()
+    db.refresh(nuevo)
+    return nuevo
