@@ -14,8 +14,11 @@ services:
       - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/Uploads:/app/static/uploads
     networks:
       - getoutside-net
+      - nginx_net
     depends_on: []
 
 networks:
   getoutside-net:
+    external: true
+  nginx_net:
     external: true
