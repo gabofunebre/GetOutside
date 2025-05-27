@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Compra</title>
+    <!-- Bootstrap 5 (usa la CDN solo si no está en tu template base) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Spinner Overlay -->
+    <div id="overlay">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+    </div>
+    <div class="container mt-5">
+      <form id="compra-form" class="compra-form shadow-sm rounded bg-white p-4 p-md-5">
+        <h2 class="mb-4">Registrar Compra</h2>
+        <!-- Fecha y Archivo: fila responsive -->
+        <div class="row mb-3">
+          <div class="col-md-6 mb-2 mb-md-0">
+            <label for="fecha" class="form-label">Fecha</label>
+            <input type="date" class="form-control" id="fecha" name="fecha" required>
+            <div class="invalid-feedback">Ingrese una fecha válida.</div>
+          </div>
+          <div class="col-md-6">
+            <label for="archivo" class="form-label">Archivo (opcional)</label>
+            <input type="file" class="form-control" id="archivo" name="archivo" accept="image/*,.pdf" capture="environment">
+            <div class="form-text">Podés seleccionar un archivo o tomar una foto.</div>
+          </div>
+        </div>
+        <!-- Concepto amplio -->
+        <div class="mb-3">
+          <label for="concepto" class="form-label">Concepto</label>
+          <textarea class="form-control" id="concepto" name="concepto" rows="3" required></textarea>
+          <div class="invalid-feedback">Ingrese un concepto.</div>
+        </div>
+        <!-- Botón registrar, responsive -->
+        <div class="d-flex justify-content-center mb-2">
+          <button type="button" class="btn btn-primary btn-lg w-100 w-md-28" id="btn-registrar" style="max-width:400px;">
+            Registrar compra
+          </button>
+        </div>
+      </form>
+      <div class="text-center mt-3">
+        <a href="/" class="text-muted">&larr; Volver al Dashboard</a>
+      </div>
+    </div>
+
+
+    <!-- Modal de confirmación -->
+    <div class="modal fade" id="modalConfirm" tabindex="-1" aria-labelledby="modalConfirmLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalConfirmLabel">Confirmar Registro</h5>
+          </div>
+          <div class="modal-body" id="modalConfirmBody">
+            <!-- Resumen generado por JS -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-success" id="btn-confirmar">Aceptar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de resultado (exito/error) -->
+    <div class="modal fade" id="modalResultado" tabindex="-1" aria-labelledby="modalResultadoLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalResultadoLabel">Resultado</h5>
+          </div>
+          <div class="modal-body" id="modalResultadoBody">
+            <!-- Mensaje generado por JS -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JS y dependencias (popper.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/compras/compra_add.js"></script>
+</body>
+</html>

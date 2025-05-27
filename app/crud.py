@@ -365,3 +365,30 @@ def crear_movimiento_dinero(
     db.commit()
     db.refresh(nuevo)
     return nuevo
+
+# --- ARCHIVOS ---
+def create_archivo(db: Session, file: UploadFile) -> models.Archivo:
+    archivos_dir = os.path.join(UPLOADS_DIR, "archivos")
+    os.makedirs(archivos_dir, exist_ok=True)
+    dest_path = os.path.join(archivos_dir, file.filename)
+    with open(dest_path, "wb") as out:
+        out.write(file.file.read())
+    db_obj = models.Archivo(filename=file.filename, filepath=dest_path)
+    db.add(db_obj)
+    db.commit()
+    db.refresh(db_obj)
+    return db_obj
+
+def get_archivos(db: Session):
+    return db.query(models.Archivo).order_by(models.Archivo.uploaded_at.desc()).all()
+
+# --- COMPRAS ---
+def create_compra(db: Session, c: schemas.CompraCreate) -> models.Compra:
+    db_obj = models.Compra(**c.dict())
+    db.add(db_obj)
+    db.commit()
+    db.refresh(db_obj)
+    return db_obj
+
+def get_compras(db: Session):
+    return db.query(models.Compra).order_by(models.Compra.fecha.desc()).all()

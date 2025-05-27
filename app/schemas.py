@@ -188,3 +188,32 @@ class MovimientoDineroOut(MovimientoDineroBase):
     metodo_pago: PaymentMethodOut
 
     model_config = ConfigDict(from_attributes=True)
+
+# --- ARCHIVO ---
+class ArchivoBase(BaseModel):
+    filename: str
+
+class ArchivoCreate(ArchivoBase):
+    pass
+
+class ArchivoOut(ArchivoBase):
+    id: int
+    filepath: str
+    uploaded_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+# --- COMPRA ---
+class CompraBase(BaseModel):
+    fecha: datetime
+    concepto: str
+    archivo_id: int
+
+class CompraCreate(CompraBase):
+    pass
+
+class CompraOut(CompraBase):
+    id: int
+    archivo: ArchivoOut
+
+    model_config = ConfigDict(from_attributes=True)
