@@ -481,3 +481,14 @@ input.is-invalid {
 select.form-select {
   font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
 }
+
+/* Responsive width for registrar compra button: 100% en mobile, 28% en desktop/tablet */
+.w-md-28 {
+  width: 100% !important;
+}
+@media (min-width: 768px) {
+  .w-md-28 {
+    width: 28% !important;
+    min-width: 180px;
+  }
+}
