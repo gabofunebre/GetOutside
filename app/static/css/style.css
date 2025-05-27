@@ -388,24 +388,33 @@ input.is-invalid {
 }
 
 /* Estilo base de cada botón */
-.botonera-dashboard a.btn-dashboard {
-  margin: 0 0.5rem; /* margen izquierdo y derecho */
-  flex: 0 0 20%;
-  max-width: 20%;
+.btn-card {
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 0.75rem;
-  padding: 1rem 0.5rem;
+  padding: 1rem 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 500;
   text-align: center;
   text-decoration: none;
-  font-weight: 500;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease-in-out;
+  display: block;
+  width: 100%;
 }
 
-.botonera-dashboard a.btn-dashboard:hover {
+.btn-card:hover {
   background-color: #f8f8f8;
   transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Ajuste solo para la botonera del dashboard */
+.botonera-dashboard a.btn-card {
+  margin: 0 0.5rem;
+  flex: 0 0 20%;
+  max-width: 20%;
+  padding: 1rem 0.5rem;
 }
 
 .btn-movimiento {
@@ -419,7 +428,7 @@ input.is-invalid {
 
 /* Mobile: botones 100% y sin texto */
 @media (max-width: 576px) {
-  .botonera-dashboard a.btn-dashboard {
+  .botonera-dashboard a.btn-card {
     /* .botonera-dashboard .label { display: none !important; } */
     margin: 0 0rem; /* margen izquierdo y derecho */
     flex: 0 0 60%;
@@ -466,4 +475,9 @@ input.is-invalid {
   top: 0;
   background-color: #fff;
   z-index: 1;
+}
+
+/* Forzar soporte de emojis en selects */
+select.form-select {
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
 }

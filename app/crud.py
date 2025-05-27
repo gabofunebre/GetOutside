@@ -6,6 +6,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from . import models, schemas
+from .models import TipoMovimientoDinero
 from .core.currencies import CURRENCY_LABELS
 
 UPLOADS_DIR = "/app/static/uploads"
@@ -229,10 +230,20 @@ def create_venta(db: Session, v: schemas.VentaCreate) -> models.Venta:
             referencia=f"Venta #{venta.id}"
         ))
     for p in v.pagos:
+        # Registrar el pago en la venta
         db.add(models.VentaPago(
             venta_id=venta.id,
             payment_method_id=p.payment_method_id,
             amount=p.amount
+        ))
+
+        # Registrar el ingreso asociado
+        db.add(models.MovimientoDinero(
+            tipo=TipoMovimientoDinero.INGRESO,
+            fecha=venta.fecha,  # misma fecha que la venta
+            concepto=f"Ingreso por venta #{venta.id}",
+            importe=p.amount,
+            payment_method_id=p.payment_method_id
         ))
     for d in v.descuentos or []:
         db.add(models.Descuento(

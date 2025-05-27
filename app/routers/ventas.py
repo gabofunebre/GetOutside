@@ -40,7 +40,6 @@ def new_sale_form(request: Request, db: Session = Depends(get_db)):
         }
         for m in medios_raw
     ]
-
     return templates.TemplateResponse(
         "sales_form.html",
         {"request": request, "productos": productos, "medios": medios}
@@ -137,6 +136,7 @@ def detalle_venta(venta_id: int, request: Request, db: Session = Depends(get_db)
     ).filter(models.Venta.id == venta_id).first()
     if not venta:
         raise HTTPException(status_code=404, detail="Venta no encontrada")
+    
     return templates.TemplateResponse(
         "venta_detalle.html",
         {"request": request, "venta": venta}
