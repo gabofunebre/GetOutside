@@ -216,7 +216,7 @@ class CompraCreate(CompraBase):
 
 class CompraOut(CompraBase):
     id: int
-    archivo: ArchivoOut
+    archivo:  Optional[ArchivoOut] = None
     payment_method: PaymentMethodOut
 
     model_config = ConfigDict(from_attributes=True)

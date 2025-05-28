@@ -19,11 +19,14 @@ def form_compra_add(request: Request):
 def crear_compra(
     concepto: str = Form(...),
     fecha: datetime = Form(...),
-    monto: float = Form(...),                    # <-- AGREGADO
+    monto: float = Form(...),
     payment_method_id: int = Form(...),
     archivo: UploadFile = File(None),
     db: Session = Depends(get_db),
 ):
+    """
+    Crea una nueva compra y registra el movimiento de egreso asociado.
+    """
     archivo_id = None
     if archivo is not None:
         archivo_obj = crud.create_archivo(db, archivo)
@@ -32,11 +35,22 @@ def crear_compra(
     compra_create = schemas.CompraCreate(
         concepto=concepto,
         fecha=fecha,
-        monto=monto,                             # <-- AGREGADO
+        monto=monto,
         archivo_id=archivo_id,
         payment_method_id=payment_method_id
     )
     compra = crud.create_compra(db, compra_create)
+
+    # Registrar movimiento de egreso automáticamente
+    crud.crear_movimiento_dinero(
+        db=db,
+        tipo=models.TipoMovimientoDinero.EGRESO,
+        fecha=compra.fecha,
+        concepto=f"Egreso por compra #{compra.id}",
+        importe=compra.monto,
+        metodo_pago_id=compra.payment_method_id
+    )
+
     return compra
 
 
