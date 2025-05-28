@@ -207,7 +207,9 @@ class ArchivoOut(ArchivoBase):
 class CompraBase(BaseModel):
     fecha: datetime
     concepto: str
-    archivo_id: int
+    monto: float
+    archivo_id: Optional[int] = None   # <-- antes era int
+    payment_method_id: int
 
 class CompraCreate(CompraBase):
     pass
@@ -215,5 +217,6 @@ class CompraCreate(CompraBase):
 class CompraOut(CompraBase):
     id: int
     archivo: ArchivoOut
+    payment_method: PaymentMethodOut
 
     model_config = ConfigDict(from_attributes=True)

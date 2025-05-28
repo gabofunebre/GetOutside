@@ -31,6 +31,22 @@
           <div class="form-text">Podés seleccionar un archivo o tomar una foto.</div>
         </div>
       </div>
+      <div class="row mb-3">
+        <div class="col-md-6 mb-2 mb-md-0">
+          <label for="monto" class="form-label">Monto</label>
+          <input type="number" step="0.01" class="form-control" id="monto" name="monto" required>
+          <div class="invalid-feedback">Ingrese un monto válido.</div>
+        </div>
+        <div class="col-md-6">
+          <label for="payment_method_id" class="form-label">Método de Pago (de dónde usé la plata)</label>
+          <select class="form-select" id="payment_method_id" name="payment_method_id" required>
+            <option value="">Seleccione...</option>
+            <!-- El JS llenará las opciones con emoji, nombre y moneda -->
+          </select>
+          <div class="invalid-feedback">Seleccione un método de pago.</div>
+        </div>
+      </div>
+
       <div class="mb-3">
         <label for="concepto" class="form-label">Concepto</label>
         <textarea class="form-control" id="concepto" name="concepto" rows="3" required></textarea>

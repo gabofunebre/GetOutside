@@ -389,6 +389,13 @@ def create_compra(db: Session, c: schemas.CompraCreate) -> models.Compra:
     db.commit()
     db.refresh(db_obj)
     return db_obj
-
 def get_compras(db: Session):
-    return db.query(models.Compra).order_by(models.Compra.fecha.desc()).all()
+    return (
+        db.query(models.Compra)
+        .options(
+            joinedload(models.Compra.payment_method),
+            joinedload(models.Compra.archivo)
+        )
+        .order_by(models.Compra.fecha.desc())
+        .all()
+    )
