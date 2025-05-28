@@ -1,6 +1,6 @@
 # app/models.py
 from sqlalchemy import (
-    Column, Integer, String, DECIMAL, DateTime, Enum, ForeignKey
+    Column, Integer, String, DECIMAL, DateTime, Enum, ForeignKey, Float
 )
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -128,6 +128,11 @@ class Compra(Base):
     id          = Column(Integer, primary_key=True, index=True)
     fecha       = Column(DateTime, default=datetime.utcnow)
     concepto    = Column(String, nullable=False)
-    archivo_id  = Column(Integer, ForeignKey("archivos.id"), nullable=False)
+
+    monto = Column(Float, nullable=False)
+    archivo_id  = Column(Integer, ForeignKey("archivos.id"), nullable=True)
+
+    payment_method_id = Column(Integer, ForeignKey("payment_methods.id"), nullable=False)
+    payment_method = relationship("PaymentMethod")
 
     archivo     = relationship("Archivo", back_populates="compras")

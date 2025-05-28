@@ -3,10 +3,10 @@
 # === Lista de monedas admitidas con etiquetas ===
 # Se usa en formularios y reportes para asegurar consistencia visual.
 TOP_CURRENCIES = [
-    {"code": "NZD", "label": "🇳🇿 NZD"},
-    {"code": "AUD", "label": "🇦🇺 AUD"},
-    {"code": "USD", "label": "🇺🇸 USD"},
-    {"code": "EUR", "label": "🇪🇺 EUR"},
+    {"code": "NZD", "label": "🇳🇿"},
+    {"code": "AUD", "label": "🇦🇺"},
+    {"code": "USD", "label": "🇺🇸"},
+    {"code": "EUR", "label": "🇪🇺"},
 ]
 
 # === Diccionario auxiliar para lookup rápido por código ===

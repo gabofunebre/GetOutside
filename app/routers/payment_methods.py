@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from ..core.templates import templates
-from ..core.currencies import TOP_CURRENCIES  # Importa desde archivo central
+from ..core.currencies import TOP_CURRENCIES, CURRENCY_LABELS # Importa desde archivo central
 from .. import crud, schemas, database
 
 router = APIRouter(prefix="/payment_methods", tags=["Payment Methods"])
@@ -79,3 +79,8 @@ def update_payment_method(id: int, pm_data: schemas.PaymentMethodCreate, db: Ses
 def get_supported_currencies():
     """Devuelve las monedas admitidas con su etiqueta visual."""
     return TOP_CURRENCIES
+
+@router.get("/currencies_labels")
+def get_supported_currencies_labels():
+    """Devuelve diccionario con las etiquetas de las monedas admitidas."""
+    return CURRENCY_LABELS
