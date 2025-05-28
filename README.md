@@ -33,3 +33,14 @@ Simple web app to manage product catalog, stock, sales, payments and basic metri
 - `make up` / `make rebuild` / `make down(-volumes)`  
 - `make logs-web` / `make logs-db`  
 - `make db-psql`
+
+
+
+En resumen
+Routers: “Qué quiero hacer y con qué datos”.
+
+CRUD: “Cómo lo hago en la base de datos”.
+
+Modelos: “Cómo es la base”.
+
+Schemas: “Cómo se ve la información que entra y sale”.
