@@ -11,8 +11,12 @@ function renderTabla(data) {
   tbody.innerHTML = "";
 
   const isMobile = window.innerWidth < 768;
+  const maxRows = isMobile ? 12 : 40;
 
-  data.forEach(m => {
+  // Limitar la cantidad de registros a mostrar
+  const mostrar = data.slice(0, maxRows);
+
+  mostrar.forEach(m => {
     const tr = document.createElement("tr");
 
     const fechaSort = new Date(m.fecha).toISOString();

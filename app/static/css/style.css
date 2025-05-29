@@ -451,13 +451,19 @@ input.is-invalid {
 /* Altura visible para 15 filas en desktop (aprox 1.5rem + padding por fila) */
 @media (min-width: 768px) {
   .tabla-scroll {
-    max-height: calc(2.5rem * 13); /* ajustá si tus filas son más altas o bajas */
+    max-height: calc(2.5rem * 30); /* ajustá si tus filas son más altas o bajas */
+  }
+  .tabla-scroll-secundaria {
+    max-height: calc(2.5rem * 13); /* igual: ajustá según altura real de tus filas */
   }
 }
 
 /* Altura visible para 5 filas en móvil */
 @media (max-width: 767.98px) {
   .tabla-scroll {
+    max-height: calc(2.5rem * 12); /* igual: ajustá según altura real de tus filas */
+  }
+  .tabla-scroll-secundaria {
     max-height: calc(2.5rem * 5); /* igual: ajustá según altura real de tus filas */
   }
 }
