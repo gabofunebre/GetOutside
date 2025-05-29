@@ -37,7 +37,7 @@ export function attachCodigoListener(ctx) {
         descripcionInput.required = true;
 
         catalogoSelect.disabled = false;
-        catalogoSelect.required = true;
+        catalogoSelect.removeAttribute("required");
 
         precioInput.disabled = false;
         precioInput.required = true;

@@ -6,24 +6,21 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from .. import crud, schemas, database, models
-from ..core.templates import templates
+from app.models.inventario import Producto, Catalogo
+from app.schemas.producto import ProductoBase, ProductoCreate, ProductoOut
+from app.crud.inventario import (
+    get_producto,
+    create_producto,
+    agregar_stock,
+    update_producto_completo,
+)
+from app.core.deps import get_db
+from app.core.templates import templates
 
 router = APIRouter(prefix="/productos", tags=["Productos"])
 
-
-# === DEPENDENCIA: Sesión de DB ===
-
-def get_db():
-    """Devuelve una sesión de base de datos y la cierra al terminar"""
-    db = database.SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
 # === MODELO AUXILIAR para actualizaciones parciales ===
+
 
 class StockUpdate(BaseModel):
     stock_agregado: int  # cantidad a sumar o restar al stock_actual
@@ -31,30 +28,32 @@ class StockUpdate(BaseModel):
 
 # === CREACIÓN DE PRODUCTOS ===
 
-@router.post("/", response_model=schemas.ProductoOut)
-def create_producto(p: schemas.ProductoCreate, db: Session = Depends(get_db)):
+
+@router.post("/", response_model=ProductoOut)
+def crear_producto(p: ProductoCreate, db: Session = Depends(get_db)):
     """Crea un nuevo producto y lo devuelve"""
-    return crud.create_producto(db, p)
+    return create_producto(db, p)
 
 
 # === FORMULARIO HTML ===
 
+
 @router.get("/new", response_class=HTMLResponse)
 def new_product_form(request: Request, db: Session = Depends(get_db)):
     """Renderiza la vista para crear un nuevo producto"""
-    catalogos = db.query(models.Catalogo).all()
+    catalogos = db.query(Catalogo).all()
     return templates.TemplateResponse(
-        "product_form.html",
-        {"request": request, "catalogos": catalogos}
+        "product_form.html", {"request": request, "catalogos": catalogos}
     )
 
 
 # === CONSULTA DE PRODUCTOS POR ID ===
 
-@router.get("/id/{producto_id}", response_model=schemas.ProductoOut)
+
+@router.get("/id/{producto_id}", response_model=ProductoOut)
 def read_producto_by_id(producto_id: int, db: Session = Depends(get_db)):
     """Devuelve un producto dado su ID"""
-    prod = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
+    prod = db.query(Producto).filter(Producto.id == producto_id).first()
     if not prod:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return prod
@@ -62,34 +61,41 @@ def read_producto_by_id(producto_id: int, db: Session = Depends(get_db)):
 
 # === ACTUALIZAR STOCK POR ID ===
 
-@router.put("/id/{producto_id}/stock", response_model=schemas.ProductoOut)
-def update_stock_by_id(producto_id: int, data: StockUpdate, db: Session = Depends(get_db)):
+
+@router.put("/id/{producto_id}/stock", response_model=ProductoOut)
+def update_stock_by_id(
+    producto_id: int, data: StockUpdate, db: Session = Depends(get_db)
+):
     """
     Ajusta únicamente el stock de un producto.
     """
-    prod = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
+    prod = db.query(Producto).filter(Producto.id == producto_id).first()
     if not prod:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
-    return crud.agregar_stock(db, prod, data.stock_agregado)
+    return agregar_stock(db, prod, data.stock_agregado)
 
 
 # === LISTADO DE PRODUCTOS COMPLETO ===
 
-@router.get("/", response_model=list[schemas.ProductoOut])
+
+@router.get("/", response_model=list[ProductoOut])
 def list_productos(db: Session = Depends(get_db)):
     """Devuelve todos los productos registrados"""
-    return db.query(models.Producto).all()
+    return db.query(Producto).all()
 
 
 # === VALIDACIÓN POR CÓDIGO (para frontend) ===
 
+
 @router.get("", response_model=dict, include_in_schema=False)
-def producto_existe_por_codigo(codigo: Optional[str] = None, db: Session = Depends(get_db)):
+def producto_existe_por_codigo(
+    codigo: Optional[str] = None, db: Session = Depends(get_db)
+):
     """Consulta si un producto existe por código. Devuelve 'exists' y datos mínimos si aplica"""
     if not codigo:
         raise HTTPException(status_code=400, detail="Código no proporcionado")
 
-    prod = db.query(models.Producto).filter(models.Producto.codigo_getoutside == codigo).first()
+    prod = db.query(Producto).filter(Producto.codigo_getoutside == codigo).first()
     if not prod:
         return {"exists": False}
 
@@ -100,10 +106,12 @@ def producto_existe_por_codigo(codigo: Optional[str] = None, db: Session = Depen
         "descripcion": prod.descripcion,
         "catalogo_id": prod.catalogo_id,
         "precio_venta": float(prod.precio_venta),
-        "stock_actual": prod.stock_actual
+        "stock_actual": prod.stock_actual,
     }
 
+
 # ====  ELIMINACIÓN POR ID ====
+
 
 @router.delete("/id/{producto_id}")
 def delete_producto(producto_id: int, db: Session = Depends(get_db)):
@@ -112,14 +120,17 @@ def delete_producto(producto_id: int, db: Session = Depends(get_db)):
     - Rechaza la eliminación si el producto ya fue vendido.
     """
     # Buscar el producto
-    prod = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
+    prod = db.query(Producto).filter(Producto.id == producto_id).first()
 
     if not prod:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
 
     # Verificar si tiene ventas asociadas (relación detalles_venta no vacía)
     if prod.detalles_venta:
-        raise HTTPException(status_code=400, detail="No se puede eliminar: producto con ventas registradas.")
+        raise HTTPException(
+            status_code=400,
+            detail="No se puede eliminar: producto con ventas registradas.",
+        )
 
     # Eliminar si no fue vendido
     db.delete(prod)
@@ -127,7 +138,9 @@ def delete_producto(producto_id: int, db: Session = Depends(get_db)):
 
     return {"success": True, "message": "Producto eliminado correctamente"}
 
+
 # === RENDER EDICION ===
+
 
 @router.get("/edit", response_class=HTMLResponse)
 def edit_productos_view(request: Request, db: Session = Depends(get_db)):
@@ -137,14 +150,13 @@ def edit_productos_view(request: Request, db: Session = Depends(get_db)):
     """
     return templates.TemplateResponse("product_edit.html", {"request": request})
 
-    
+
 # === EDICION POR ID CON VALIDACIÓN ===
 
-@router.put("/id/{producto_id}", response_model=schemas.ProductoOut)
-def update_producto_completo(
-    producto_id: int,
-    data: schemas.ProductoCreate,
-    db: Session = Depends(get_db)
+
+@router.put("/id/{producto_id}", response_model=ProductoOut)
+def actualizar_producto_completo(
+    producto_id: int, data: ProductoCreate, db: Session = Depends(get_db)
 ):
     """
     Endpoint para actualizar todos los campos de un producto.
@@ -152,6 +164,6 @@ def update_producto_completo(
     - Lanza HTTP 400 en errores de validación.
     """
     try:
-        return crud.update_producto_completo(db, producto_id, data)
+        return update_producto_completo(db, producto_id, data)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

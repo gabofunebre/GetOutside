@@ -202,3 +202,6 @@ help:
 %:
 
 ################################################################################
+
+db:
+	psql -U getoutside -d getoutside_stock -h localhost

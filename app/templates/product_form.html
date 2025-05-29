@@ -16,6 +16,10 @@
 
   <div class="container mt-5" style="max-width: 600px;">
     <h1 class="text-center mb-4">Agregar Producto</h1>
+    <p class="text-center fst-italic text-muted small mb-4">
+      Si existe, agregar stock a un producto. Si no existe, agregar producto al sistema. Edición de productos en otra sección.
+    </p>
+
 
     <div id="estado-producto" class="text-center mb-3 text-info fw-bold"></div>
     <div id="alert-placeholder"></div>
@@ -40,6 +44,7 @@
         <div class="mb-3">
           <label for="catalogo_id" class="form-label">Catálogo</label>
           <select id="catalogo_id" name="catalogo_id" class="form-select" disabled>
+            <option value="">-- Sin catálogo --</option>
             {% for c in catalogos %}
               <option value="{{ c.id }}">{{ c.filename }}</option>
             {% endfor %}
