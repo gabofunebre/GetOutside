@@ -1,30 +1,41 @@
-# app/main.py
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from .database import Base, engine
-# Routers existentes...
-from .routers import dashboard, productos, ventas, payment_methods, stock, ingresos, ranking, catalogos, movimientos_dinero, compras
-# Crear tablas
+from app.core.db import Base, engine
+
+# Routers existentes
+from .routers import (
+    dashboard,
+    productos,
+    ventas,
+    payment_methods,
+    stock,
+    tenencias,
+    ranking,
+    catalogos,
+    movimientos_dinero,
+    compras,
+)
+
+# Crear tablas en base de datos
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="GetOutside Stock API")
 
-# Montar archivos estáticos
+# Archivos estáticos
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-# Dashboard y subpáginas
-app.include_router(dashboard.router)
-
 # Routers
+app.include_router(dashboard.router)
 app.include_router(productos.router)
 app.include_router(ventas.router)
 app.include_router(payment_methods.router)
 app.include_router(stock.router)
-app.include_router(ingresos.router)
-app.include_router(ranking.router)  # ← Asegúrate de tener esta línea
+app.include_router(ranking.router)
 app.include_router(catalogos.router)
 app.include_router(movimientos_dinero.router)
 app.include_router(compras.router)
+app.include_router(tenencias.router)
+
 
 @app.get("/")
 def read_root():

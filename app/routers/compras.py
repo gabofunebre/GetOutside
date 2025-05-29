@@ -2,20 +2,27 @@ from fastapi import APIRouter, Depends, Form, File, UploadFile, HTTPException, R
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from .. import models, schemas, crud
-from ..database import get_db
-from ..core.templates import templates
+from app.schemas.compra import CompraCreate, CompraOut
+from app.crud import compras
+from app.core.templates import templates
+from app.core.deps import get_db
 
-router = APIRouter(prefix="/compras", tags=["compras"])
+router = APIRouter(prefix="/compras", tags=["Compras"])
 
+
+# =======================================================
+# 1. Formulario HTML para registrar una nueva compra
+# =======================================================
 @router.get("/new")
 def form_compra_add(request: Request):
-    """
-    Renderiza el formulario HTML para registrar una nueva compra.
-    """
     return templates.TemplateResponse("compra_add.html", {"request": request})
 
-@router.post("/new", response_model=schemas.CompraOut)
+
+# =======================================================================
+# 2. Registro de una nueva compra, con carga opcional de archivo asociado
+#    - También registra un movimiento de egreso vinculado a esa compra
+# =======================================================================
+@router.post("/new", response_model=CompraOut)
 def crear_compra(
     concepto: str = Form(...),
     fecha: datetime = Form(...),
@@ -24,54 +31,28 @@ def crear_compra(
     archivo: UploadFile = File(None),
     db: Session = Depends(get_db),
 ):
-    """
-    Crea una nueva compra y registra el movimiento de egreso asociado.
-    """
-    archivo_id = None
-    if archivo is not None:
-        archivo_obj = crud.create_archivo(db, archivo)
-        archivo_id = archivo_obj.id
-
-    compra_create = schemas.CompraCreate(
-        concepto=concepto,
-        fecha=fecha,
-        monto=monto,
-        archivo_id=archivo_id,
-        payment_method_id=payment_method_id
-    )
-    compra = crud.create_compra(db, compra_create)
-
-    # Registrar movimiento de egreso automáticamente
-    crud.crear_movimiento_dinero(
-        db=db,
-        tipo=models.TipoMovimientoDinero.EGRESO,
-        fecha=compra.fecha,
-        concepto=f"Egreso por compra #{compra.id}",
-        importe=compra.monto,
-        metodo_pago_id=compra.payment_method_id
+    compra_data = CompraCreate(
+        concepto=concepto, fecha=fecha, monto=monto, payment_method_id=payment_method_id
     )
 
+    compra = compras.crear_compra_completa(db, compra_data, archivo)
     return compra
 
 
-@router.get("/", response_model=list[schemas.CompraOut])
+# =======================================================
+# 3. Listado de compras con sus archivos y métodos de pago
+# =======================================================
+@router.get("/", response_model=list[CompraOut])
 def listar_compras(db: Session = Depends(get_db)):
-    """
-    Devuelve una lista de todas las compras registradas, ordenadas por fecha descendente.
+    return compras.get_compras(db)
 
-    - Incluye información del archivo y método de pago asociado para cada compra.
-    - Ideal para mostrar un listado general de compras.
-    """
-    compras = crud.get_compras(db)
-    return compras
 
-@router.get("/{compra_id}", response_model=schemas.CompraOut)
+# ===========================================
+# 4. Obtener detalle de una compra por su ID
+# ===========================================
+@router.get("/{compra_id}", response_model=CompraOut)
 def obtener_compra(compra_id: int, db: Session = Depends(get_db)):
-    """
-    Devuelve una compra específica por su ID.
-
-    - Si no existe, responde con error 404.
-    - Incluye información del archivo y método de pago asociado.
-    """
-    compra = db.query(models.Compra).filter(models.Compra.id == compra_id).first()
+    compra = compras.get_compra_by_id(db, compra_id)
+    if not compra:
+        raise HTTPException(status_code=404, detail="Compra no encontrada")
     return compra
