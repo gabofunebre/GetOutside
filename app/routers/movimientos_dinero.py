@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Depends, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
 
-from app.crud.dinero import listar_movimientos, crear_y_guardar_movimiento
+from app.crud.dinero import listar_movimientos, crear_y_guardar_movimiento, get_movimiento_by_id
 from app.schemas.dinero import MovimientoDineroCreate, MovimientoDineroOut
 from app.models.dinero import TipoMovimientoDinero, MovimientoDinero
 from app.core.deps import get_db
@@ -41,3 +41,18 @@ def crear_movimiento_dinero_api(
         metodo_pago_id=movimiento.payment_method_id,
     )
     return JSONResponse(content={"id": nuevo.id}, status_code=status.HTTP_201_CREATED)
+
+@router.get("/movimiento/{movimiento_id}", response_class=HTMLResponse)
+def ver_movimiento_detalle(request: Request, movimiento_id: int, db: Session = Depends(get_db)):
+    try:
+        movimiento = get_movimiento_by_id(db, movimiento_id)
+    except MovimientoNoRegistrado as e:
+        return templates.TemplateResponse(
+            "error.html",
+            {"request": request, "mensaje": str(e)},
+            status_code=404,
+        )
+@router.get("/api/movimiento/{movimiento_id}", response_model=MovimientoDineroOut)
+def obtener_movimiento_api(movimiento_id: int, db: Session = Depends(get_db)):
+    movimiento = get_movimiento_by_id(db, movimiento_id)
+    return movimiento

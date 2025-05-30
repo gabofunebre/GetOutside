@@ -17,12 +17,16 @@ class MovimientoDineroCreate(MovimientoDineroBase):
     pass
 
 
-class MovimientoDineroOut(MovimientoDineroBase):
+class MovimientoDineroOut(BaseModel):
     id: int
-    creado_en: datetime
-    metodo_pago: PaymentMethodOut
+    fecha: datetime
+    tipo: str
+    concepto: str
+    importe: float
+    metodo_pago: PaymentMethodOut  # 👈 asegurate que sea este modelo, no solo un ID
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        orm_mode = True
 
 
 class TenenciaAcumuladaBase(BaseModel):

@@ -21,11 +21,12 @@ class PaymentMethodOut(PaymentMethodBase):
     """
     Salida de método de pago con ID y moneda.
     """
-
     id: int
-    currency: constr(min_length=3, max_length=3)
+    name: str
+    currency: str
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        orm_mode = True
 
 
 class PagoCreate(BaseModel):

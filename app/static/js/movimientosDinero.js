@@ -12,12 +12,13 @@ function renderTabla(data) {
 
   const isMobile = window.innerWidth < 768;
   const maxRows = isMobile ? 12 : 40;
-
-  // Limitar la cantidad de registros a mostrar
   const mostrar = data.slice(0, maxRows);
 
   mostrar.forEach(m => {
     const tr = document.createElement("tr");
+    tr.dataset.id = m.id;
+    tr.classList.add("fila-movimiento");
+    tr.style.cursor = "pointer";
 
     const fechaSort = new Date(m.fecha).toISOString();
     const fecha = `<td class="col-fecha" data-sort="${fechaSort}">${formatearFecha(m.fecha)}</td>`;
@@ -37,11 +38,57 @@ function renderTabla(data) {
       : `<td class="col-importe text-danger fw-bold text-end" data-sort="${importeSort}">${isMobile ? importeMobile : importeDesktop}</td>`;
 
     tr.innerHTML = fecha + concepto + moneda + importe;
+
+    tr.addEventListener("click", () => {
+      fetch(`/api/movimiento/${m.id}`)
+        .then(res => res.json())
+        .then(data => {
+          const body = document.getElementById("modalMovimientoBody");
+
+          const concepto = data.concepto;
+          const match = concepto.match(/Ingreso por venta\s*#(\d+)/i);
+
+          let botonDetalleVenta = "";
+          if (match) {
+            const ventaId = match[1];
+            botonDetalleVenta = `
+              <div class="mt-4 text-end">
+                <a href="/ventas/${ventaId}" class="btn btn-primary btn-sm" target="_blank" rel="noopener">
+                  Ver detalle de la venta
+                </a>
+              </div>
+            `;
+          }
+
+          body.innerHTML = `
+            <p><strong>Fecha:</strong> ${formatearFecha(data.fecha)}</p>
+            <p><strong>Tipo:</strong> ${data.tipo}</p>
+            <p><strong>Concepto:</strong> ${concepto}</p>
+            <p><strong>Importe:</strong> $${data.importe.toFixed(2)}</p>
+            <p><strong>Moneda:</strong> ${data.metodo_pago.currency}</p>
+            <p><strong>Método de Pago:</strong> ${data.metodo_pago.name}</p>
+            ${botonDetalleVenta}
+          `;
+
+          const modal = new bootstrap.Modal(document.getElementById('modalMovimiento'));
+          modal.show();
+        })
+        .catch(err => {
+          console.error(err);
+          const body = document.getElementById("modalMovimientoBody");
+          body.innerHTML = `<div class="text-danger text-center">Error al cargar el movimiento.</div>`;
+        });
+    });
+
     tbody.appendChild(tr);
   });
 
   new Tablesort(document.getElementById("tabla-movimientos"));
 }
+
+
+
+
 
 function cargarMovimientos() {
   fetch("/api/movimientos-dinero")
