@@ -534,3 +534,23 @@ select.form-select {
   width: 130px;
   display: inline-block;
 }
+/* === Estilos personalizados para modal segun tipo === */
+.modal-content-ingreso {
+  border-top: 5px solid #198754; /* verde */
+}
+
+.modal-content-egreso {
+  border-top: 5px solid #fd7e14; /* naranja */
+}
+
+/* === Botón Guardar para egresos === */
+.btn-egreso {
+  background-color: #fd7e14;
+  border-color: #fd7e14;
+  color: white;
+}
+
+.btn-egreso:hover {
+  background-color: #e36b0a;
+  border-color: #e36b0a;
+}
