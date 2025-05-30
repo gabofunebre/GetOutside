@@ -12,7 +12,7 @@ class Producto(Base):
     id = Column(Integer, primary_key=True, index=True)
     codigo_getoutside = Column(String, nullable=False, unique=True, index=True)
     descripcion = Column(String, nullable=False)
-    catalogo_id = Column(Integer, ForeignKey("catalogos.id"), nullable=False)
+    catalogo_id = Column(Integer, ForeignKey("catalogos.id"), nullable=True)
     precio_venta = Column(DECIMAL(12, 2), nullable=False)
     stock_actual = Column(Integer, nullable=False)
 

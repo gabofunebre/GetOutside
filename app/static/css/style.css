@@ -523,3 +523,14 @@ select.form-select {
     max-width: none !important;
   }
 }
+
+#modalMovimiento .modal-body p {
+  margin-bottom: 0.6rem;
+  font-size: 1rem;
+}
+
+#modalMovimiento .modal-body p strong {
+  color: #212529;
+  width: 130px;
+  display: inline-block;
+}
