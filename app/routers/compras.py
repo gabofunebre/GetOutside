@@ -22,6 +22,8 @@ def form_compra_add(request: Request):
 # 2. Registro de una nueva compra, con carga opcional de archivo asociado
 #    - También registra un movimiento de egreso vinculado a esa compra
 # =======================================================================
+from fastapi import status
+
 @router.post("/new", response_model=CompraOut)
 def crear_compra(
     concepto: str = Form(...),
@@ -31,12 +33,26 @@ def crear_compra(
     archivo: UploadFile = File(None),
     db: Session = Depends(get_db),
 ):
-    compra_data = CompraCreate(
-        concepto=concepto, fecha=fecha, monto=monto, payment_method_id=payment_method_id
-    )
+    try:
+        compra_data = CompraCreate(
+            concepto=concepto,
+            fecha=fecha,
+            monto=monto,
+            payment_method_id=payment_method_id
+        )
 
-    compra = compras.crear_compra_completa(db, compra_data, archivo)
-    return compra
+        compra = compras.crear_compra_completa(db, compra_data, archivo)
+        return compra
+
+    except ValueError as e:
+        # Error por datos inválidos
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    
+    except Exception as e:
+        # Error inesperado: loguearlo y devolver genérico
+        # log.error("Error inesperado al crear compra", exc_info=e)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error interno al registrar la compra.")
+
 
 
 # =======================================================
@@ -56,3 +72,14 @@ def obtener_compra(compra_id: int, db: Session = Depends(get_db)):
     if not compra:
         raise HTTPException(status_code=404, detail="Compra no encontrada")
     return compra
+
+# =====================================================
+# 4. Renderiza con los  detalle de una compra por su ID
+# ====================================================
+@router.get("/detalle/{compra_id}")
+def vista_detalle_compra(request: Request, compra_id: int):
+    return templates.TemplateResponse("compra_detalle.html", {
+        "request": request,
+        "compra_id": compra_id
+    })
+

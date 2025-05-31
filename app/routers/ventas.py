@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session #, joinedload
 from app.core.templates import templates
 from app.core.deps import get_db
 from app.crud.ventas import create_venta, get_ventas, filtrar_ventas, get_venta_by_id
-from app.crud.dinero import get_tenencias, get_tenencias_convertidas
+from app.crud.tenencias import get_tenencias, get_tenencias_convertidas
 from app.schemas.producto import ProductoOut
 from app.schemas.venta import VentaCreate, VentaOut, VentaFilterParams
 from app.models.ventas import Venta, DetalleVenta

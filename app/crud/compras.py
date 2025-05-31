@@ -2,6 +2,7 @@ import os
 from fastapi import UploadFile
 from sqlalchemy.orm import Session, joinedload
 
+from app.models.enums import TipoMovimientoDinero
 from app.models import Archivo, Compra
 from app.schemas.compra import CompraCreate
 from app.core.config import ARCHIVOS_DIR
@@ -51,14 +52,14 @@ def get_compra_by_id(db: Session, compra_id: int) -> Compra | None:
 
 
 def registrar_egreso_por_compra(db: Session, compra: Compra) -> None:
-    movimiento = crear_movimiento(
+    movimiento = crear_y_guardar_movimiento(
+        db=db,
         tipo=TipoMovimientoDinero.EGRESO,
         fecha=compra.fecha,
         concepto=f"Egreso por compra #{compra.id}",
         importe=compra.monto,
         metodo_pago_id=compra.payment_method_id,
     )
-    guardar_movimiento(db, movimiento)
 
 def crear_compra_completa(
     db: Session, compra_data: CompraCreate, archivo: UploadFile | None = None
