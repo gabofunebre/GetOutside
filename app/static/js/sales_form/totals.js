@@ -32,8 +32,7 @@ export class TotalsCalculator {
       const amount = +b.querySelector("[name='amount']").value || 0;
       const select = b.querySelector("[name='payment_method_id']");
       const medio = select.options[select.selectedIndex];
-      const label = medio.textContent.trim();
-      const currency = label.split(' - ').pop().trim().split(' ').pop(); // Extrae "NZD" desde "Visa - 🇺🇸 USD"
+      const currency = medio.dataset.currency;
 
       if (currency === "NZD") {
         pagadoNZD += amount;

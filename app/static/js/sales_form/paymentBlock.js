@@ -19,7 +19,7 @@ export class PaymentBlock {
   /** Genera el HTML del bloque */
   render() {
     const options = this.mediosData
-      .map(m => `<option value="${m.id}">${m.name} - ${m.currency_label}</option>`)
+      .map(m => `<option value="${m.id}" data-currency="${m.currency}">${m.name} - ${m.currency_label} ${m.currency}</option>`)
       .join('');
     const div = document.createElement('div');
     div.className = 'pago-block border rounded p-3 mb-3 bg-light';
