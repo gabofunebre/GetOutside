@@ -17,7 +17,9 @@ function cargarMovimientos() {
       if (!res.ok) throw new Error("Error al cargar movimientos");
       return res.json();
     })
-    .then(movimientos => renderTablaDashboard(movimientos))
+    .then(movimientos => {
+      renderTablaDashboard(movimientos);
+    })
     .catch(err => {
       console.error(err);
       document.getElementById("tabla-movimientos").innerHTML =
@@ -36,25 +38,31 @@ function renderTablaDashboard(data) {
     const tr = document.createElement("tr");
 
     const fecha = `<td>${formatearFecha(m.fecha)}</td>`;
+
     const concepto = m.tipo === "INGRESO"
       ? `<td class="text-start">${m.concepto}</td>`
       : `<td class="fst-italic ps-3">${m.concepto}</td>`;
 
+    const importe = m.tipo === "INGRESO"
+      ? `<td class="fw-bold text-success">${Math.round(m.importe)}</td>`
+      : `<td class="fw-bold text-danger">${Math.round(m.importe)}</td>`;
+
     if (isMobile) {
       const montoMoneda = `${Math.round(m.importe)}${m.metodo_pago.currency}`;
-      const importe = `<td class="text-end fw-bold">${montoMoneda}</td>`;
-      tr.innerHTML = fecha + concepto + importe;
+      const importeMobile = m.tipo === "INGRESO"
+        ? `<td class="text-end fw-bold text-success">${montoMoneda}</td>`
+        : `<td class="text-end fw-bold text-danger">${montoMoneda}</td>`;
+      tr.innerHTML = fecha + concepto + importeMobile;
     } else {
-      const moneda = `<td class="text-center d-none d-md-table-cell">${m.metodo_pago.currency}</td>`;
-      const importe = `<td class="fw-bold">${Math.round(m.importe)}</td>`;
-
+      const moneda = m.tipo === "INGRESO"
+        ? `<td class="text-center d-none d-md-table-cell text-success">${m.metodo_pago.currency}</td>`
+        : `<td class="text-center d-none d-md-table-cell text-danger">${m.metodo_pago.currency}</td>`;
       tr.innerHTML = fecha + concepto + moneda + importe;
     }
 
     tbody.appendChild(tr);
   });
 }
-
 
 // 🔁 Cargar la tabla inicial al abrir la página
 cargarMovimientos();
