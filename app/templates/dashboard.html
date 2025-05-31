@@ -107,7 +107,10 @@
         <div class="modal-body">
           <div class="mb-3">
             <label for="fecha" class="form-label">Fecha</label>
-            <input type="date" class="form-control" id="fecha" name="fecha" required>
+            <div class="d-flex gap-2">
+              <input type="datetime-local" class="form-control" id="fecha" name="fecha" readonly required>
+              <button type="button" id="btnModificarFecha" class="btn btn-outline-secondary">Editar fecha</button>
+            </div>
           </div>
 
           <div class="mb-3">
