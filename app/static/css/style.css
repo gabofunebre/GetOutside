@@ -554,3 +554,11 @@ select.form-select {
   background-color: #e36b0a;
   border-color: #e36b0a;
 }
+
+#modal-message {
+  min-height: 1.5em;
+  margin-bottom: 0.25em;
+}
+#modal-message .alert {
+  margin-bottom: 0;
+}

@@ -28,6 +28,12 @@ class SalesForm {
 
     const confirmBtn = document.getElementById('confirmar-venta');
     confirmBtn.addEventListener('click', () => this.submit());
+
+    // Limpia mensaje al cerrar modal (por botón Editar)
+    document.querySelector('#resumen-modal .btn-secondary')
+      .addEventListener('click', () => {
+        document.getElementById('modal-message').innerHTML = '';
+    });
   }
 
   init() {
@@ -36,22 +42,27 @@ class SalesForm {
   }
 
   addProduct() {
-    const block = new ProductBlock(this.productosData, this.dom);
+    const block = new ProductBlock(this.productosData, this.dom, (bloque) => {
+      this.productBlocks = this.productBlocks.filter(b => b !== bloque);
+    });
     this.productBlocks.push(block);
   }
 
   addPayment() {
-    const block = new PaymentBlock(this.mediosData, this.dom);
+    const block = new PaymentBlock(this.mediosData, this.dom, (bloque) => {
+      this.paymentBlocks = this.paymentBlocks.filter(b => b !== bloque);
+    });
     this.paymentBlocks.push(block);
   }
 
   addDiscount() {
-    const block = new DiscountBlock(this.dom);
+    const block = new DiscountBlock(this.dom, (bloque) => {
+      this.discountBlocks = this.discountBlocks.filter(b => b !== bloque);
+    });
     this.discountBlocks.push(block);
   }
 
   async showResumenModal() {
-    // Actualiza totales antes de mostrar resumen
     await TotalsCalculator.recalcAll(
       this.dom.productos,
       this.dom.pagos,
@@ -66,55 +77,64 @@ class SalesForm {
     const descuentos = this.discountBlocks.map(b => b.getData());
     const pagos      = this.paymentBlocks.map(b => b.getData());
 
-    // Construcción del resumen tipo ticket
-    let texto = '     RESUMEN DE LA VENTA\n\n';
+    // Rediseño: resumen menos tabulado, orden tipo ticket
+    let texto = '';
+    texto += '======= RESUMEN DE VENTA =======\n\n';
+    texto += 'Productos:\n';
     let subtotal = 0;
     for (const d of detalles) {
-      texto += `${d.producto_id.toString().padEnd(10)}\t\t$${d.precio_unitario.toFixed(2)} NZD\n`;
+      // Buscar el producto por id para mostrar el código
+      const prod = this.productosData.find(p => p.id === d.producto_id);
+      const codigo = prod ? prod.codigo_getoutside : `ID:${d.producto_id}`;
+      texto += `  ${codigo.padEnd(12)} $${d.precio_unitario.toFixed(2)} x${d.cantidad}\n`;
       subtotal += d.cantidad * d.precio_unitario;
     }
-    texto += `\nSUBTOTAL\t\t$${subtotal.toFixed(2)} NZD\n`;
-    texto += `\t---------------\n`;
+    texto += `\nSUBTOTAL:      $${subtotal.toFixed(2)} NZD\n`;
 
     let totalDesc = 0;
-    for (const d of descuentos) {
-      texto += `${d.concepto.padEnd(10)}\t\t-$${d.amount.toFixed(2)} NZD\n`;
-      totalDesc += d.amount;
+    if (descuentos.length) {
+      texto += '\nDescuentos:\n';
+      for (const d of descuentos) {
+        texto += `  ${d.concepto.slice(0,12).padEnd(12)} -$${d.amount.toFixed(2)} NZD\n`;
+        totalDesc += d.amount;
+      }
     }
-
     const totalFinal = subtotal - totalDesc;
-    texto += `---------------------------------\n`;
-    texto += `TOTAL\t\t\t$${totalFinal.toFixed(2)} NZD\n\n`;
+    texto += `\n-------------------------------\n`;
+    texto += `TOTAL:         $${totalFinal.toFixed(2)} NZD\n`;
 
     let totalPagado = 0;
-    for (const p of pagos) {
-      const medio = this.mediosData.find(m => m.id === p.payment_method_id);
-      if (!medio) continue;
-      let linea = `${medio.name.padEnd(10)}\t\t$${p.amount.toFixed(2)} ${medio.currency}`;
-      if (medio.currency !== 'NZD') {
-        const res = await fetch(`https://api.frankfurter.app/latest?from=${medio.currency}&to=NZD&amount=${p.amount}`);
-        const data = await res.json();
-        const convertido = data.rates['NZD'];
-        totalPagado += convertido;
-        linea += `\t( $${convertido.toFixed(2)} NZD )`;
-      } else {
-        totalPagado += p.amount;
+    if (pagos.length) {
+      texto += '\nPagos:\n';
+      for (const p of pagos) {
+        const medio = this.mediosData.find(m => m.id === p.payment_method_id);
+        if (!medio) continue;
+        let linea = `  ${medio.name.slice(0,12).padEnd(12)} $${p.amount.toFixed(2)} ${medio.currency}`;
+        if (medio.currency !== 'NZD') {
+          const res = await fetch(`https://api.frankfurter.app/latest?from=${medio.currency}&to=NZD&amount=${p.amount}`);
+          const data = await res.json();
+          const convertido = data.rates['NZD'];
+          totalPagado += convertido;
+          linea += ` (=${convertido.toFixed(2)} NZD)`;
+        } else {
+          totalPagado += p.amount;
+        }
+        texto += `${linea}\n`;
       }
-      texto += `${linea}\n`;
     }
-
-    texto += `\nTOTAL PAGADO\t\t$${totalPagado.toFixed(2)} NZD\n`;
+    texto += `\nTOTAL PAGADO:  $${totalPagado.toFixed(2)} NZD\n`;
     const faltan = Math.max(0, totalFinal - totalPagado);
-    texto += `RESTAN\t\t\t$${faltan.toFixed(2)} NZD`;
+    texto += `FALTAN:        $${faltan.toFixed(2)} NZD`;
 
-    // Mostrar en modal
     document.getElementById('resumen-texto').textContent = texto;
+    document.getElementById('modal-message').innerHTML = ''; // Limpia mensaje
     const modal = new bootstrap.Modal(document.getElementById('resumen-modal'));
     modal.show();
   }
 
   async submit() {
-    this.dom.alert.innerHTML = '';
+    const modalMessage = document.getElementById('modal-message');
+    modalMessage.innerHTML = ''; // Limpia el mensaje anterior
     this.dom.overlay.style.display = 'flex';
 
     const detalles   = this.productBlocks.map(b => b.getData());
@@ -138,8 +158,8 @@ class SalesForm {
       const modalInstancia = bootstrap.Modal.getInstance(modalEl);
       if (modalInstancia) modalInstancia.hide();
 
-      // Muestra mensaje de éxito
-      this.dom.alert.innerHTML = `<div class="alert alert-success" role="alert">
+      // Muestra mensaje de éxito DENTRO DEL MODAL
+      modalMessage.innerHTML = `<div class="alert alert-success" role="alert">
         Venta #${venta.id} registrada. Total: ${venta.total.toFixed(2)}
       </div>`;
 
@@ -158,7 +178,8 @@ class SalesForm {
 
       this.init();
     } catch (e) {
-      this.dom.alert.innerHTML = `<div class="alert alert-danger" role="alert">${e.message}</div>`;
+      // Muestra mensaje de error DENTRO DEL MODAL
+      modalMessage.innerHTML = `<div class="alert alert-danger" role="alert">${e.message}</div>`;
     } finally {
       this.dom.overlay.style.display = 'none';
     }
