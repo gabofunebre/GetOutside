@@ -1,6 +1,6 @@
 // File: app/static/js/sales_form/discountBlock.js
 ////////////////////////////////////////////////////////////////////////////////
-// DiscountBlock con recálculo dinámico usando TotalsCalculator.recalcFromDom
+// DiscountBlock con recálculo dinámico usando TotalsCalculator.recalcFromDom y callback onRemove
 ////////////////////////////////////////////////////////////////////////////////
 
 import { TotalsCalculator } from './totals.js';
@@ -8,9 +8,11 @@ import { TotalsCalculator } from './totals.js';
 export class DiscountBlock {
   /**
    * @param {Object} dom - referencias DOM para recálculo
+   * @param {Function} onRemove - callback para eliminar instancia del array principal
    */
-  constructor(dom) {
+  constructor(dom, onRemove) {
     this.dom = dom;
+    this.onRemove = onRemove;
     this.el = this.render();
     dom.descuentos.appendChild(this.el);
     this.bind();
@@ -47,6 +49,9 @@ export class DiscountBlock {
 
     this.el.querySelector('.btn-quitar-descuento').addEventListener('click', () => {
       this.el.remove();
+      if (typeof this.onRemove === 'function') {
+        this.onRemove(this);
+      }
       this.recalc();
     });
   }

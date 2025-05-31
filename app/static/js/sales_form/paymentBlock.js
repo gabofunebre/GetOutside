@@ -1,14 +1,15 @@
 // File: app/static/js/sales_form/paymentBlock.js
 ////////////////////////////////////////////////////////////////////////////////
-// PaymentBlock con TotalsCalculator.recalcFromDom
+// PaymentBlock con TotalsCalculator.recalcFromDom y callback onRemove
 ////////////////////////////////////////////////////////////////////////////////
 
 import { TotalsCalculator } from './totals.js';
 
 export class PaymentBlock {
-  constructor(mediosData, dom) {
+  constructor(mediosData, dom, onRemove) {
     this.mediosData = mediosData;
     this.dom = dom;
+    this.onRemove = onRemove;
     this.el = this.render();
     dom.pagos.appendChild(this.el);
     this.bindEvents();
@@ -51,6 +52,9 @@ export class PaymentBlock {
 
     this.el.querySelector('.btn-quitar-pago').addEventListener('click', () => {
       this.el.remove();
+      if (typeof this.onRemove === 'function') {
+        this.onRemove(this);
+      }
       this.recalc();
     });
   }

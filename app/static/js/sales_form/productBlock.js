@@ -1,15 +1,16 @@
 // File: app/static/js/sales_form/productBlock.js
 ////////////////////////////////////////////////////////////////////////////////
-// ProductBlock actualizado con TotalsCalculator.recalcFromDom
+// ProductBlock actualizado con TotalsCalculator.recalcFromDom y callback onRemove
 ////////////////////////////////////////////////////////////////////////////////
 
 import { Autocomplete } from './autocomplete.js';
 import { TotalsCalculator } from './totals.js';
 
 export class ProductBlock {
-  constructor(data, dom) {
+  constructor(data, dom, onRemove) {
     this.data = data;
     this.dom = dom;
+    this.onRemove = onRemove;
     this.el = this.render();
     dom.productos.appendChild(this.el);
     this.bind();
@@ -66,6 +67,9 @@ export class ProductBlock {
 
     this.el.querySelector('.btn-quitar-producto').addEventListener('click', () => {
       this.el.remove();
+      if (typeof this.onRemove === 'function') {
+        this.onRemove(this);
+      }
       this.recalc();
     });
   }
