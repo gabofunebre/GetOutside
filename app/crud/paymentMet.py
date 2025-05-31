@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+from fastapi import HTTPException
 
 from app.models import PaymentMethod, VentaPago
 from app.schemas.pago import PaymentMethodCreate
@@ -32,7 +33,10 @@ def delete_payment_method_by_id(db: Session, id: int) -> bool:
     """Elimina un método si no está referenciado en ventas."""
     usado = db.query(VentaPago).filter_by(payment_method_id=id).first()
     if usado:
-        raise ValueError("No se puede eliminar: el medio fue utilizado en ventas.")
+        raise HTTPException(
+            status_code=400,
+            detail="Medio de pago en uso, no se puede eliminar. Pruebe con editar o crear uno nuevo"
+        )
 
     pm = db.query(PaymentMethod).filter(PaymentMethod.id == id).first()
     if not pm:

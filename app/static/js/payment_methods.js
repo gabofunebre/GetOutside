@@ -2,9 +2,11 @@
 document.addEventListener("DOMContentLoaded", () => {
   const table = document.getElementById("payment-methods-body");
 
-  const deleteModal = new bootstrap.Modal(document.getElementById("confirmDeleteModal"));
+  const deleteModalEl = document.getElementById("confirmDeleteModal");
+  const deleteModal = new bootstrap.Modal(deleteModalEl);
   const modalName = document.getElementById("modal-payment-name");
   const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+  const deleteErrorMsg = document.getElementById("delete-error-msg");
 
   const editModal = new bootstrap.Modal(document.getElementById("editModal"));
   const editForm = document.getElementById("editForm");
@@ -46,6 +48,9 @@ document.addEventListener("DOMContentLoaded", () => {
     idAEliminar = id;
     rowAEliminar = row;
 
+    deleteErrorMsg.classList.add("d-none");
+    deleteErrorMsg.textContent = "";
+
     confirmDeleteBtn.disabled = false;
     confirmDeleteBtn.innerHTML = 'Sí, eliminar';
     deleteModal.show();
@@ -57,14 +62,23 @@ document.addEventListener("DOMContentLoaded", () => {
     confirmDeleteBtn.disabled = true;
     confirmDeleteBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Eliminando...`;
 
+    deleteErrorMsg.classList.add("d-none");
+    deleteErrorMsg.textContent = "";
+
     try {
       const res = await fetch(`/payment_methods/id/${idAEliminar}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Error al eliminar");
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.detail || "Error al eliminar");
+      }
+
       rowAEliminar.remove();
-    } catch (err) {
-      alert("Hubo un problema al eliminar: " + err.message);
-    } finally {
       deleteModal.hide();
+    } catch (err) {
+      deleteErrorMsg.textContent = err.message;
+      deleteErrorMsg.classList.remove("d-none");
+    } finally {
       confirmDeleteBtn.disabled = false;
       confirmDeleteBtn.innerHTML = 'Sí, eliminar';
       idAEliminar = null;
@@ -124,5 +138,11 @@ document.addEventListener("DOMContentLoaded", () => {
       idAEditar = null;
       rowAEditar = null;
     }
+  });
+
+  // ✅ Limpieza de error al cerrar el modal de eliminación
+  deleteModalEl.addEventListener("hidden.bs.modal", () => {
+    deleteErrorMsg.classList.add("d-none");
+    deleteErrorMsg.textContent = "";
   });
 });
