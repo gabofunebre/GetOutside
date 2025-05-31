@@ -44,17 +44,38 @@ function renderTabla(data) {
         .then(res => res.json())
         .then(data => {
           const body = document.getElementById("modalMovimientoBody");
+          const modalContent = document.querySelector("#modalMovimiento .modal-content");
+
+          // Estilo visual del modal según tipo
+          modalContent.classList.remove("modal-content-ingreso", "modal-content-egreso");
+          if (data.tipo === "INGRESO") {
+            modalContent.classList.add("modal-content-ingreso");
+          } else if (data.tipo === "EGRESO") {
+            modalContent.classList.add("modal-content-egreso");
+          }
 
           const concepto = data.concepto;
-          const match = concepto.match(/Ingreso por venta\s*#(\d+)/i);
 
-          let botonDetalleVenta = "";
-          if (match) {
-            const ventaId = match[1];
-            botonDetalleVenta = `
+          // Detección de enlaces
+          let botonDetalleExtra = "";
+          const matchVenta = concepto.match(/Ingreso por venta\s*#(\d+)/i);
+          const matchCompra = concepto.match(/Egreso por compra\s*#(\d+)/i);
+
+          if (matchVenta) {
+            const ventaId = matchVenta[1];
+            botonDetalleExtra = `
               <div class="mt-4 text-end">
                 <a href="/ventas/${ventaId}" class="btn btn-primary btn-sm" target="_blank" rel="noopener">
                   Ver detalle de la venta
+                </a>
+              </div>
+            `;
+          } else if (matchCompra) {
+            const compraId = matchCompra[1];
+            botonDetalleExtra = `
+              <div class="mt-4 text-end">
+                <a href="/compras/detalle/${compraId}" class="btn btn-warning btn-sm" target="_blank" rel="noopener">
+                  Ver detalle de la compra
                 </a>
               </div>
             `;
@@ -67,10 +88,10 @@ function renderTabla(data) {
             <p><strong>Importe:</strong> $${data.importe.toFixed(2)}</p>
             <p><strong>Moneda:</strong> ${data.metodo_pago.currency}</p>
             <p><strong>Método de Pago:</strong> ${data.metodo_pago.name}</p>
-            ${botonDetalleVenta}
+            ${botonDetalleExtra}
           `;
 
-          const modal = new bootstrap.Modal(document.getElementById('modalMovimiento'));
+          const modal = new bootstrap.Modal(document.getElementById("modalMovimiento"));
           modal.show();
         })
         .catch(err => {
@@ -85,10 +106,6 @@ function renderTabla(data) {
 
   new Tablesort(document.getElementById("tabla-movimientos"));
 }
-
-
-
-
 
 function cargarMovimientos() {
   fetch("/api/movimientos-dinero")
@@ -105,6 +122,5 @@ function cargarMovimientos() {
 }
 
 cargarMovimientos();
-
-// Re-renderizar en resize
 window.addEventListener("resize", cargarMovimientos);
+  
