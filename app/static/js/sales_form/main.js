@@ -29,7 +29,6 @@ class SalesForm {
     const confirmBtn = document.getElementById('confirmar-venta');
     confirmBtn.addEventListener('click', () => this.submit());
 
-    // Limpia mensaje al cerrar modal (por botón Editar)
     document.querySelector('#resumen-modal .btn-secondary')
       .addEventListener('click', () => {
         document.getElementById('modal-message').innerHTML = '';
@@ -62,10 +61,10 @@ class SalesForm {
     this.discountBlocks.push(block);
   }
 
-  async showResumenModal() {
+  validarCampos() {
     let hasError = false;
 
-    // === Validación de productos ===
+    // === Productos ===
     this.productBlocks.forEach(b => {
       const codigoInput = b.el.querySelector("[name='codigo_getoutside']");
       const idInput = b.el.querySelector("[name='producto_id']");
@@ -94,7 +93,7 @@ class SalesForm {
       }
     });
 
-    // === Validación de pagos ===
+    // === Pagos ===
     this.paymentBlocks.forEach(b => {
       const medio = b.el.querySelector("[name='payment_method_id']");
       const monto = b.el.querySelector("[name='amount']");
@@ -114,31 +113,41 @@ class SalesForm {
       }
     });
 
-    // === Validación de descuentos ===
+    // === Descuentos ===
     this.discountBlocks.forEach(b => {
       const concepto = b.el.querySelector("[name='concepto']");
       const monto = b.el.querySelector("[name='amount']");
+      const montoVal = parseFloat(monto.value);
 
-      if (concepto.value.trim() === "" && monto.value) {
-        concepto.classList.add("is-invalid");
-        hasError = true;
+      const conceptoValido = concepto.value.trim().length > 0;
+      const montoValido = !isNaN(montoVal) && montoVal >= 0;
+
+      if (conceptoValido || monto.value.trim() !== "") {
+        if (!conceptoValido) {
+          concepto.classList.add("is-invalid");
+          hasError = true;
+        } else {
+          concepto.classList.remove("is-invalid");
+        }
+
+        if (!montoValido) {
+          monto.classList.add("is-invalid");
+          hasError = true;
+        } else {
+          monto.classList.remove("is-invalid");
+        }
       } else {
         concepto.classList.remove("is-invalid");
-      }
-
-      if (monto.value < 0) {
-        monto.classList.add("is-invalid");
-        hasError = true;
-      } else {
         monto.classList.remove("is-invalid");
       }
     });
 
-    if (hasError) {
-      return; // no abrir modal si hay errores
-    }
+    return !hasError;
+  }
 
-    // === Si todo está OK, recalcula y abre el modal ===
+  async showResumenModal() {
+    if (!this.validarCampos()) return;
+
     await TotalsCalculator.recalcAll(
       this.dom.productos,
       this.dom.pagos,
@@ -149,14 +158,66 @@ class SalesForm {
       this.dom.totals.faltante
     );
 
-    // El resto del código para armar el resumen sigue igual...
-    // (no es necesario modificarlo)
-  }
+    const detalles   = this.productBlocks.map(b => b.getData());
+    const descuentos = this.discountBlocks.map(b => b.getData());
+    const pagos      = this.paymentBlocks.map(b => b.getData());
 
+    let texto = '';
+    texto += '======= RESUMEN DE VENTA =======\n\n';
+    texto += 'Productos:\n';
+    let subtotal = 0;
+    for (const d of detalles) {
+      const prod = this.productosData.find(p => p.id === d.producto_id);
+      const codigo = prod ? prod.codigo_getoutside : `ID:${d.producto_id}`;
+      texto += `  ${codigo.padEnd(12)} $${d.precio_unitario.toFixed(2)} x${d.cantidad}\n`;
+      subtotal += d.cantidad * d.precio_unitario;
+    }
+    texto += `\nSUBTOTAL:      $${subtotal.toFixed(2)} NZD\n`;
+
+    let totalDesc = 0;
+    if (descuentos.length) {
+      texto += '\nDescuentos:\n';
+      for (const d of descuentos) {
+        texto += `  ${d.concepto.slice(0,12).padEnd(12)} -$${d.amount.toFixed(2)} NZD\n`;
+        totalDesc += d.amount;
+      }
+    }
+    const totalFinal = subtotal - totalDesc;
+    texto += `\n-------------------------------\n`;
+    texto += `TOTAL:         $${totalFinal.toFixed(2)} NZD\n`;
+
+    let totalPagado = 0;
+    if (pagos.length) {
+      texto += '\nPagos:\n';
+      for (const p of pagos) {
+        const medio = this.mediosData.find(m => m.id === p.payment_method_id);
+        if (!medio) continue;
+        let linea = `  ${medio.name.slice(0,12).padEnd(12)} $${p.amount.toFixed(2)} ${medio.currency}`;
+        if (medio.currency !== 'NZD') {
+          const res = await fetch(`https://api.frankfurter.app/latest?from=${medio.currency}&to=NZD&amount=${p.amount}`);
+          const data = await res.json();
+          const convertido = data.rates['NZD'];
+          totalPagado += convertido;
+          linea += ` (=${convertido.toFixed(2)} NZD)`;
+        } else {
+          totalPagado += p.amount;
+        }
+        texto += `${linea}\n`;
+      }
+    }
+    texto += `\nTOTAL PAGADO:  $${totalPagado.toFixed(2)} NZD\n`;
+    const faltan = Math.max(0, totalFinal - totalPagado);
+    texto += `FALTAN:        $${faltan.toFixed(2)} NZD`;
+
+    document.getElementById('resumen-texto').textContent = texto;
+    document.getElementById('modal-message').innerHTML = '';
+    const modal = new bootstrap.Modal(document.getElementById('resumen-modal'));
+    modal.show();
+  }
 
   async submit() {
     const modalMessage = document.getElementById('modal-message');
-    modalMessage.innerHTML = ''; // Limpia el mensaje anterior
+    modalMessage.innerHTML = '';
     this.dom.overlay.style.display = 'flex';
 
     const detalles   = this.productBlocks.map(b => b.getData());
@@ -175,17 +236,12 @@ class SalesForm {
       }
       const venta = await res.json();
 
-      // Cierra el modal si está abierto
       const modalEl = document.getElementById('resumen-modal');
       const modalInstancia = bootstrap.Modal.getInstance(modalEl);
       if (modalInstancia) modalInstancia.hide();
 
-      // Muestra mensaje de éxito DENTRO DEL MODAL
-      modalMessage.innerHTML = `<div class="alert alert-success" role="alert">
-        Venta #${venta.id} registrada. Total: ${venta.total.toFixed(2)}
-      </div>`;
+      this.dom.alert.innerHTML = `<div class="alert alert-success">Venta #${venta.id} registrada. Total: ${venta.total.toFixed(2)} NZD</div>`;
 
-      // Limpia y reinicia todo
       this.dom.productos.innerHTML = '';
       this.dom.pagos.innerHTML = '';
       this.dom.descuentos.innerHTML = '';
@@ -200,7 +256,6 @@ class SalesForm {
 
       this.init();
     } catch (e) {
-      // Muestra mensaje de error DENTRO DEL MODAL
       modalMessage.innerHTML = `<div class="alert alert-danger" role="alert">${e.message}</div>`;
     } finally {
       this.dom.overlay.style.display = 'none';
