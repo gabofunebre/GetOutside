@@ -20,6 +20,7 @@ services:
     networks:
       - getoutside-net
       - nginx_net
+    restart: unless-stopped  
 
   web:
     build: .
@@ -36,6 +37,7 @@ services:
     networks:
       - getoutside-net
       - nginx_net
+    restart: unless-stopped  
 
 networks:
   getoutside-net:

@@ -1,34 +1,40 @@
 document.addEventListener("DOMContentLoaded", () => {
   const fechaInput = document.getElementById("fecha");
   const btnModificarFecha = document.getElementById("btnModificarFecha");
-  const hoy = new Date();
 
-  // Obtener fecha/hora local en formato compatible con datetime-local
-  const localISO = new Date(hoy.getTime() - hoy.getTimezoneOffset() * 60000)
-    .toISOString()
-    .slice(0, 16); // "YYYY-MM-DDTHH:mm"
-  fechaInput.value = localISO;
+  let localISO = "";
+
+  // Obtener fecha desde el servidor
+  fetch("/api/server-datetime")
+    .then(res => res.json())
+    .then(data => {
+      const serverDate = new Date(data.datetime);
+      localISO = new Date(serverDate.getTime() - serverDate.getTimezoneOffset() * 60000)
+        .toISOString()
+        .slice(0, 16);
+      fechaInput.value = localISO;
+    })
+    .catch(err => {
+      console.error("Error al obtener fecha del servidor:", err);
+    });
+
   fechaInput.readOnly = true;
 
-  // Activar modificación manual al hacer clic en el botón
   btnModificarFecha.addEventListener("click", () => {
     fechaInput.readOnly = false;
     fechaInput.focus();
     btnModificarFecha.style.display = "none";
   });
 
-  let tipoMovimiento = "INGRESO"; // valor por defecto
+  let tipoMovimiento = "INGRESO";
 
-  // Detectar qué botón abre el modal
   document.querySelectorAll(".btn-movimiento").forEach(btn => {
     btn.addEventListener("click", () => {
       tipoMovimiento = btn.dataset.tipo || "INGRESO";
 
-      // Título del modal
       const titulo = tipoMovimiento === "EGRESO" ? "Registrar Egreso" : "Registrar Ingreso";
       document.getElementById("modalIngresoLabel").textContent = titulo;
 
-      // Clases de color
       const modal = document.querySelector("#modalIngreso .modal-content");
       modal.classList.remove("modal-content-ingreso", "modal-content-egreso");
       modal.classList.add(tipoMovimiento === "EGRESO" ? "modal-content-egreso" : "modal-content-ingreso");
@@ -38,14 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
       botonGuardar.classList.remove("btn-success", "btn-egreso");
       botonGuardar.classList.add(tipoMovimiento === "EGRESO" ? "btn-egreso" : "btn-success");
 
-      // Reset fecha y volver a deshabilitar
       fechaInput.value = localISO;
       fechaInput.readOnly = true;
       btnModificarFecha.style.display = "inline-block";
     });
   });
 
-  // Cargar medios de pago
   fetch("/payment_methods/")
     .then(res => res.json())
     .then(data => {
@@ -58,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-  // Manejar envío del formulario
   document.getElementById("formIngreso").addEventListener("submit", e => {
     e.preventDefault();
 

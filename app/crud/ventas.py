@@ -26,7 +26,10 @@ def create_venta(db: Session, v: VentaCreate) -> Venta:
     total_descuentos = sum(d.amount for d in v.descuentos or [])
     total_venta = total_detalles - total_descuentos
 
-    venta = Venta(total=total_venta)
+    venta = Venta(
+        total=total_venta,
+        fecha=v.fecha  # 👈 ahora se asume que siempre viene (requerido)
+    )
     db.add(venta)
     db.flush()
 
@@ -65,11 +68,10 @@ def create_venta(db: Session, v: VentaCreate) -> Venta:
                 amount=p.amount,
             )
         )
-
         db.add(
             MovimientoDinero(
                 tipo=TipoMovimientoDinero.INGRESO,
-                fecha=venta.fecha,
+                fecha=v.fecha,
                 concepto=f"Ingreso por venta #{venta.id}",
                 importe=p.amount,
                 payment_method_id=p.payment_method_id,
@@ -77,11 +79,16 @@ def create_venta(db: Session, v: VentaCreate) -> Venta:
         )
 
     for d in v.descuentos or []:
-        db.add(Descuento(venta_id=venta.id, concepto=d.concepto, amount=d.amount))
+        db.add(Descuento(
+            venta_id=venta.id,
+            concepto=d.concepto,
+            amount=d.amount
+        ))
 
     db.commit()
     db.refresh(venta)
     return venta
+
 
 
 def get_ventas(
