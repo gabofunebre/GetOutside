@@ -3,14 +3,14 @@
 .env.*
 !.env.dev.example
 .venv/
+env/
+venv/
 
 # Python
 __pycache__/
-*.py[cod]
+*.py[co]
 *.egg-info/
 *.sqlite3
-env/
-venv/
 
 # Docker
 docker-compose.override.yml
@@ -23,8 +23,11 @@ docker-compose.override.yml
 .DS_Store
 *.log
 
-# Build / distribution
+# Build / distribución
 dist/
 build/
 *.egg
-app/static/Uploads
+app/static/uploads/
+
+# Node
+node_modules/
