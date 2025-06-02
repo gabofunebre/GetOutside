@@ -33,6 +33,29 @@ class SalesForm {
       .addEventListener('click', () => {
         document.getElementById('modal-message').innerHTML = '';
     });
+
+    // === Fecha de venta ===
+    const fechaInput = document.getElementById('fecha-venta');
+    const btnEditarFecha = document.getElementById('editar-fecha');
+
+    fetch('/api/server-datetime')
+      .then(res => res.json())
+      .then(data => {
+        const serverDate = new Date(data.datetime);
+        const localISO = new Date(serverDate.getTime() - serverDate.getTimezoneOffset() * 60000)
+          .toISOString()
+          .slice(0, 16);
+        fechaInput.value = localISO;
+      })
+      .catch(err => {
+        console.error("Error obteniendo fecha del servidor", err);
+      });
+
+    btnEditarFecha.addEventListener('click', () => {
+      fechaInput.readOnly = false;
+      fechaInput.focus();
+      btnEditarFecha.style.display = 'none';
+    });
   }
 
   init() {
@@ -64,7 +87,6 @@ class SalesForm {
   validarCampos() {
     let hasError = false;
 
-    // === Productos ===
     this.productBlocks.forEach(b => {
       const codigoInput = b.el.querySelector("[name='codigo_getoutside']");
       const idInput = b.el.querySelector("[name='producto_id']");
@@ -93,7 +115,6 @@ class SalesForm {
       }
     });
 
-    // === Pagos ===
     this.paymentBlocks.forEach(b => {
       const medio = b.el.querySelector("[name='payment_method_id']");
       const monto = b.el.querySelector("[name='amount']");
@@ -113,7 +134,6 @@ class SalesForm {
       }
     });
 
-    // === Descuentos ===
     this.discountBlocks.forEach(b => {
       const concepto = b.el.querySelector("[name='concepto']");
       const monto = b.el.querySelector("[name='amount']");
@@ -162,8 +182,11 @@ class SalesForm {
     const descuentos = this.discountBlocks.map(b => b.getData());
     const pagos      = this.paymentBlocks.map(b => b.getData());
 
+    const fechaVenta = document.getElementById('fecha-venta').value;
+
     let texto = '';
     texto += '======= RESUMEN DE VENTA =======\n\n';
+    texto += `Fecha: ${fechaVenta}\n\n`;
     texto += 'Productos:\n';
     let subtotal = 0;
     for (const d of detalles) {
@@ -223,12 +246,13 @@ class SalesForm {
     const detalles   = this.productBlocks.map(b => b.getData());
     const pagos      = this.paymentBlocks.map(b => b.getData());
     const descuentos = this.discountBlocks.map(b => b.getData());
+    const fechaVenta = document.getElementById('fecha-venta').value;
 
     try {
       const res = await fetch('/ventas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ detalles, pagos, descuentos })
+        body: JSON.stringify({ detalles, pagos, descuentos, fecha: fechaVenta })
       });
       if (!res.ok) {
         const err = await res.json();

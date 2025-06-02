@@ -16,6 +16,7 @@ services:
       - getoutside-net
       - nginx_net
     depends_on: []
+    restart: unless-stopped 
 
 networks:
   getoutside-net:

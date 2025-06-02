@@ -14,6 +14,7 @@ from .routers import (
     catalogos,
     movimientos_dinero,
     compras,
+    sistem,
 )
 
 # Crear tablas en base de datos
@@ -35,7 +36,7 @@ app.include_router(catalogos.router)
 app.include_router(movimientos_dinero.router)
 app.include_router(compras.router)
 app.include_router(tenencias.router)
-
+app.include_router(sistem.router)
 
 @app.get("/")
 def read_root():

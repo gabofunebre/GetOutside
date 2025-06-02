@@ -51,6 +51,7 @@ class VentaCreate(BaseModel):
     detalles: List[DetalleVentaIn]  # Lista de ítems vendidos
     pagos: List[PagoCreate]  # Lista de pagos recibidos
     descuentos: Optional[List[DescuentoCreate]] = []  # Descuentos opcionales
+    fecha: datetime
 
 
 class VentaOut(BaseModel):
