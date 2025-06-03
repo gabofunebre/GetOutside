@@ -1,4 +1,5 @@
 // payment_method_form.js
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("pmForm");
   const alertPlaceholder = document.getElementById("alert-placeholder");
@@ -12,7 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
       data.forEach(({ code, label }) => {
         const opt = document.createElement("option");
         opt.value = code;
-        opt.textContent = label;
+
+        // Estrategia: mostrar "CODIGOISO - emoji"
+        // Si el navegador no renderiza el emoji, verá texto (como "🇳🇿"), pero en un color que se camufla con el fondo.
+        // Así, si no se renderiza, el texto será prácticamente invisible; si se renderiza correctamente, verá la bandera.
+        opt.innerHTML = `${code} - <span style="color: #f8f9fa">${label}</span>`;
+
         currencySelect.appendChild(opt);
       });
     } catch (err) {
