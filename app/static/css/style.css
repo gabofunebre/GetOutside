@@ -64,44 +64,9 @@ body {
   gap: 1.75rem;
 }
 
-.btn-action {
-  width: 100%;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  font-size: 1.125rem;
-}
-
 /* ==========================================================================
    Payment Form Layout
    ========================================================================== */
-.payment-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-.payment-form .form-control {
-  max-width: 300px;
-  width: 100%;
-}
-
-.payment-form button {
-  flex-shrink: 0;
-}
-
-@media (min-width: 768px) {
-  .payment-form {
-    flex-direction: row;
-    justify-content: center;
-  }
-  .payment-form .form-control {
-    margin-right: 1rem;
-    max-width: 300px;
-  }
-}
 
 /* ==========================================================================
    Catalog Upload Form
@@ -287,14 +252,6 @@ body {
   transform: translateY(-50%);
 }
 
-.tabla-ordenable th.sort-up::after {
-  content: "▲";
-}
-
-.tabla-ordenable th.sort-down::after {
-  content: "▼";
-}
-
 /* ==========================================================================
    Modal edición producto
    ========================================================================== */
@@ -371,15 +328,6 @@ input.is-invalid {
 }
 
 /* BOTONES DASHBOARD*/
-.btn-soft {
-  background-color: #fefefe;
-  border: 1px solid #ddd;
-  transition: all 0.2s ease;
-}
-.btn-soft:hover {
-  background-color: #f1f1f1;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
 .botonera-dashboard {
   display: flex;
   flex-wrap: wrap;
@@ -489,15 +437,6 @@ select.form-select {
 }
 
 /* Responsive width for registrar compra button: 100% en mobile, 28% en desktop/tablet */
-.w-md-28 {
-  width: 100% !important;
-}
-@media (min-width: 768px) {
-  .w-md-28 {
-    width: 28% !important;
-    min-width: 180px;
-  }
-}
 /* Forzar que el formulario y sus campos usen todo el ancho en mobile */
 @media (max-width: 767.98px) {
   .container {
