@@ -5,7 +5,18 @@
 export class TotalsCalculator {
   static conversionCache = {};
 
-  static async recalcAll(prodContainer, pagoContainer, cambioContainer, descContainer, elVenta, elPago, elDesc, elFaltan) {
+  static async recalcAll(
+    prodContainer,
+    pagoContainer,
+    cambioContainer,
+    descContainer,
+    elVenta,
+    elPago,
+    elDesc,
+    elFaltan,
+    elTotal = null,
+    elSobrante = null
+  ) {
     // === 1. Calcular subtotal de productos ===
     let venta = 0;
     prodContainer.querySelectorAll('.producto-block').forEach(b => {
@@ -79,9 +90,14 @@ export class TotalsCalculator {
 
     elPago.textContent = `${pagadoNZD.toFixed(2)} NZD`;
 
-    // === 4. Calcular faltante ===
-    const faltan = Math.max(0, venta - descuentos - pagadoNZD);
+    // === 4. Calcular total final y faltante/sobrante ===
+    const totalFinal = venta - descuentos;
+    if (elTotal) elTotal.textContent = `${totalFinal.toFixed(2)} NZD`;
+
+    const faltan = Math.max(0, totalFinal - pagadoNZD);
     elFaltan.textContent = `${faltan.toFixed(2)} NZD`;
+    const sobrante = Math.max(0, pagadoNZD - totalFinal);
+    if (elSobrante) elSobrante.textContent = `${sobrante.toFixed(2)} NZD`;
   }
 
   /** Método auxiliar para evitar duplicar llamadas a recalcAll */
@@ -94,7 +110,9 @@ export class TotalsCalculator {
       dom.totals.venta,
       dom.totals.pago,
       dom.totals.descuentos,
-      dom.totals.faltante
+      dom.totals.faltante,
+      dom.totals.total,
+      dom.totals.sobrante
     );
   }
 }

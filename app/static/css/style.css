@@ -193,8 +193,16 @@ body {
   color: #198754;
 }
 
+#total-final {
+  color: #0d6efd;
+}
+
 #total-pago {
   color: #000;
+}
+
+#total-sobrante {
+  color: #198754;
 }
 
 #total-faltante {
@@ -217,7 +225,9 @@ body {
 
 #total-venta,
 #total-descuentos,
+#total-final,
 #total-pago,
+#total-sobrante,
 #total-faltante {
   font-size: 1.25rem;
   font-weight: 600;
