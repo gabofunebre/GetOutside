@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import List, Optional
 
-from app.schemas.pago import PagoCreate, PagoOut
+from app.schemas.pago import PagoCreate, PagoOut, PaymentMethodOut
 from app.schemas.producto import ProductoOut
 
 
@@ -43,6 +43,21 @@ class DescuentoOut(DescuentoCreate):
     model_config = ConfigDict(from_attributes=True)
 
 
+class VueltoCreate(BaseModel):
+    """Entrada de vuelto: moneda y monto devuelto."""
+
+    payment_method_id: int
+    amount: float
+
+
+class VueltoOut(VueltoCreate):
+    """Salida de vuelto con detalle del medio de pago."""
+
+    metodo: PaymentMethodOut
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class VentaCreate(BaseModel):
     """
     Entrada para crear una venta con detalles, pagos y descuentos.
@@ -52,6 +67,7 @@ class VentaCreate(BaseModel):
     pagos: List[PagoCreate]  # Lista de pagos recibidos
     descuentos: Optional[List[DescuentoCreate]] = []  # Descuentos opcionales
     fecha: datetime
+    vueltos: Optional[List[VueltoCreate]] = []  # Cambio entregado
 
 
 class VentaOut(BaseModel):
@@ -65,6 +81,7 @@ class VentaOut(BaseModel):
     detalles: List[DetalleVentaOut]  # Detalles con subtotales
     pagos: List[PagoOut]  # Pagos detallados
     descuentos: List[DescuentoOut]  # Descuentos aplicados
+    vueltos: List[VueltoOut]  # Vueltos entregados
 
     model_config = ConfigDict(from_attributes=True)
 
