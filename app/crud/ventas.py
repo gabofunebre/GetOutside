@@ -9,6 +9,7 @@ from app.models import (
     Descuento,
     VentaPago,
     PaymentMethod,
+    Vuelto,
     MovimientoDinero,
     Producto,
     InventarioMovimiento,
@@ -79,6 +80,25 @@ def create_venta(db: Session, v: VentaCreate) -> Venta:
     for d in v.descuentos or []:
         db.add(Descuento(venta_id=venta.id, concepto=d.concepto, amount=d.amount))
 
+    for ch in v.vueltos or []:
+        db.add(
+            Vuelto(
+                venta_id=venta.id,
+                payment_method_id=ch.payment_method_id,
+                amount=ch.amount,
+            )
+        )
+
+        db.add(
+            MovimientoDinero(
+                tipo=TipoMovimientoDinero.EGRESO,
+                fecha=venta.fecha,
+                concepto=f"Vuelto de venta #{venta.id}",
+                importe=ch.amount,
+                payment_method_id=ch.payment_method_id,
+            )
+        )
+
     db.commit()
     db.refresh(venta)
     return venta
@@ -111,6 +131,7 @@ def get_ventas(
         query.options(
             joinedload(Venta.detalles).joinedload(DetalleVenta.producto),
             joinedload(Venta.pagos).joinedload(VentaPago.metodo),
+            joinedload(Venta.vueltos).joinedload(Vuelto.metodo),
         )
         .order_by(Venta.fecha.desc())
         .all()
@@ -208,6 +229,7 @@ def get_venta_by_id(db: Session, venta_id: int) -> Venta | None:
             joinedload(Venta.detalles).joinedload(DetalleVenta.producto),
             joinedload(Venta.pagos).joinedload(VentaPago.metodo),
             joinedload(Venta.descuentos),
+            joinedload(Venta.vueltos).joinedload(Vuelto.metodo),
         )
         .filter(Venta.id == venta_id)
         .first()
