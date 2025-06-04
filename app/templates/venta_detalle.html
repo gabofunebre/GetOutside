@@ -52,6 +52,16 @@
       </div>
     {% endfor %}
 
+    {% if venta.vueltos %}
+      <h5 class="mt-4 mb-3">Vueltos</h5>
+      {% for v in venta.vueltos %}
+        <div class="vuelto-block d-flex justify-content-between mb-2">
+          <span>{{ v.metodo.name }} ({{ v.metodo.currency }})</span>
+          <span class="text-danger">- ${{ '{:.2f}'.format(v.amount) }}</span>
+        </div>
+      {% endfor %}
+    {% endif %}
+
     <!-- Acciones -->
     <div class="d-flex justify-content-between mt-5">
       <a href="#" class="btn btn-secondary" onclick="goBackToFilteredList()">← Volver al listado</a>
