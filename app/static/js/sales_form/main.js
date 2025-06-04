@@ -5,6 +5,7 @@
 
 import { ProductBlock } from './productBlock.js';
 import { PaymentBlock } from './paymentBlock.js';
+import { ChangeBlock } from './changeBlock.js';
 import { DiscountBlock } from './discountBlock.js';
 import { TotalsCalculator } from './totals.js';
 
@@ -15,6 +16,7 @@ class SalesForm {
     this.dom           = dom;
     this.productBlocks = [];
     this.paymentBlocks = [];
+    this.changeBlocks = [];
     this.discountBlocks = [];
     this.bind();
     this.init();
@@ -23,6 +25,7 @@ class SalesForm {
   bind() {
     this.dom.addItem.addEventListener('click', () => this.addProduct());
     this.dom.addPayment.addEventListener('click', () => this.addPayment());
+    this.dom.addChange.addEventListener('click', () => this.addChange());
     this.dom.addDiscount.addEventListener('click', () => this.addDiscount());
     this.dom.submit.addEventListener('click', () => this.showResumenModal());
 
@@ -52,6 +55,13 @@ class SalesForm {
       this.paymentBlocks = this.paymentBlocks.filter(b => b !== bloque);
     });
     this.paymentBlocks.push(block);
+  }
+
+  addChange() {
+    const block = new ChangeBlock(this.mediosData, this.dom, (bloque) => {
+      this.changeBlocks = this.changeBlocks.filter(b => b !== bloque);
+    });
+    this.changeBlocks.push(block);
   }
 
   addDiscount() {
@@ -113,6 +123,26 @@ class SalesForm {
       }
     });
 
+    // === Vueltos ===
+    this.changeBlocks.forEach(b => {
+      const medio = b.el.querySelector("[name='payment_method_id']");
+      const monto = b.el.querySelector("[name='amount']");
+
+      if (!medio.value) {
+        medio.classList.add("is-invalid");
+        hasError = true;
+      } else {
+        medio.classList.remove("is-invalid");
+      }
+
+      if (!monto.value || monto.value <= 0) {
+        monto.classList.add("is-invalid");
+        hasError = true;
+      } else {
+        monto.classList.remove("is-invalid");
+      }
+    });
+
     // === Descuentos ===
     this.discountBlocks.forEach(b => {
       const concepto = b.el.querySelector("[name='concepto']");
@@ -151,6 +181,7 @@ class SalesForm {
     await TotalsCalculator.recalcAll(
       this.dom.productos,
       this.dom.pagos,
+      this.dom.vueltos,
       this.dom.descuentos,
       this.dom.totals.venta,
       this.dom.totals.pago,
@@ -161,6 +192,7 @@ class SalesForm {
     const detalles   = this.productBlocks.map(b => b.getData());
     const descuentos = this.discountBlocks.map(b => b.getData());
     const pagos      = this.paymentBlocks.map(b => b.getData());
+    const vueltos    = this.changeBlocks.map(b => b.getData());
 
     let texto = '';
     texto += '======= RESUMEN DE VENTA =======\n\n';
@@ -205,6 +237,24 @@ class SalesForm {
         texto += `${linea}\n`;
       }
     }
+    if (vueltos.length) {
+      texto += '\nVueltos:\n';
+      for (const c of vueltos) {
+        const medio = this.mediosData.find(m => m.id === c.payment_method_id);
+        if (!medio) continue;
+        let linea = `  ${medio.name.slice(0,12).padEnd(12)} -$${c.amount.toFixed(2)} ${medio.currency}`;
+        if (medio.currency !== 'NZD') {
+          const res = await fetch(`https://api.frankfurter.app/latest?from=${medio.currency}&to=NZD&amount=${c.amount}`);
+          const data = await res.json();
+          const convertido = data.rates['NZD'];
+          totalPagado -= convertido;
+          linea += ` (=-${convertido.toFixed(2)} NZD)`;
+        } else {
+          totalPagado -= c.amount;
+        }
+        texto += `${linea}\n`;
+      }
+    }
     texto += `\nTOTAL PAGADO:  $${totalPagado.toFixed(2)} NZD\n`;
     const faltan = Math.max(0, totalFinal - totalPagado);
     texto += `FALTAN:        $${faltan.toFixed(2)} NZD`;
@@ -223,12 +273,13 @@ class SalesForm {
     const detalles   = this.productBlocks.map(b => b.getData());
     const pagos      = this.paymentBlocks.map(b => b.getData());
     const descuentos = this.discountBlocks.map(b => b.getData());
+    const vueltos    = this.changeBlocks.map(b => b.getData());
 
     try {
       const res = await fetch('/ventas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ detalles, pagos, descuentos })
+        body: JSON.stringify({ detalles, pagos, descuentos, vueltos })
       });
       if (!res.ok) {
         const err = await res.json();
@@ -244,9 +295,11 @@ class SalesForm {
 
       this.dom.productos.innerHTML = '';
       this.dom.pagos.innerHTML = '';
+      this.dom.vueltos.innerHTML = '';
       this.dom.descuentos.innerHTML = '';
       this.productBlocks = [];
       this.paymentBlocks = [];
+      this.changeBlocks = [];
       this.discountBlocks = [];
 
       this.dom.totals.venta.textContent     = '0.00 NZD';
@@ -268,6 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const dom = {
     productos:   document.getElementById('productos-container'),
     pagos:       document.getElementById('pagos-container'),
+    vueltos:     document.getElementById('vueltos-container'),
     descuentos:  document.getElementById('descuentos-container'),
     totals: {
       venta:    document.getElementById('total-venta'),
@@ -279,6 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay:     document.getElementById('overlay'),
     addItem:     document.getElementById('add-item'),
     addPayment:  document.getElementById('add-payment'),
+    addChange:   document.getElementById('add-change'),
     addDiscount: document.getElementById('add-discount'),
     submit:      document.getElementById('submit-sale')
   };
