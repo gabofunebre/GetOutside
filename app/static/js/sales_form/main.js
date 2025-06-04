@@ -205,7 +205,9 @@ class SalesForm {
       this.dom.totals.venta,
       this.dom.totals.pago,
       this.dom.totals.descuentos,
-      this.dom.totals.faltante
+      this.dom.totals.faltante,
+      this.dom.totals.total,
+      this.dom.totals.sobrante
     );
 
     const detalles   = this.productBlocks.map(b => b.getData());
@@ -331,6 +333,8 @@ class SalesForm {
       this.dom.totals.pago.textContent      = '0.00 NZD';
       this.dom.totals.descuentos.textContent = '0.00 NZD';
       this.dom.totals.faltante.textContent  = '0.00 NZD';
+      this.dom.totals.total.textContent     = '0.00 NZD';
+      this.dom.totals.sobrante.textContent  = '0.00 NZD';
 
       this.init();
     } catch (e) {
@@ -352,7 +356,9 @@ document.addEventListener('DOMContentLoaded', () => {
       venta:    document.getElementById('total-venta'),
       pago:     document.getElementById('total-pago'),
       descuentos: document.getElementById('total-descuentos'),
-      faltante: document.getElementById('total-faltante')
+      faltante: document.getElementById('total-faltante'),
+      total:    document.getElementById('total-final'),
+      sobrante: document.getElementById('total-sobrante')
     },
     alert:       document.getElementById('alert-placeholder'),
     overlay:     document.getElementById('overlay'),
