@@ -18,6 +18,7 @@ class Venta(Base):
     descuentos = relationship(
         "Descuento", back_populates="venta", cascade="all, delete"
     )
+    vueltos = relationship("Vuelto", back_populates="venta", cascade="all, delete")
 
 
 class DetalleVenta(Base):
@@ -72,3 +73,15 @@ class VentaPago(Base):
     @property
     def metodo_str(self):
         return self.metodo.name if self.metodo else None
+
+
+class Vuelto(Base):
+    __tablename__ = "vueltos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    venta_id = Column(Integer, ForeignKey("ventas.id"), nullable=False)
+    payment_method_id = Column(Integer, ForeignKey("payment_methods.id"), nullable=False)
+    amount = Column(DECIMAL(14, 2), nullable=False)
+
+    venta = relationship("Venta", back_populates="vueltos")
+    metodo = relationship("PaymentMethod")
