@@ -16,6 +16,8 @@ from app.crud.paymentMet import (
     delete_payment_method_by_id,
     update_payment_method_by_id,
 )
+from app.crud.tenencias import get_tenencias
+from app.models.ventas import PaymentMethod
 from app.schemas import pago
 from app.core.deps import get_db
 
@@ -95,3 +97,27 @@ def get_supported_currencies():
 def get_supported_currencies_labels():
     """Devuelve diccionario con las etiquetas de las monedas admitidas."""
     return CURRENCY_LABELS
+
+
+@router.get("/id/{id}/balance")
+def get_payment_method_balance(id: int, db: Session = Depends(get_db)):
+    """Devuelve el saldo disponible para un método de pago."""
+    tenencias = get_tenencias(db)
+    for m in tenencias.get("por_medio", []):
+        if m["id"] == id:
+            return {
+                "id": id,
+                "amount": m["amount"],
+                "currency": m["currency"],
+                "currency_label": m["currency_label"],
+            }
+
+    pm = db.query(PaymentMethod).filter(PaymentMethod.id == id).first()
+    if not pm:
+        raise HTTPException(status_code=404, detail="Método de pago no encontrado")
+    return {
+        "id": id,
+        "amount": 0.0,
+        "currency": pm.currency,
+        "currency_label": CURRENCY_LABELS.get(pm.currency, pm.currency),
+    }
