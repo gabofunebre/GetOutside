@@ -22,7 +22,7 @@ export class PaymentBlock {
       .map(m => `<option value="${m.id}" data-currency="${m.currency}">${m.name} - ${m.currency_label} ${m.currency}</option>`)
       .join('');
     const div = document.createElement('div');
-    div.className = 'pago-block border rounded p-3 mb-3 bg-light';
+    div.className = 'pago-block border rounded p-3 mb-3';
     div.innerHTML = `
       <div class="mb-2">
         <label class="form-label">Medio de Pago</label>
