@@ -20,7 +20,7 @@ export class ProductBlock {
   // Renderiza el bloque de producto con campos necesarios
   render() {
     const d = document.createElement('div');
-    d.className = 'producto-block border rounded p-3 mb-3 bg-light';
+    d.className = 'producto-block border rounded p-3 mb-3';
     d.innerHTML = `
       <div class="mb-2">
         <label class="form-label">Producto</label>

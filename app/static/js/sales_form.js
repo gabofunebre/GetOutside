@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
    */
   function addProductoItem() {
     const block = document.createElement("div");
-    block.className = "producto-block border rounded p-3 mb-3 bg-light";
+    block.className = "producto-block border rounded p-3 mb-3";
     block.innerHTML = `
       <div class="mb-2">
         <label class="form-label">Producto</label>
@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
       `<option value="${m.id}">${m.name}</option>`
     ).join('');
     const block = document.createElement('div');
-    block.className = 'pago-block border rounded p-3 mb-3 bg-light';
+    block.className = 'pago-block border rounded p-3 mb-3';
     block.innerHTML = `
       <div class="mb-2">
         <label class="form-label">Medio</label>
@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /** Agrega un bloque de descuento */
   function addDiscountRow() {
     const block = document.createElement('div');
-    block.className = 'descuento-block border rounded p-3 mb-3 bg-light';
+    block.className = 'descuento-block border rounded p-3 mb-3';
     block.innerHTML = `
       <div class="mb-2">
         <label class="form-label">Concepto de Descuento</label>
