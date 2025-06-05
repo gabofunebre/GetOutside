@@ -34,6 +34,8 @@ def create_venta(db: Session, v: VentaCreate) -> Venta:
     db.add(venta)
     db.flush()
 
+    codigos: list[str] = []
+
     for item in v.detalles:
         prod = get_producto(db, item.producto_id)
         if not prod:
@@ -51,6 +53,8 @@ def create_venta(db: Session, v: VentaCreate) -> Venta:
             )
         )
 
+        codigos.append(prod.codigo_getoutside)
+
         prod.stock_actual -= item.cantidad
         db.add(
             InventarioMovimiento(
@@ -60,6 +64,8 @@ def create_venta(db: Session, v: VentaCreate) -> Venta:
                 referencia=f"Venta #{venta.id}",
             )
         )
+
+    codigos_str = " - ".join(codigos)
 
     for p in v.pagos:
         db.add(
@@ -73,7 +79,7 @@ def create_venta(db: Session, v: VentaCreate) -> Venta:
             MovimientoDinero(
                 tipo=TipoMovimientoDinero.INGRESO,
                 fecha=v.fecha,
-                concepto=f"Ingreso por venta #{venta.id}",
+                concepto=f"V#{venta.id} - {codigos_str}",
                 importe=p.amount,
                 payment_method_id=p.payment_method_id,
             )
