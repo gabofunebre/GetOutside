@@ -37,7 +37,9 @@ body {
 }
 
 .descuento-block {
-  background-color: #ffe5cb;
+  /* un tono más claro que el botón naranja */
+  background-color: #ffd8a8;
+
 }
 
 /* ==========================================================================
@@ -205,26 +207,32 @@ body {
    Estilos para Totales En registrar ventas
    ========================================================================== */
 #total-venta {
-  color: #0d6efd;
-}
-
-#total-descuentos {
-  color: #198754;
-}
-
-#total-final {
-  color: #fd7e14:
-}
-
-#total-pago {
+  /* Venta en negro */
   color: #000;
 }
 
-#total-sobrante {
+#total-descuentos {
+  /* Descuentos naranja */
+  color: #ff8800;
+}
+
+#total-final {
+  /* Total azul */
+  color: #0d6efd;
+}
+
+#total-pago {
+  /* Pagado verde */
   color: #198754;
 }
 
+#total-sobrante {
+  /* Sobran violeta */
+  color: #6f42c1;
+}
+
 #total-faltante {
+  /* Faltan rojo */
   color: #dc3545;
 }
 
