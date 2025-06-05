@@ -41,7 +41,7 @@ export class ProductBlock {
         </div>
       </div>
       <div class="d-flex justify-content-between align-items-center">
-        <span>Total: $<span class="subtotal">0.00</span></span>
+        <span class="total-line">Total: $<span class="subtotal">0.00</span></span>
         <button class="btn btn-danger btn-sm btn-quitar-producto">Quitar</button>
       </div>`;
     return d;
