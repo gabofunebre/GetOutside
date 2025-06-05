@@ -11,11 +11,14 @@ body {
 .producto-block,
 .pago-block,
 .descuento-block {
-  background-color: #fefefe;
+  background-color: #bcbef1;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1rem;
+}
+.pago-block{
+  background-color: #bbf7b3;
 }
 
 .producto-block .form-label,
@@ -38,7 +41,7 @@ body {
 
 .descuento-block {
   /* un tono más claro que el botón naranja */
-  background-color: #ffd8a8;
+  background-color: #fad1a0;
 
 }
 
@@ -333,7 +336,6 @@ input.is-invalid {
 .producto-block,
 .descuento-block,
 .pago-block {
-  background-color: #fefefe;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1rem;
