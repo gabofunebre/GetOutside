@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const serverDate = new Date(data.datetime);
       localISO = new Date(serverDate.getTime() - serverDate.getTimezoneOffset() * 60000)
         .toISOString()
-        .slice(0, 16);
+        .slice(0, 19);
       fechaInput.value = localISO;
     })
     .catch(err => {
