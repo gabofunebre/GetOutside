@@ -113,13 +113,20 @@ body {
    Payment & Discount Action Buttons
    ========================================================================== */
 #add-payment,
+#add-change,
 #add-discount {
   width: 200px;
 }
 
+#add-change {
+  background-color: #d8c6ec;
+  border-color: #d8c6ec;
+  color: #000;
+}
+
 #add-discount {
-  background-color: #f9c58e;
-  border-color: #f9c58e;
+  background-color: #ffa34a;
+  border-color: #ffa34a;
   color: #000;
 }
 
