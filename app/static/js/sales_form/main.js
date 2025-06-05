@@ -336,6 +336,23 @@ class SalesForm {
       this.dom.totals.total.textContent     = '0.00 NZD';
       this.dom.totals.sobrante.textContent  = '0.00 NZD';
 
+      // Restaurar fecha a la hora actual del servidor
+      const fechaInput = document.getElementById('fecha-venta');
+      const btnEditarFecha = document.getElementById('editar-fecha');
+      try {
+        const resFecha = await fetch('/api/server-datetime');
+        const fechaData = await resFecha.json();
+        const serverDate = new Date(fechaData.datetime);
+        const localISO = new Date(serverDate.getTime() - serverDate.getTimezoneOffset() * 60000)
+          .toISOString()
+          .slice(0, 16);
+        fechaInput.value = localISO;
+      } catch (err) {
+        console.error('Error obteniendo fecha del servidor', err);
+      }
+      fechaInput.readOnly = true;
+      btnEditarFecha.style.display = 'inline-block';
+
       this.init();
     } catch (e) {
       modalMessage.innerHTML = `<div class="alert alert-danger" role="alert">${e.message}</div>`;
