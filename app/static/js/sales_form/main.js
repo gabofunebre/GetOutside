@@ -47,7 +47,7 @@ class SalesForm {
         const serverDate = new Date(data.datetime);
         const localISO = new Date(serverDate.getTime() - serverDate.getTimezoneOffset() * 60000)
           .toISOString()
-          .slice(0, 16);
+          .slice(0, 19);
         fechaInput.value = localISO;
       })
       .catch(err => {
@@ -345,7 +345,7 @@ class SalesForm {
         const serverDate = new Date(fechaData.datetime);
         const localISO = new Date(serverDate.getTime() - serverDate.getTimezoneOffset() * 60000)
           .toISOString()
-          .slice(0, 16);
+          .slice(0, 19);
         fechaInput.value = localISO;
       } catch (err) {
         console.error('Error obteniendo fecha del servidor', err);
