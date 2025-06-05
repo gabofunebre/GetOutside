@@ -25,7 +25,7 @@ export class PaymentBlock {
     div.className = 'pago-block border rounded p-3 mb-3 bg-light';
     div.innerHTML = `
       <div class="mb-2">
-        <label class="form-label">Medio</label>
+        <label class="form-label">Medio de Pago</label>
         <select name="payment_method_id" class="form-select">${options}</select>
       </div>
       <div class="row mb-2">
