@@ -31,25 +31,42 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // 1. Fetch currency labels
-    let currencyLabels = {};
-    fetch('/payment_methods/currencies_labels')
-      .then(resp => resp.json())
-      .then(labels => {
-        currencyLabels = labels;
-        // 2. Fetch payment methods y poblar select
-        return fetch('/payment_methods/');
-      })
-      .then(resp => resp.json())
-      .then(paymentMethods => {
-        const select = document.getElementById('payment_method_id');
-        paymentMethods.forEach(pm => {
-          const emoji = currencyLabels[pm.currency] || pm.currency;
-          const option = document.createElement('option');
-          option.value = pm.id;
-          option.text = `${emoji} ${pm.name} (${pm.currency})`;
-          select.appendChild(option);
-        });
+  let currencyLabels = {};
+  fetch('/payment_methods/currencies_labels')
+    .then(resp => resp.json())
+    .then(labels => {
+      currencyLabels = labels;
+      // 2. Fetch payment methods y poblar select
+      return fetch('/payment_methods/');
+    })
+    .then(resp => resp.json())
+    .then(paymentMethods => {
+      const select = document.getElementById('payment_method_id');
+      const saldoLabel = document.getElementById('saldoDisponible');
+      window.saldoDisponible = 0;
+      paymentMethods.forEach(pm => {
+        const emoji = currencyLabels[pm.currency] || pm.currency;
+        const option = document.createElement('option');
+        option.value = pm.id;
+        option.text = `${emoji} ${pm.name} (${pm.currency})`;
+        select.appendChild(option);
       });
+
+      select.addEventListener('change', () => {
+        const id = select.value;
+        saldoLabel.textContent = '';
+        document.getElementById('errorSaldo').textContent = '';
+        if (!id) return;
+        fetch(`/payment_methods/id/${id}/balance`)
+          .then(r => r.json())
+          .then(bal => {
+            window.saldoDisponible = bal.amount;
+            saldoLabel.textContent = `Disponible: ${bal.amount.toFixed(2)} ${bal.currency}`;
+          });
+      });
+
+      select.dispatchEvent(new Event('change'));
+    });
 });
 
 const form = document.getElementById('compra-form');
@@ -63,6 +80,12 @@ btnRegistrar.addEventListener('click', function () {
     if (!form.checkValidity()) {
         form.classList.add('was-validated');
         return;
+    }
+    if (parseFloat(document.getElementById('monto').value) > window.saldoDisponible) {
+        document.getElementById('errorSaldo').textContent = 'No hay dinero suficiente';
+        return;
+    } else {
+        document.getElementById('errorSaldo').textContent = '';
     }
     const concepto = document.getElementById('concepto').value.trim();
     const fecha = document.getElementById('fecha').value;
@@ -87,6 +110,12 @@ btnRegistrar.addEventListener('click', function () {
 
 // Confirmación real
 document.getElementById('btn-confirmar').addEventListener('click', function () {
+    if (parseFloat(formDataCache.monto) > window.saldoDisponible) {
+        document.getElementById('modalResultadoBody').innerHTML = '<div class="alert alert-danger">No hay dinero suficiente</div>';
+        modalResultado.show();
+        return;
+    }
+
     modalConfirm.hide();
     showOverlay();
 
