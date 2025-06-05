@@ -6,12 +6,28 @@ function hideOverlay() {
     document.getElementById('overlay').style.display = 'none';
 }
 
+function formatFechaCompleta(date) {
+    const pad = n => String(n).padStart(2, '0');
+    return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${date.getFullYear()} ` +
+           `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
 // Setear fecha de hoy por defecto en el input fecha
 document.addEventListener('DOMContentLoaded', function () {
     const fechaInput = document.getElementById('fecha');
     if (fechaInput && !fechaInput.value) {
-        const hoy = new Date().toISOString().split('T')[0];
-        fechaInput.value = hoy;
+        fetch('/api/server-datetime')
+          .then(res => res.json())
+          .then(data => {
+            const serverDate = new Date(data.datetime);
+            const localISO = new Date(serverDate.getTime() - serverDate.getTimezoneOffset() * 60000)
+              .toISOString()
+              .slice(0, 19);
+            fechaInput.value = localISO;
+          })
+          .catch(() => {
+            fechaInput.value = new Date().toISOString().slice(0, 19);
+          });
     }
 
     // 1. Fetch currency labels
@@ -50,13 +66,14 @@ btnRegistrar.addEventListener('click', function () {
     }
     const concepto = document.getElementById('concepto').value.trim();
     const fecha = document.getElementById('fecha').value;
+    const fechaFormatted = formatFechaCompleta(new Date(fecha));
     const monto = document.getElementById('monto').value;
     const archivo = document.getElementById('archivo').files[0];
     const paymentMethodSelect = document.getElementById('payment_method_id');
     const payment_method_id = paymentMethodSelect.value;
     const payment_method_text = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
 
-    let resumen = `<b>Fecha:</b> ${fecha}<br>`;
+    let resumen = `<b>Fecha:</b> ${fechaFormatted}<br>`;
     resumen += `<b>Monto:</b> ${monto}<br>`;
     resumen += `<b>Método de pago:</b> ${payment_method_text}<br>`;
     resumen += archivo ? `<b>Archivo:</b> ${archivo.name}<br>` : `<b>Archivo:</b> <i>(ninguno)</i><br>`;
