@@ -6,19 +6,36 @@ body {
 }
 
 /* ==========================================================================
+   Button Base Styles
+   ========================================================================== */
+.btn {
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+.btn:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* ==========================================================================
    Block Components: Product, Payment, Discount
    ========================================================================== */
 .producto-block,
 .pago-block,
 .descuento-block {
-  background-color: #bcbef1;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1rem;
 }
-.pago-block{
-  background-color: #bbf7b3;
+
+.producto-block {
+  background-color: #e8f5ff;
+}
+
+.pago-block {
+  background-color: #e6f9e6;
 }
 
 .producto-block .form-label,
@@ -133,6 +150,18 @@ body {
 #add-change,
 #add-discount {
   width: 200px;
+}
+
+#add-item {
+  background-color: #6ec1ff;
+  border-color: #6ec1ff;
+  color: #000;
+}
+
+#add-payment {
+  background-color: #a4e8a6;
+  border-color: #a4e8a6;
+  color: #000;
 }
 
 #add-change {
