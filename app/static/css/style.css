@@ -24,9 +24,20 @@ body {
   font-weight: 500;
 }
 
-.producto-block .subtotal {
+.producto-block .total-line {
+  font-size: 1.25rem;
   font-weight: bold;
-  font-size: 1.1rem;
+}
+.producto-block .total-line .subtotal {
+  font-size: inherit;
+}
+
+.vuelto-block {
+  background-color: #ebe3f6;
+}
+
+.descuento-block {
+  background-color: #ffe5cb;
 }
 
 /* ==========================================================================
@@ -112,6 +123,7 @@ body {
 /* ==========================================================================
    Payment & Discount Action Buttons
    ========================================================================== */
+#add-item,
 #add-payment,
 #add-change,
 #add-discount {
