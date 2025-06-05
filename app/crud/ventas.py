@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
@@ -130,7 +130,10 @@ def get_ventas(
     if start:
         query = query.filter(Venta.fecha >= start)
     if end:
-        query = query.filter(Venta.fecha <= end)
+        # "end" se interpreta como fecha final inclusiva. Para incluir todo el
+        # día se avanza un día y se filtra con '<'.
+        end_plus_one = end + timedelta(days=1)
+        query = query.filter(Venta.fecha < end_plus_one)
     if payment_method_id:
         query = query.join(VentaPago).filter(
             VentaPago.payment_method_id == payment_method_id
@@ -174,7 +177,9 @@ def get_product_ranking(
     if start:
         query = query.filter(Venta.fecha >= start)
     if end:
-        query = query.filter(Venta.fecha <= end)
+        # Incluir el día "end" completo avanzando un día y usando '<'
+        end_plus_one = end + timedelta(days=1)
+        query = query.filter(Venta.fecha < end_plus_one)
     if tipo:
         query = query.filter(Producto.descripcion == tipo)
     if proceso_aplicado:
