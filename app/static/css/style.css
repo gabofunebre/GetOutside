@@ -24,9 +24,21 @@ body {
   font-weight: 500;
 }
 
-.producto-block .subtotal {
+.producto-block .total-line {
+  font-size: 1.25rem;
   font-weight: bold;
-  font-size: 1.1rem;
+}
+.producto-block .total-line .subtotal {
+  font-size: inherit;
+}
+
+.vuelto-block {
+  background-color: #ebe3f6;
+}
+
+.descuento-block {
+  /* un tono más claro que el botón naranja */
+  background-color: #ffd8a8;
 }
 
 /* ==========================================================================
@@ -112,14 +124,22 @@ body {
 /* ==========================================================================
    Payment & Discount Action Buttons
    ========================================================================== */
+#add-item,
 #add-payment,
+#add-change,
 #add-discount {
   width: 200px;
 }
 
+#add-change {
+  background-color: #d8c6ec;
+  border-color: #d8c6ec;
+  color: #000;
+}
+
 #add-discount {
-  background-color: #f9c58e;
-  border-color: #f9c58e;
+  background-color: #ffa34a;
+  border-color: #ffa34a;
   color: #000;
 }
 
@@ -186,26 +206,32 @@ body {
    Estilos para Totales En registrar ventas
    ========================================================================== */
 #total-venta {
-  color: #0d6efd;
-}
-
-#total-descuentos {
-  color: #198754;
-}
-
-#total-final {
-  color: #fd7e14:
-}
-
-#total-pago {
+  /* Venta en negro */
   color: #000;
 }
 
-#total-sobrante {
+#total-descuentos {
+  /* Descuentos naranja */
+  color: #ff8800;
+}
+
+#total-final {
+  /* Total azul */
+  color: #0d6efd;
+}
+
+#total-pago {
+  /* Pagado verde */
   color: #198754;
 }
 
+#total-sobrante {
+  /* Sobran violeta */
+  color: #6f42c1;
+}
+
 #total-faltante {
+  /* Faltan rojo */
   color: #dc3545;
 }
 
