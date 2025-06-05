@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   let tipoMovimiento = "INGRESO";
+  let saldoDisponible = 0;
 
   document.querySelectorAll(".btn-movimiento").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -54,15 +55,40 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(res => res.json())
     .then(data => {
       const select = document.getElementById("metodo_pago");
+      const saldoLabel = document.getElementById("saldoDisponible");
       data.forEach(pm => {
         const opt = document.createElement("option");
         opt.value = pm.id;
         opt.textContent = `${pm.name} (${pm.currency})`;
         select.appendChild(opt);
       });
+
+      select.addEventListener("change", () => {
+        const id = select.value;
+        saldoLabel.textContent = "";
+        document.getElementById("errorSaldo").textContent = "";
+        if (!id) return;
+        fetch(`/payment_methods/id/${id}/balance`)
+          .then(r => r.json())
+          .then(bal => {
+            saldoDisponible = bal.amount;
+            saldoLabel.textContent = `Disponible: ${bal.amount.toFixed(2)} ${bal.currency}`;
+          });
+      });
+
+      select.dispatchEvent(new Event("change"));
     });
 
   document.getElementById("formIngreso").addEventListener("submit", e => {
+    if (
+      tipoMovimiento === "EGRESO" &&
+      parseFloat(document.getElementById("importe").value) > saldoDisponible
+    ) {
+      e.preventDefault();
+      document.getElementById("errorSaldo").textContent = "No hay dinero suficiente";
+      return;
+    }
+
     e.preventDefault();
 
     const overlay = document.getElementById("overlay");
