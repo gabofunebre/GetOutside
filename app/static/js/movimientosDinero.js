@@ -58,7 +58,7 @@ function renderTabla(data) {
 
           // Detección de enlaces
           let botonDetalleExtra = "";
-          const matchVenta = concepto.match(/Ingreso por venta\s*#(\d+)/i);
+          const matchVenta = concepto.match(/^V#(\d+)/i);
           const matchCompra = concepto.match(/Egreso por compra\s*#(\d+)/i);
 
           if (matchVenta) {
