@@ -19,10 +19,10 @@ export class ChangeBlock {
       .map(m => `<option value="${m.id}" data-currency="${m.currency}">${m.name} - ${m.currency_label} ${m.currency}</option>`)
       .join('');
     const div = document.createElement('div');
-    div.className = 'vuelto-block border rounded p-3 mb-3 bg-light';
+    div.className = 'vuelto-block border rounded p-3 mb-3';
     div.innerHTML = `
       <div class="mb-2">
-        <label class="form-label">Medio</label>
+        <label class="form-label">Medio del Vuelto</label>
         <select name="payment_method_id" class="form-select">${options}</select>
       </div>
       <div class="row mb-2">

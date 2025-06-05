@@ -22,7 +22,7 @@ export class DiscountBlock {
   /** Genera el HTML del bloque */
   render() {
     const div = document.createElement('div');
-    div.className = 'descuento-block border rounded p-3 mb-3 bg-light';
+    div.className = 'descuento-block border rounded p-3 mb-3';
     div.innerHTML = `
       <div class="mb-2">
         <label class="form-label">Concepto de Descuento</label>
