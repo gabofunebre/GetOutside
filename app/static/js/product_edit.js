@@ -75,6 +75,11 @@ async function cargarCatalogos() {
     catalogos = await res.json();
 
     catalogoSelect.innerHTML = "";
+    const optEmpty = document.createElement("option");
+    optEmpty.value = "";
+    optEmpty.textContent = "-- Sin catálogo --";
+    catalogoSelect.appendChild(optEmpty);
+
     for (const c of catalogos) {
       const option = document.createElement("option");
       option.value = c.id;
@@ -93,7 +98,7 @@ function abrirModal(p) {
   descripcionInput.value = p.descripcion;
   precioInput.value = p.precio_venta;
   stockInput.value = p.stock_actual;
-  catalogoSelect.value = p.catalogo_id;
+  catalogoSelect.value = p.catalogo_id ?? "";
   codigoInput.classList.remove("is-invalid");
   modal.show();
 }
@@ -103,12 +108,13 @@ async function handleFormSubmit(e) {
   overlay.style.display = "flex";
 
   const id = idInput.value;
+  const catalogoVal = catalogoSelect.value;
   const payload = {
     codigo_getoutside: codigoInput.value,
     descripcion: descripcionInput.value,
     precio_venta: parseFloat(precioInput.value),
     stock_actual: parseInt(stockInput.value),
-    catalogo_id: parseInt(catalogoSelect.value),
+    catalogo_id: catalogoVal === "" ? null : parseInt(catalogoVal),
   };
 
   const res = await fetch(`/productos/id/${id}`, {
