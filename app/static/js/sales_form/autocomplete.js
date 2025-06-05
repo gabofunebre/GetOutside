@@ -15,7 +15,10 @@ export class Autocomplete {
   bind() {
     this.input.addEventListener('input', () => this.render());
     this.input.addEventListener('focus', () => this.render());
-    this.input.addEventListener('blur', () => setTimeout(() => this.hide(), 150));
+    this.list.addEventListener('mousedown', e => {
+      e.preventDefault();
+      this.onClick(e);
+    });
     this.list.addEventListener('click', e => this.onClick(e));
     this.input.addEventListener('keydown', e => this.onKeyDown(e));
   }
