@@ -23,7 +23,8 @@ body {
    ========================================================================== */
 .producto-block,
 .pago-block,
-.descuento-block {
+.descuento-block,
+.vuelto-block {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1rem;
@@ -364,7 +365,8 @@ input.is-invalid {
 /* === Bloques visuales para productos, descuentos y pagos === */
 .producto-block,
 .descuento-block,
-.pago-block {
+.pago-block,
+.vuelto-block {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1rem;
