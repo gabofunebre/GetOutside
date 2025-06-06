@@ -65,7 +65,7 @@ function renderTabla(data) {
             const ventaId = matchVenta[1];
             botonDetalleExtra = `
               <div class="mt-4 text-end">
-                <a href="/ventas/${ventaId}" class="btn btn-primary btn-sm" target="_blank" rel="noopener">
+                <a href="/ventas/${ventaId}" class="btn btn-primary btn-sm">
                   Ver detalle de la venta
                 </a>
               </div>
@@ -74,7 +74,7 @@ function renderTabla(data) {
             const compraId = matchCompra[1];
             botonDetalleExtra = `
               <div class="mt-4 text-end">
-                <a href="/compras/detalle/${compraId}" class="btn btn-warning btn-sm" target="_blank" rel="noopener">
+                <a href="/compras/detalle/${compraId}" class="btn btn-warning btn-sm">
                   Ver detalle de la compra
                 </a>
               </div>

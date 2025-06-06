@@ -6,12 +6,7 @@ function storeVentasFilters(paramsString = null) {
 
 // Vuelve al listado con los filtros anteriores si existen
 function goBackToFilteredList() {
-  const params = sessionStorage.getItem("lastVentasParams");
-  if (params) {
-    window.location.href = "/ventas/list?" + params;
-  } else {
-    window.location.href = "/ventas";
-  }
+  window.history.back();
 }
 
 // Construye los parámetros del formulario actual
