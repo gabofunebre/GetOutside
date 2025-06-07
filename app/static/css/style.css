@@ -571,3 +571,21 @@ select.form-select {
 #modal-message .alert {
   margin-bottom: 0;
 }
+
+/* ==========================================================================
+   Stock Overview Search
+   ========================================================================== */
+.stock-search {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.stock-search .form-control,
+.stock-search .input-group-text {
+  border: none;
+}
+
+.stock-search input::placeholder {
+  font-style: italic;
+}
