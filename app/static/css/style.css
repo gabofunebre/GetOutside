@@ -576,6 +576,9 @@ select.form-select {
    Stock Overview Search
    ========================================================================== */
 .stock-search {
+
+  max-width: 420px;
+
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
   overflow: hidden;
@@ -584,6 +587,11 @@ select.form-select {
 .stock-search .form-control,
 .stock-search .input-group-text {
   border: none;
+
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+  font-size: 1.05rem;
+
 }
 
 .stock-search input::placeholder {
