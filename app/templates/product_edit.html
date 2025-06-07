@@ -6,11 +6,18 @@
   <title>Edición de Productos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
   <div class="container mt-5">
     <h1 class="mb-4 text-center">Editar Productos</h1>
+    <div class="d-flex justify-content-center mb-3">
+      <div class="input-group stock-search">
+        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+        <input type="text" id="stock-search" class="form-control border-start-0" placeholder="Buscar" aria-label="Buscar">
+      </div>
+    </div>
     <div class="table-responsive">
       <table id="tabla-ordenable" class="table table-striped table-hover align-middle tabla-ordenable">
         <thead class="table-dark">
@@ -128,5 +135,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
   <script type="module" src="/static/js/product_edit.js" defer></script>
   <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+  <script src="/static/js/stock_overview_filter.js" defer></script>
 </body>
 </html>
