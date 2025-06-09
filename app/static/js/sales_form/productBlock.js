@@ -34,7 +34,7 @@ export class ProductBlock {
       <div class="row mb-1">
         <div class="col"><label class="form-label">Cantidad</label></div>
         <div class="col"><label class="form-label">Precio</label></div>
-        <div class="col text-end"><label class="form-label">Subtotal</label></div>
+        <div class="col-auto"><label class="form-label">Subtotal</label></div>
       </div>
       <div class="row align-items-center g-2">
         <div class="col">
@@ -45,7 +45,7 @@ export class ProductBlock {
           <input type="number" name="precio_unitario" class="form-control" step="0.01">
         </div>
         <div class="col-auto">=</div>
-        <div class="col">
+        <div class="col-auto">
           <span class="total-line">$<span class="subtotal">0.00</span></span>
         </div>
       </div>`;
