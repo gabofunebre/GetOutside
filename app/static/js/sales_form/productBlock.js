@@ -20,8 +20,9 @@ export class ProductBlock {
   // Renderiza el bloque de producto con campos necesarios
   render() {
     const d = document.createElement('div');
-    d.className = 'producto-block border rounded p-3 mb-3';
+    d.className = 'producto-block border rounded p-3 mb-3 position-relative';
     d.innerHTML = `
+      <button type="button" class="btn-close btn-sm btn-quitar-producto position-absolute top-0 end-0 m-2" aria-label="Quitar"></button>
       <div class="mb-2">
         <label class="form-label">Producto</label>
         <div class="autocomplete">
@@ -30,19 +31,23 @@ export class ProductBlock {
           <ul class="autocomplete-list"></ul>
         </div>
       </div>
-      <div class="row mb-2">
+      <div class="row mb-1">
+        <div class="col"><label class="form-label">Cantidad</label></div>
+        <div class="col"><label class="form-label">Precio</label></div>
+        <div class="col text-end"><label class="form-label">Subtotal</label></div>
+      </div>
+      <div class="row align-items-center g-2">
         <div class="col">
-          <label class="form-label">Cantidad</label>
           <input type="number" name="cantidad" class="form-control" value="1" min="1">
         </div>
+        <div class="col-auto">&times;</div>
         <div class="col">
-          <label class="form-label">Precio</label>
           <input type="number" name="precio_unitario" class="form-control" step="0.01">
         </div>
-      </div>
-      <div class="d-flex justify-content-between align-items-center">
-        <span class="total-line">Total: $<span class="subtotal">0.00</span></span>
-        <button class="btn btn-danger btn-sm btn-quitar-producto">Quitar</button>
+        <div class="col-auto">=</div>
+        <div class="col">
+          <span class="total-line">$<span class="subtotal">0.00</span></span>
+        </div>
       </div>`;
     return d;
   }
