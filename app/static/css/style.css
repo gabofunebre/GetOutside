@@ -33,6 +33,7 @@ body {
 
 .producto-block {
   background-color: #e8f5ff;
+  position: relative;
 }
 
 .pago-block {
@@ -51,6 +52,12 @@ body {
 }
 .producto-block .total-line .subtotal {
   font-size: inherit;
+}
+
+.producto-block .btn-quitar-producto {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
 }
 
 .vuelto-block {
