@@ -608,3 +608,7 @@ select.form-select {
 .stock-search input::placeholder {
   font-style: italic;
 }
+
+#total-productos {
+  font-size: 1.5rem;  /* Ajustá el valor a gusto (ej: 2rem, 32px, etc.) */
+}
