@@ -28,7 +28,8 @@
       <!-- Campo código visible al inicio -->
       <div class="mb-3">
         <label for="codigo_getoutside" class="form-label">Código GetOutside <span class="text-danger">*</span></label>
-        <input type="text" class="form-control" id="codigo_getoutside" name="codigo_getoutside" required>
+        <input type="text" class="form-control" id="codigo_getoutside" name="codigo_getoutside" list="codigo_datalist" autocomplete="off" required>
+        <datalist id="codigo_datalist"></datalist>
         <div class="invalid-feedback">
           Este código ya corresponde a un producto existente.
         </div>
