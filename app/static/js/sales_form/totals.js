@@ -39,7 +39,7 @@ export class TotalsCalculator {
 
     // === 3. Calcular total pagado convertido a NZD ===
     let pagadoNZD = 0; // suma de montos de pago sin considerar vueltos
-    let netoPagadoNZD = 0; // pagos menos vueltos, usado para faltante/sobrante
+    let netoPagadoNZD = 0; // pagos menos vueltos, util para otras operaciones
     const pagos = pagoContainer.querySelectorAll('.pago-block');
     const cambios = cambioContainer.querySelectorAll('.vuelto-block');
 
