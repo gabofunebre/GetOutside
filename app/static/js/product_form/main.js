@@ -35,25 +35,44 @@ document.addEventListener("DOMContentLoaded", () => {
     productoTemporal: null
   };
 
-  async function cargarCodigos() {
-    const datalist = document.getElementById("codigo_datalist");
-    if (!datalist) return;
+
+  let productosCache = [];
+
+  async function cargarProductos() {
     try {
       const res = await fetch("/productos/");
       if (!res.ok) throw new Error("Error loading products");
-      const productos = await res.json();
-      datalist.innerHTML = "";
-      for (const p of productos) {
-        const opt = document.createElement("option");
-        opt.value = p.codigo_getoutside;
-        if (p.descripcion) opt.label = p.descripcion;
-        datalist.appendChild(opt);
-      }
+      productosCache = await res.json();
+
     } catch (err) {
       console.error("Error cargando lista de códigos", err);
     }
   }
-  cargarCodigos();
+
+  function actualizarDatalist(termino) {
+    const datalist = document.getElementById("codigo_datalist");
+    if (!datalist) return;
+    datalist.innerHTML = "";
+    if (!termino) return;
+    const lower = termino.toLowerCase();
+    const filtrados = productosCache.filter(p =>
+      p.codigo_getoutside.toLowerCase().includes(lower) ||
+      (p.descripcion && p.descripcion.toLowerCase().includes(lower))
+    );
+    for (const p of filtrados) {
+      const opt = document.createElement("option");
+      opt.value = p.codigo_getoutside;
+      opt.textContent = `${p.codigo_getoutside} - ${p.descripcion || ""}`.trim();
+      datalist.appendChild(opt);
+    }
+  }
+
+  cargarProductos().then(() => {
+    ctx.codigoInput.addEventListener("input", (e) => {
+      actualizarDatalist(e.target.value);
+    });
+  });
+
 
   attachCodigoListener(ctx);
   setupFormBehavior(ctx);
