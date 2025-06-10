@@ -27,7 +27,6 @@ export class PaymentBlock {
       <button type="button" class="btn-close btn-sm btn-quitar-pago position-absolute top-0 end-0 m-2" aria-label="Quitar"></button>
       <div class="row mb-1">
         <div class="col"><label class="form-label">Medio de Pago</label></div>
-        <div class="col-auto"><label class="form-label">Monto</label></div>
       </div>
       <div class="row align-items-end g-2">
         <div class="col">
