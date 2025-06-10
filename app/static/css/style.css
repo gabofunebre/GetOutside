@@ -63,6 +63,17 @@ body {
   top: 0.25rem;
   right: 0.25rem;
 }
+.pago-block .btn-quitar-pago,
+.descuento-block .btn-quitar-descuento,
+.vuelto-block .btn-quitar-vuelto {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+}
+
+.amount-input {
+  max-width: 100px;
+}
 
 .vuelto-block {
   background-color: #ebe3f6;
@@ -79,15 +90,9 @@ body {
    ========================================================================== */
 .btn-quitar-producto,
 .btn-quitar-pago,
-.btn-quitar-descuento {
+.btn-quitar-descuento,
+.btn-quitar-vuelto {
   font-size: 1rem;
-  padding: 0.5rem 1rem;
-}
-
-.btn-quitar-pago,
-.btn-quitar-descuento {
-  align-self: flex-end;
-  margin-bottom: 0.25rem;
 }
 
 /* ==========================================================================
