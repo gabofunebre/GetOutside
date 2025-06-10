@@ -4,17 +4,17 @@
 import { TotalsCalculator } from './totals.js';
 
 export class ChangeBlock {
-  constructor(mediosData, dom, onRemove) {
+  constructor(mediosData, dom, onRemove, defaultAmount = 0) {
     this.mediosData = mediosData;
     this.dom = dom;
     this.onRemove = onRemove;
-    this.el = this.render();
+    this.el = this.render(defaultAmount);
     dom.vueltos.appendChild(this.el);
     this.bindEvents();
     this.recalc();
   }
 
-  render() {
+  render(defaultAmount) {
     const options = this.mediosData
       .map(m => `<option value="${m.id}" data-currency="${m.currency}">${m.name} - ${m.currency_label} ${m.currency}</option>`)
       .join('');
@@ -30,7 +30,7 @@ export class ChangeBlock {
           <select name="payment_method_id" class="form-select">${options}</select>
         </div>
         <div class="col-auto">
-          <input type="number" name="amount" class="form-control amount-input" step="0.01">
+          <input type="number" name="amount" class="form-control amount-input" step="0.01" value="${defaultAmount}">
         </div>
       </div>`;
     return div;
