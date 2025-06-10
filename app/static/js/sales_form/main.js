@@ -81,9 +81,11 @@ class SalesForm {
   }
 
   addChange() {
+    const sobranteText = this.dom.totals.sobrante.textContent || '0';
+    const defaultAmount = parseFloat(sobranteText) || 0;
     const block = new ChangeBlock(this.mediosData, this.dom, (bloque) => {
       this.changeBlocks = this.changeBlocks.filter(b => b !== bloque);
-    });
+    }, defaultAmount);
     this.changeBlocks.push(block);
   }
 
