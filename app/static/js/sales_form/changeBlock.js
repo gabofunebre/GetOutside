@@ -19,20 +19,19 @@ export class ChangeBlock {
       .map(m => `<option value="${m.id}" data-currency="${m.currency}">${m.name} - ${m.currency_label} ${m.currency}</option>`)
       .join('');
     const div = document.createElement('div');
-    div.className = 'vuelto-block border rounded p-3 mb-3';
+    div.className = 'vuelto-block border rounded p-3 mb-3 position-relative';
     div.innerHTML = `
-      <div class="mb-2">
-        <label class="form-label">Medio del Vuelto</label>
-        <select name="payment_method_id" class="form-select">${options}</select>
+      <button type="button" class="btn-close btn-sm btn-quitar-vuelto position-absolute top-0 end-0 m-2" aria-label="Quitar"></button>
+      <div class="row mb-1">
+        <div class="col"><label class="form-label">Medio del Vuelto</label></div>
+        <div class="col-auto"><label class="form-label">Monto</label></div>
       </div>
-      <div class="row mb-2">
+      <div class="row align-items-end g-2">
         <div class="col">
-          <label class="form-label">Monto</label>
-          <input type="number" name="amount" class="form-control" step="0.01">
+          <select name="payment_method_id" class="form-select">${options}</select>
         </div>
-        <div class="col-auto d-flex flex-column justify-content-end">
-          <label class="form-label invisible">Quitar</label>
-          <button class="btn btn-danger btn-quitar-vuelto">Quitar</button>
+        <div class="col-auto">
+          <input type="number" name="amount" class="form-control amount-input" step="0.01">
         </div>
       </div>`;
     return div;
