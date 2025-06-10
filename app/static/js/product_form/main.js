@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     productoTemporal: null
   };
 
+
   let productosCache = [];
 
   async function cargarProductos() {
@@ -42,6 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/productos/");
       if (!res.ok) throw new Error("Error loading products");
       productosCache = await res.json();
+
     } catch (err) {
       console.error("Error cargando lista de códigos", err);
     }
@@ -70,6 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
       actualizarDatalist(e.target.value);
     });
   });
+
 
   attachCodigoListener(ctx);
   setupFormBehavior(ctx);
