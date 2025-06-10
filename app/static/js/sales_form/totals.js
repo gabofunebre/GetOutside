@@ -38,7 +38,8 @@ export class TotalsCalculator {
     elDesc.textContent = `- ${descuentos.toFixed(2)} NZD`;
 
     // === 3. Calcular total pagado convertido a NZD ===
-    let pagadoNZD = 0;
+    let pagadoNZD = 0; // suma de montos de pago sin considerar vueltos
+    let netoPagadoNZD = 0; // pagos menos vueltos, util para otras operaciones
     const pagos = pagoContainer.querySelectorAll('.pago-block');
     const cambios = cambioContainer.querySelectorAll('.vuelto-block');
 
@@ -50,6 +51,7 @@ export class TotalsCalculator {
 
       if (currency === "NZD") {
         pagadoNZD += amount;
+        netoPagadoNZD += amount;
       } else {
         const key = `${currency}->NZD:${amount}`;
         if (!this.conversionCache[key]) {
@@ -63,6 +65,7 @@ export class TotalsCalculator {
           }
         }
         pagadoNZD += this.conversionCache[key];
+        netoPagadoNZD += this.conversionCache[key];
       }
     }
     // === 3b. Restar vueltos ===
@@ -73,7 +76,7 @@ export class TotalsCalculator {
       const currency = medio.dataset.currency;
 
       if (currency === "NZD") {
-        pagadoNZD -= amount;
+        netoPagadoNZD -= amount;
       } else {
         const key = `${currency}->NZD:${amount}`;
         if (!this.conversionCache[key]) {
@@ -86,7 +89,7 @@ export class TotalsCalculator {
             this.conversionCache[key] = 0;
           }
         }
-        pagadoNZD -= this.conversionCache[key];
+        netoPagadoNZD -= this.conversionCache[key];
       }
     }
 
