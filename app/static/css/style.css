@@ -292,11 +292,65 @@ body {
   font-family: 'Courier New', monospace;
   font-size: 1rem;
   line-height: 1.5;
-  white-space: pre-wrap;
   background-color: #f8f9fa;
   padding: 1rem;
   border: 1px dashed #ccc;
   border-radius: 6px;
+}
+
+.ticket-line {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ticket-indent {
+  padding-left: 1.5rem;
+}
+
+.ticket-blue {
+  color: #005b96;
+}
+
+.ticket-blue-light {
+  color: #5bc0de;
+  font-style: italic;
+}
+
+.ticket-orange {
+  color: #ff6600;
+}
+
+.ticket-orange-light {
+  color: #ffae6d;
+  font-style: italic;
+}
+
+.ticket-green {
+  color: #0a3622;
+}
+
+.ticket-green-light {
+  color: #198754;
+  font-style: italic;
+}
+
+.ticket-purple {
+  color: #4b0082;
+}
+
+.ticket-purple-light {
+  color: #a671ff;
+  font-style: italic;
+}
+
+.ticket-divider {
+  border-top: 1px dashed #000;
+  margin: 0.5rem 0;
+}
+
+.ticket-total {
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 #total-venta,

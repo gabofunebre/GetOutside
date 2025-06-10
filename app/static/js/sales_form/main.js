@@ -220,73 +220,78 @@ class SalesForm {
 
     const fechaVenta = document.getElementById('fecha-venta').value;
 
-    let texto = '';
-    texto += '======= RESUMEN DE VENTA =======\n\n';
-    texto += `Fecha: ${fechaVenta}\n\n`;
-    texto += 'Productos:\n';
+    const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const dt = new Date(fechaVenta);
+    const fechaTexto = `${String(dt.getDate()).padStart(2,'0')}-${months[dt.getMonth()]}-${dt.getFullYear()}`;
+
     let subtotal = 0;
+    let productosHTML = '';
     for (const d of detalles) {
       const prod = this.productosData.find(p => p.id === d.producto_id);
       const codigo = prod ? prod.codigo_getoutside : `ID:${d.producto_id}`;
-      texto += `  ${codigo.padEnd(12)} $${d.precio_unitario.toFixed(2)} x${d.cantidad}\n`;
+      productosHTML += `<div class="ticket-line ticket-blue-light ticket-indent"><span>(${d.cantidad}) ${codigo}</span><span>$${d.precio_unitario.toFixed(2)}</span></div>`;
       subtotal += d.cantidad * d.precio_unitario;
     }
-    texto += `\nSUBTOTAL:      $${subtotal.toFixed(2)} NZD\n`;
 
     let totalDesc = 0;
-    if (descuentos.length) {
-      texto += '\nDescuentos:\n';
-      for (const d of descuentos) {
-        texto += `  ${d.concepto.slice(0,12).padEnd(12)} -$${d.amount.toFixed(2)} NZD\n`;
-        totalDesc += d.amount;
-      }
+    let descHTML = '';
+    for (const d of descuentos) {
+      descHTML += `<div class="ticket-line ticket-orange-light ticket-indent"><span>${d.concepto}</span><span>$${d.amount.toFixed(2)}</span></div>`;
+      totalDesc += d.amount;
     }
     const totalFinal = subtotal - totalDesc;
-    texto += `\n-------------------------------\n`;
-    texto += `TOTAL:         $${totalFinal.toFixed(2)} NZD\n`;
 
-    let totalPagado = 0;
-    if (pagos.length) {
-      texto += '\nPagos:\n';
-      for (const p of pagos) {
-        const medio = this.mediosData.find(m => m.id === p.payment_method_id);
-        if (!medio) continue;
-        let linea = `  ${medio.name.slice(0,12).padEnd(12)} $${p.amount.toFixed(2)} ${medio.currency}`;
-        if (medio.currency !== 'NZD') {
-          const res = await fetch(`https://api.frankfurter.app/latest?from=${medio.currency}&to=NZD&amount=${p.amount}`);
-          const data = await res.json();
-          const convertido = data.rates['NZD'];
-          totalPagado += convertido;
-          linea += ` (=${convertido.toFixed(2)} NZD)`;
-        } else {
-          totalPagado += p.amount;
-        }
-        texto += `${linea}\n`;
+    let totalPagos = 0;
+    let pagosHTML = '';
+    for (const p of pagos) {
+      const medio = this.mediosData.find(m => m.id === p.payment_method_id);
+      if (!medio) continue;
+      let convertido = p.amount;
+      if (medio.currency !== 'NZD') {
+        const res = await fetch(`https://api.frankfurter.app/latest?from=${medio.currency}&to=NZD&amount=${p.amount}`);
+        const data = await res.json();
+        convertido = data.rates['NZD'];
       }
+      totalPagos += convertido;
+      pagosHTML += `<div class="ticket-line ticket-green-light ticket-indent"><span>${medio.name} ${medio.currency}</span><span>$${p.amount.toFixed(2)}</span></div>`;
     }
+
+    let totalVueltos = 0;
+    let vueltosHTML = '';
+    for (const c of vueltos) {
+      const medio = this.mediosData.find(m => m.id === c.payment_method_id);
+      if (!medio) continue;
+      let convertido = c.amount;
+      if (medio.currency !== 'NZD') {
+        const res = await fetch(`https://api.frankfurter.app/latest?from=${medio.currency}&to=NZD&amount=${c.amount}`);
+        const data = await res.json();
+        convertido = data.rates['NZD'];
+      }
+      totalVueltos += convertido;
+      vueltosHTML += `<div class="ticket-line ticket-purple-light ticket-indent"><span>${medio.name} ${medio.currency}</span><span>$${c.amount.toFixed(2)}</span></div>`;
+    }
+
+    let html = '';
+    html += `<div class="text-center text-secondary fw-bold">RESUMEN DE VENTA</div>`;
+    html += `<div class="text-secondary">${fechaTexto}</div>`;
+    html += `<div class="my-2"></div>`;
+    html += `<div class="ticket-line ticket-blue fw-bold"><span>Productos:</span><span>$${subtotal.toFixed(2)}</span></div>`;
+    html += productosHTML;
+    html += `<div class="my-2"></div>`;
+    html += `<div class="ticket-line ticket-orange fw-bold"><span>Descuentos:</span><span>$${totalDesc.toFixed(2)}</span></div>`;
+    html += descHTML;
+    html += `<div class="ticket-divider"></div>`;
+    html += `<div class="ticket-line ticket-total text-dark"><span>TOTAL A PAGAR:</span><span>$${totalFinal.toFixed(2)}</span></div>`;
+    html += `<div class="my-2"></div>`;
+    html += `<div class="ticket-line ticket-green fw-bold"><span>Pagado:</span><span>$${totalPagos.toFixed(2)}</span></div>`;
+    html += pagosHTML;
     if (vueltos.length) {
-      texto += '\nVueltos:\n';
-      for (const c of vueltos) {
-        const medio = this.mediosData.find(m => m.id === c.payment_method_id);
-        if (!medio) continue;
-        let linea = `  ${medio.name.slice(0,12).padEnd(12)} -$${c.amount.toFixed(2)} ${medio.currency}`;
-        if (medio.currency !== 'NZD') {
-          const res = await fetch(`https://api.frankfurter.app/latest?from=${medio.currency}&to=NZD&amount=${c.amount}`);
-          const data = await res.json();
-          const convertido = data.rates['NZD'];
-          totalPagado -= convertido;
-          linea += ` (=-${convertido.toFixed(2)} NZD)`;
-        } else {
-          totalPagado -= c.amount;
-        }
-        texto += `${linea}\n`;
-      }
+      html += `<div class="my-2"></div>`;
+      html += `<div class="ticket-line ticket-purple fw-bold"><span>Vuelto:</span><span>$${totalVueltos.toFixed(2)}</span></div>`;
+      html += vueltosHTML;
     }
-    texto += `\nTOTAL PAGADO:  $${totalPagado.toFixed(2)} NZD\n`;
-    const faltan = Math.max(0, totalFinal - totalPagado);
-    texto += `FALTAN:        $${faltan.toFixed(2)} NZD`;
 
-    document.getElementById('resumen-texto').textContent = texto;
+    document.getElementById('resumen-texto').innerHTML = html;
     document.getElementById('modal-message').innerHTML = '';
     const modal = new bootstrap.Modal(document.getElementById('resumen-modal'));
     modal.show();
