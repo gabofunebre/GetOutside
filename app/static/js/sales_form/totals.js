@@ -99,7 +99,7 @@ export class TotalsCalculator {
     const totalFinal = venta - descuentos;
     if (elTotal) elTotal.textContent = `${totalFinal.toFixed(2)} NZD`;
 
-    const faltan = Math.max(0, totalFinal - netoPagadoNZD);
+    const faltan = Math.max(0, totalFinal - pagadoNZD);
     elFaltan.textContent = `${faltan.toFixed(2)} NZD`;
     const sobrante = Math.max(0, netoPagadoNZD - totalFinal);
     if (elSobrante) elSobrante.textContent = `${sobrante.toFixed(2)} NZD`;
