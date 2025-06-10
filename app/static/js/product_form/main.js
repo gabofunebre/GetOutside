@@ -35,6 +35,26 @@ document.addEventListener("DOMContentLoaded", () => {
     productoTemporal: null
   };
 
+  async function cargarCodigos() {
+    const datalist = document.getElementById("codigo_datalist");
+    if (!datalist) return;
+    try {
+      const res = await fetch("/productos/");
+      if (!res.ok) throw new Error("Error loading products");
+      const productos = await res.json();
+      datalist.innerHTML = "";
+      for (const p of productos) {
+        const opt = document.createElement("option");
+        opt.value = p.codigo_getoutside;
+        if (p.descripcion) opt.label = p.descripcion;
+        datalist.appendChild(opt);
+      }
+    } catch (err) {
+      console.error("Error cargando lista de códigos", err);
+    }
+  }
+  cargarCodigos();
+
   attachCodigoListener(ctx);
   setupFormBehavior(ctx);
 });
