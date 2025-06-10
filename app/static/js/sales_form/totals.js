@@ -15,7 +15,8 @@ export class TotalsCalculator {
     elDesc,
     elFaltan,
     elTotal = null,
-    elSobrante = null
+    elSobrante = null,
+    elProductos = null
   ) {
     // === 1. Calcular subtotal de productos ===
     let venta = 0;
@@ -27,6 +28,7 @@ export class TotalsCalculator {
       venta += sub;
     });
     elVenta.textContent = `${venta.toFixed(2)} NZD`;
+    if (elProductos) elProductos.textContent = venta.toFixed(2);
 
     // === 2. Calcular total de descuentos ===
     let descuentos = 0;
@@ -112,7 +114,8 @@ export class TotalsCalculator {
       dom.totals.descuentos,
       dom.totals.faltante,
       dom.totals.total,
-      dom.totals.sobrante
+      dom.totals.sobrante,
+      dom.totals.productos
     );
   }
 }

@@ -207,7 +207,8 @@ class SalesForm {
       this.dom.totals.descuentos,
       this.dom.totals.faltante,
       this.dom.totals.total,
-      this.dom.totals.sobrante
+      this.dom.totals.sobrante,
+      this.dom.totals.productos
     );
 
     const detalles   = this.productBlocks.map(b => b.getData());
@@ -335,6 +336,7 @@ class SalesForm {
       this.dom.totals.faltante.textContent  = '0.00 NZD';
       this.dom.totals.total.textContent     = '0.00 NZD';
       this.dom.totals.sobrante.textContent  = '0.00 NZD';
+      this.dom.totals.productos.textContent = '0.00';
 
       // Restaurar fecha a la hora actual del servidor
       const fechaInput = document.getElementById('fecha-venta');
@@ -375,7 +377,8 @@ document.addEventListener('DOMContentLoaded', () => {
       descuentos: document.getElementById('total-descuentos'),
       faltante: document.getElementById('total-faltante'),
       total:    document.getElementById('total-final'),
-      sobrante: document.getElementById('total-sobrante')
+      sobrante: document.getElementById('total-sobrante'),
+      productos: document.getElementById('total-productos')
     },
     alert:       document.getElementById('alert-placeholder'),
     overlay:     document.getElementById('overlay'),
