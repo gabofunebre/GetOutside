@@ -1,18 +1,18 @@
 # app/routers/productos.py
 
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Request, Body
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.models.inventario import Producto, Catalogo
-from app.schemas.producto import ProductoBase, ProductoCreate, ProductoOut
+from app.schemas.producto import ProductoCreate, ProductoOut
 from app.crud.inventario import (
     get_producto,
     create_producto,
-    agregar_stock,
     update_producto_completo,
+    update_stock,
 )
 from app.core.deps import get_db
 from app.core.templates import templates
@@ -24,6 +24,7 @@ router = APIRouter(prefix="/productos", tags=["Productos"])
 
 class StockUpdate(BaseModel):
     stock_agregado: int  # cantidad a sumar o restar al stock_actual
+    referencia: str = "Ajuste manual"  # descripción del movimiento
 
 
 # === CREACIÓN DE PRODUCTOS ===
@@ -72,7 +73,7 @@ def update_stock_by_id(
     prod = db.query(Producto).filter(Producto.id == producto_id).first()
     if not prod:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
-    return agregar_stock(db, prod, data.stock_agregado)
+    return update_stock(db, producto_id, data.stock_agregado, data.referencia)
 
 
 # === LISTADO DE PRODUCTOS COMPLETO ===

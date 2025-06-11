@@ -25,15 +25,6 @@ def create_producto(db: Session, p: ProductoCreate) -> Producto:
     db.refresh(db_p)
     return db_p
 
-
-def agregar_stock(db: Session, producto: Producto, stock_agregado: int) -> Producto:
-    """Aumenta el stock_actual de un Producto existente."""
-    producto.stock_actual += stock_agregado
-    db.commit()
-    db.refresh(producto)
-    return producto
-
-
 def update_producto_completo(
     db: Session, producto_id: int, data: ProductoCreate
 ) -> Producto:
