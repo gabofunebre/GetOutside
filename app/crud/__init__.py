@@ -2,7 +2,6 @@
 from .inventario import (
     get_producto,
     create_producto,
-    agregar_stock,
     update_producto_completo,
     update_stock,
     create_catalogo,
