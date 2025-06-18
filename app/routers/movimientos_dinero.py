@@ -47,7 +47,9 @@ def listar_movimientos_dinero(
     if any([start_dt, end_dt, tipo, concepto]):
         return filtrar_movimientos(
             db=db,
+
             limit=None,
+
             start=start_dt,
             end=end_dt,
             tipo=tipo,
