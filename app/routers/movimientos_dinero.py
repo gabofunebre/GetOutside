@@ -1,8 +1,16 @@
-from fastapi import APIRouter, Request, Depends, status
+from datetime import datetime
+from typing import Optional
+
+from fastapi import APIRouter, Request, Depends, status, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
 
-from app.crud.dinero import listar_movimientos, crear_y_guardar_movimiento, get_movimiento_by_id
+from app.crud.dinero import (
+    listar_movimientos,
+    crear_y_guardar_movimiento,
+    get_movimiento_by_id,
+    filtrar_movimientos,
+)
 from app.schemas.dinero import MovimientoDineroCreate, MovimientoDineroOut
 from app.models.dinero import TipoMovimientoDinero, MovimientoDinero
 from app.core.deps import get_db
@@ -22,9 +30,29 @@ def ver_movimientos_page(request: Request, db: Session = Depends(get_db)):
 # API JSON: últimos N movimientos, ordenados por fecha
 @router.get("/api/movimientos-dinero", response_model=list[MovimientoDineroOut])
 def listar_movimientos_dinero(
-    limit: int = DEFAULT_MOVIMIENTOS_LIMIT,  # 👈 Usás la constante como valor por defecto
+    limit: int = DEFAULT_MOVIMIENTOS_LIMIT,
+    start: Optional[str] = Query(None),
+    end: Optional[str] = Query(None),
+    tipo: Optional[TipoMovimientoDinero] = Query(None),
+    ventas: bool = False,
+    concepto: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
+    start_dt = datetime.fromisoformat(start) if start else None
+    end_dt = datetime.fromisoformat(end) if end else None
+
+    if ventas:
+        concepto = "V#"
+
+    if any([start_dt, end_dt, tipo, concepto]):
+        return filtrar_movimientos(
+            db=db,
+            limit=limit,
+            start=start_dt,
+            end=end_dt,
+            tipo=tipo,
+            concepto=concepto,
+        )
     return listar_movimientos(db, limit=limit)
 
 
