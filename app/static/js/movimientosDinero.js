@@ -115,6 +115,7 @@ function cargarMovimientos(params = {}, showOverlay = false, infoText = null) {
   Object.entries(params).forEach(([k, v]) => {
     if (v) url.searchParams.append(k, v);
   });
+
   if (showOverlay) filtroOverlay.style.display = "flex";
   fetch(url)
     .then(res => {
@@ -153,17 +154,18 @@ document.getElementById("btnMes").addEventListener("click", () => setRangoRapido
 
 document.getElementById("filtroForm").addEventListener("submit", e => {
   e.preventDefault();
+
   const form = e.target;
   const params = {};
   const desde = form.fechaDesde.value;
   const hasta = form.fechaHasta.value;
   const tipo = form.tipoFiltro.value;
   const concepto = form.conceptoBuscar.value.trim();
+
   if (desde) params.start = desde;
   if (hasta) params.end = hasta;
   if (tipo === "VENTA") params.ventas = "1"; else if (tipo) params.tipo = tipo;
   if (concepto) params.concepto = concepto;
-
   const partes = [];
   if (desde || hasta) {
     const textoDesde = desde ? desde.split("-").reverse().join("/") : "";
@@ -186,6 +188,7 @@ document.getElementById("filtroForm").addEventListener("submit", e => {
 
   bootstrap.Modal.getInstance(document.getElementById("modalFiltro")).hide();
   form.reset();
+
 });
 
 cargarMovimientos();

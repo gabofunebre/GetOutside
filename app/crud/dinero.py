@@ -98,7 +98,9 @@ def get_movimiento_by_id(db: Session, movimiento_id: int) -> MovimientoDinero:
 
 def filtrar_movimientos(
     db: Session,
+
     limit: int | None = None,
+
     start: datetime | None = None,
     end: datetime | None = None,
     tipo: TipoMovimientoDinero | None = None,
@@ -116,8 +118,8 @@ def filtrar_movimientos(
         query = query.filter(MovimientoDinero.tipo == tipo)
     if concepto:
         query = query.filter(MovimientoDinero.concepto.ilike(f"%{concepto}%"))
-
     query = query.order_by(MovimientoDinero.fecha.desc())
     if limit:
         query = query.limit(limit)
     return query.all()
+
