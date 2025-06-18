@@ -107,8 +107,12 @@ function renderTabla(data) {
   new Tablesort(document.getElementById("tabla-movimientos"));
 }
 
-function cargarMovimientos() {
-  fetch("/api/movimientos-dinero")
+function cargarMovimientos(params = {}) {
+  const url = new URL("/api/movimientos-dinero", window.location.origin);
+  Object.entries(params).forEach(([k, v]) => {
+    if (v) url.searchParams.append(k, v);
+  });
+  fetch(url)
     .then(res => {
       if (!res.ok) throw new Error("Error al cargar los movimientos");
       return res.json();
@@ -121,6 +125,37 @@ function cargarMovimientos() {
     });
 }
 
+document.getElementById("btnFiltro").addEventListener("click", () => {
+  const modal = new bootstrap.Modal(document.getElementById("modalFiltro"));
+  modal.show();
+});
+
+function setRangoRapido(dias) {
+  const hoy = new Date();
+  const inicio = new Date();
+  inicio.setDate(hoy.getDate() - dias);
+  document.getElementById("fechaDesde").value = inicio.toISOString().slice(0, 10);
+  document.getElementById("fechaHasta").value = hoy.toISOString().slice(0, 10);
+}
+
+document.getElementById("btnSemana").addEventListener("click", () => setRangoRapido(7));
+document.getElementById("btnMes").addEventListener("click", () => setRangoRapido(30));
+
+document.getElementById("filtroForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const params = {};
+  const desde = document.getElementById("fechaDesde").value;
+  const hasta = document.getElementById("fechaHasta").value;
+  const tipo = document.getElementById("tipoFiltro").value;
+  const concepto = document.getElementById("conceptoBuscar").value;
+  if (desde) params.start = desde;
+  if (hasta) params.end = hasta;
+  if (tipo === "VENTA") params.ventas = "1"; else if (tipo) params.tipo = tipo;
+  if (concepto) params.concepto = concepto;
+  cargarMovimientos(params);
+  bootstrap.Modal.getInstance(document.getElementById("modalFiltro")).hide();
+});
+
 cargarMovimientos();
-window.addEventListener("resize", cargarMovimientos);
+window.addEventListener("resize", () => cargarMovimientos());
   
