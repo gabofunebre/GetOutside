@@ -210,6 +210,31 @@ body {
   z-index: 9999;
 }
 
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1055;
+}
+
+.btn-filtro {
+  background: linear-gradient(#ffa94d, #ff7f0e);
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 0 #c66b00;
+}
+
+.btn-filtro:active {
+  box-shadow: 0 1px 0 #c66b00;
+  transform: translateY(3px);
+}
+
 /* ==========================================================================
    Autocomplete List — estilos alternos para distinguir filas
    ========================================================================== */

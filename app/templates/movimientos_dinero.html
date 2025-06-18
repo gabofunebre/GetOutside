@@ -10,13 +10,12 @@
 <body>
   <div class="container mt-5">
     <h2 class="mb-4 text-center">Movimientos de Dinero</h2>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <span class="small text-muted">Últimos 30 movimientos de dinero</span>
-      <div>
-        <button type="button" class="btn btn-secondary btn-sm me-2" id="btnFiltro">Filtrar</button>
-        <a href="/tenencias/" class="btn btn-primary btn-modern">Ir a Tenencias</a>
-      </div>
+
+    <div class="d-flex justify-content-between align-items-center">
+      <button type="button" class="btn btn-filtro btn-sm" id="btnFiltro">Filtrar</button>
+      <a href="/tenencias/" class="btn btn-primary btn-modern">Ir a Tenencias</a>
     </div>
+    <p id="infoConsulta" class="small text-muted mt-2 mb-3">Últimos 30 movimientos de dinero</p>
     <div class="tabla-scroll">
       <table class="table table-striped tabla-ordenable align-middle" id="tabla-movimientos">
         <thead>
@@ -41,6 +40,9 @@
 <div class="modal fade" id="modalFiltro" tabindex="-1" aria-labelledby="modalFiltroLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
+      <div id="filtroOverlay" class="modal-overlay">
+        <div class="spinner-border text-primary" role="status"></div>
+      </div>
       <div class="modal-header">
         <h5 class="modal-title" id="modalFiltroLabel">Filtrar Movimientos</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>

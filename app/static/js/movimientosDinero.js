@@ -107,21 +107,32 @@ function renderTabla(data) {
   new Tablesort(document.getElementById("tabla-movimientos"));
 }
 
-function cargarMovimientos(params = {}) {
+const infoLabel = document.getElementById("infoConsulta");
+const filtroOverlay = document.getElementById("filtroOverlay");
+
+function cargarMovimientos(params = {}, showOverlay = false, infoText = null) {
   const url = new URL("/api/movimientos-dinero", window.location.origin);
   Object.entries(params).forEach(([k, v]) => {
     if (v) url.searchParams.append(k, v);
   });
+
+  if (showOverlay) filtroOverlay.style.display = "flex";
   fetch(url)
     .then(res => {
       if (!res.ok) throw new Error("Error al cargar los movimientos");
       return res.json();
     })
-    .then(renderTabla)
+    .then(data => {
+      renderTabla(data);
+      if (infoText !== null) infoLabel.textContent = infoText;
+    })
     .catch(err => {
       console.error(err);
       const tbody = document.getElementById("tabla-body");
       tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Error al cargar datos</td></tr>`;
+    })
+    .finally(() => {
+      if (showOverlay) filtroOverlay.style.display = "none";
     });
 }
 
@@ -143,17 +154,41 @@ document.getElementById("btnMes").addEventListener("click", () => setRangoRapido
 
 document.getElementById("filtroForm").addEventListener("submit", e => {
   e.preventDefault();
+
+  const form = e.target;
   const params = {};
-  const desde = document.getElementById("fechaDesde").value;
-  const hasta = document.getElementById("fechaHasta").value;
-  const tipo = document.getElementById("tipoFiltro").value;
-  const concepto = document.getElementById("conceptoBuscar").value;
+  const desde = form.fechaDesde.value;
+  const hasta = form.fechaHasta.value;
+  const tipo = form.tipoFiltro.value;
+  const concepto = form.conceptoBuscar.value.trim();
+
   if (desde) params.start = desde;
   if (hasta) params.end = hasta;
   if (tipo === "VENTA") params.ventas = "1"; else if (tipo) params.tipo = tipo;
   if (concepto) params.concepto = concepto;
-  cargarMovimientos(params);
+  const partes = [];
+  if (desde || hasta) {
+    const textoDesde = desde ? desde.split("-").reverse().join("/") : "";
+    const textoHasta = hasta ? hasta.split("-").reverse().join("/") : "";
+    if (desde && hasta) partes.push(`del ${textoDesde} al ${textoHasta}`);
+    else if (desde) partes.push(`desde ${textoDesde}`);
+    else partes.push(`hasta ${textoHasta}`);
+  }
+  if (tipo) {
+    const map = { INGRESO: "ingresos", EGRESO: "egresos", VENTA: "ventas" };
+    partes.push(map[tipo]);
+  }
+  if (concepto) partes.push(`concepto "${concepto}"`);
+
+  const texto = partes.length
+    ? `Movimientos ${partes.join(", ")}`
+    : "Últimos 30 movimientos de dinero";
+
+  cargarMovimientos(params, true, texto);
+
   bootstrap.Modal.getInstance(document.getElementById("modalFiltro")).hide();
+  form.reset();
+
 });
 
 cargarMovimientos();
