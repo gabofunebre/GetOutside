@@ -94,3 +94,31 @@ def get_movimiento_by_id(db: Session, movimiento_id: int) -> MovimientoDinero:
         raise MovimientoNoRegistrado(f"Movimiento con ID {movimiento_id} no encontrado.")
 
     return movimiento
+
+
+def filtrar_movimientos(
+    db: Session,
+    limit: int = DEFAULT_MOVIMIENTOS_LIMIT,
+    start: datetime | None = None,
+    end: datetime | None = None,
+    tipo: TipoMovimientoDinero | None = None,
+    concepto: str | None = None,
+) -> list[MovimientoDinero]:
+    """Aplica filtros opcionales y devuelve los movimientos de dinero."""
+
+    query = db.query(MovimientoDinero).options(joinedload(MovimientoDinero.metodo_pago))
+
+    if start:
+        query = query.filter(MovimientoDinero.fecha >= start)
+    if end:
+        query = query.filter(MovimientoDinero.fecha <= end)
+    if tipo:
+        query = query.filter(MovimientoDinero.tipo == tipo)
+    if concepto:
+        query = query.filter(MovimientoDinero.concepto.ilike(f"%{concepto}%"))
+
+    return (
+        query.order_by(MovimientoDinero.fecha.desc())
+        .limit(limit)
+        .all()
+    )
