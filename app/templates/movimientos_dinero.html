@@ -10,10 +10,12 @@
 <body>
   <div class="container mt-5">
     <h2 class="mb-4 text-center">Movimientos de Dinero</h2>
-    <div class="d-flex justify-content-end mb-3">
-      <a href="/tenencias/" class="btn btn-primary btn-modern">
-        Ir a Tenencias
-      </a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <span class="small text-muted">Últimos 30 movimientos de dinero</span>
+      <div>
+        <button type="button" class="btn btn-secondary btn-sm me-2" id="btnFiltro">Filtrar</button>
+        <a href="/tenencias/" class="btn btn-primary btn-modern">Ir a Tenencias</a>
+      </div>
     </div>
     <div class="tabla-scroll">
       <table class="table table-striped tabla-ordenable align-middle" id="tabla-movimientos">
@@ -30,10 +32,56 @@
         </tbody>
       </table>
     </div>
-    <div class="text-center mt-4">
-      <a href="/" class="text-muted">&larr; Volver al Dashboard</a>
+  <div class="text-center mt-4">
+    <a href="/" class="text-muted">&larr; Volver al Dashboard</a>
+  </div>
+</div>
+
+<!-- Modal Filtro -->
+<div class="modal fade" id="modalFiltro" tabindex="-1" aria-labelledby="modalFiltroLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalFiltroLabel">Filtrar Movimientos</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <form id="filtroForm">
+        <div class="modal-body">
+          <div class="d-flex justify-content-center gap-2 mb-3">
+            <button type="button" class="btn btn-outline-primary btn-sm" id="btnSemana">Última semana</button>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="btnMes">Último mes</button>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col">
+              <label for="fechaDesde" class="form-label">Fecha desde</label>
+              <input type="date" class="form-control" id="fechaDesde">
+            </div>
+            <div class="col">
+              <label for="fechaHasta" class="form-label">Fecha hasta</label>
+              <input type="date" class="form-control" id="fechaHasta">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="tipoFiltro" class="form-label">Tipo</label>
+            <select id="tipoFiltro" class="form-select">
+              <option value="">Todos</option>
+              <option value="INGRESO">Ingresos</option>
+              <option value="EGRESO">Egresos</option>
+              <option value="VENTA">Ventas</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="conceptoBuscar" class="form-label">Concepto</label>
+            <input type="text" class="form-control" id="conceptoBuscar" placeholder="Buscar concepto">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Aplicar</button>
+        </div>
+      </form>
     </div>
   </div>
+</div>
 
 
   
