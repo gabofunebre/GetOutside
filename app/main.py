@@ -1,6 +1,17 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import inspect, text
 from app.core.db import Base, engine
+
+
+def _ensure_foto_column():
+    """Add foto_filename column if it's missing (simple auto-migration)."""
+    inspector = inspect(engine)
+    cols = [c["name"] for c in inspector.get_columns("productos")]
+    if "foto_filename" not in cols:
+        with engine.connect() as conn:
+            conn.execute(text("ALTER TABLE productos ADD COLUMN foto_filename VARCHAR"))
+            conn.commit()
 
 # Routers existentes
 from .routers import (
@@ -18,6 +29,7 @@ from .routers import (
 )
 
 # Crear tablas en base de datos
+_ensure_foto_column()
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="GetOutside Stock API")
