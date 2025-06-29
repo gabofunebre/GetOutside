@@ -7,7 +7,7 @@ import os
 
 from app.models import Producto, InventarioMovimiento, Catalogo, TipoMov
 from app.schemas.producto import ProductoCreate
-from app.core.config import CATALOGOS_DIR
+from app.core.config import CATALOGOS_DIR, PRODUCT_PHOTOS_DIR
 
 # === PRODUCTOS ===
 
@@ -17,16 +17,29 @@ def get_producto(db: Session, producto_id: int) -> Optional[Producto]:
     return db.query(Producto).filter(Producto.id == producto_id).first()
 
 
-def create_producto(db: Session, p: ProductoCreate) -> Producto:
-    """Crea y devuelve un nuevo Producto."""
-    db_p = Producto(**p.dict())
+def create_producto(
+    db: Session, p: ProductoCreate, foto: UploadFile | None = None
+) -> Producto:
+    """Crea y devuelve un nuevo Producto. Guarda foto si se provee."""
+
+    db_p = Producto(**p.dict(exclude={"foto_filename"}))
+
+    if foto is not None and foto.filename:
+        os.makedirs(PRODUCT_PHOTOS_DIR, exist_ok=True)
+        ext = os.path.splitext(foto.filename)[1].lower()
+        filename = f"{p.codigo_getoutside}{ext}"
+        dest_path = os.path.join(PRODUCT_PHOTOS_DIR, filename)
+        with open(dest_path, "wb") as out:
+            out.write(foto.file.read())
+        db_p.foto_filename = filename
+
     db.add(db_p)
     db.commit()
     db.refresh(db_p)
     return db_p
 
 def update_producto_completo(
-    db: Session, producto_id: int, data: ProductoCreate
+    db: Session, producto_id: int, data: ProductoCreate, foto: UploadFile | None = None
 ) -> Producto:
     """
     Actualiza completamente un producto existente:
@@ -56,6 +69,15 @@ def update_producto_completo(
     prod.precio_venta = data.precio_venta
     prod.stock_actual = data.stock_actual
     prod.catalogo_id = data.catalogo_id
+
+    if foto is not None and foto.filename:
+        os.makedirs(PRODUCT_PHOTOS_DIR, exist_ok=True)
+        ext = os.path.splitext(foto.filename)[1].lower()
+        filename = f"{data.codigo_getoutside}{ext}"
+        dest_path = os.path.join(PRODUCT_PHOTOS_DIR, filename)
+        with open(dest_path, "wb") as out:
+            out.write(foto.file.read())
+        prod.foto_filename = filename
 
     # Guardar cambios
     db.commit()
