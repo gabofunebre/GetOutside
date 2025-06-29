@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     catalogoSelect: document.getElementById("catalogo_id"),
     precioInput: document.getElementById("precio_venta"),
     stockInput: document.getElementById("stock_actual"),
+    fotoInput: document.getElementById("foto"),
 
     // Existente
     existenteForm: document.getElementById("form-existente"),
@@ -34,6 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
     productoId: null,
     productoTemporal: null
   };
+
+  resetFormularioVisual(ctx);
 
 
   let productosCache = [];

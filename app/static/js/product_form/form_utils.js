@@ -12,6 +12,7 @@ export function resetFormularioVisual(ctx) {
     estadoMsg, submitButton,
     nuevoForm, existenteForm,
     descripcionInput, catalogoSelect, precioInput, stockInput,
+    fotoInput,
     stockAgregadoInput,
     descripcionLabel, catalogoLabel, precioLabel, stockLabel
   } = ctx;
@@ -42,6 +43,11 @@ export function resetFormularioVisual(ctx) {
   stockAgregadoInput.value = 0;
   stockAgregadoInput.disabled = true;
   stockAgregadoInput.removeAttribute("required");
+
+  if (fotoInput) {
+    fotoInput.value = "";
+    fotoInput.disabled = true;
+  }
 
   descripcionLabel.textContent = "";
   catalogoLabel.textContent = "";

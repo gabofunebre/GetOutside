@@ -22,52 +22,45 @@
         <input type="text" id="stock-search" class="form-control border-start-0" placeholder="Buscar" aria-label="Buscar">
       </div>
     </div>
-    <div class="table-responsive">
-      <table class="table table-striped table-hover align-middle tabla-ordenable">
-        <thead class="table-dark">
-          <tr>
-            <th>Stock</th>
-            <th>Código GetOutside</th>
-            <th>Precio Venta</th>
-            <th>Descripción</th>
-            <th>Catálogo</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for p in productos %}
-          <tr>
-            <td>{{ p.stock_actual }}</td>
-            <td>{{ p.codigo_getoutside }}</td>
-            <td>{{ "{:.2f}".format(p.precio_venta) }}</td>
-            <td>{{ p.descripcion }}</td>
-            <td>
-              {% if p.catalogo %}
-                <a href="/catalogos/download/{{ p.catalogo.id }}" target="_blank">
-                  {{ p.catalogo.filename }}
-                </a>
-              {% else %}
-                -
-              {% endif %}
-            </td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4" id="product-grid">
+      {% for p in productos %}
+        <div class="col product-card" data-codigo="{{ p.codigo_getoutside }}" data-descripcion="{{ p.descripcion }}" data-precio="{{ p.precio_venta }}" data-stock="{{ p.stock_actual }}" data-catalogo-id="{{ p.catalogo_id }}" data-foto="{{ p.foto_filename }}">
+          <div class="card h-100 text-center">
+            <img src="/static/uploads/products_photos/{{ p.foto_filename }}" class="card-img-top product-thumb" alt="{{ p.codigo_getoutside }}" onerror="this.src='/static/images/no-image.png'">
+            <div class="card-body p-2">
+              <h6 class="card-title mb-1">{{ p.codigo_getoutside }}</h6>
+              <p class="small mb-0">Stock: {{ p.stock_actual }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
     </div>
     <div class="text-center mt-4">
       <a href="/" class="text-muted">&larr; Volver al Dashboard</a>
     </div>
   </div>
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-    crossorigin="anonymous" defer
-  ></script>
-  <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
-  <script src="/static/js/stock_overview_filter.js" defer></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      new Tablesort(document.querySelector(".tabla-ordenable"));
-    });
-  </script>
+
+  <!-- Modal detalle producto -->
+  <div class="modal fade" id="product-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalle del producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img id="modal-foto" class="img-fluid mb-3" src="" alt="">
+          <p id="modal-descripcion"></p>
+          <p><strong>Precio:</strong> $<span id="modal-precio"></span></p>
+          <p><strong>Stock:</strong> <span id="modal-stock"></span></p>
+          <p><strong>Código:</strong> <span id="modal-codigo"></span></p>
+          <p><strong>Catálogo:</strong> <span id="modal-catalogo"></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous" defer></script>
+  <script src="/static/js/stock_overview_grid.js" defer></script>
 </body>
 </html>
