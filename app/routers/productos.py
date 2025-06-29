@@ -1,7 +1,7 @@
 # app/routers/productos.py
 
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Form, File, UploadFile
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -31,9 +31,25 @@ class StockUpdate(BaseModel):
 
 
 @router.post("/", response_model=ProductoOut)
-def crear_producto(p: ProductoCreate, db: Session = Depends(get_db)):
-    """Crea un nuevo producto y lo devuelve"""
-    return create_producto(db, p)
+async def crear_producto(
+    codigo_getoutside: str = Form(...),
+    descripcion: str = Form(...),
+    catalogo_id: Optional[int] = Form(None),
+    precio_venta: float = Form(...),
+    stock_actual: int = Form(...),
+    foto: UploadFile = File(None),
+    db: Session = Depends(get_db),
+):
+    """Crea un nuevo producto con opción de subir foto"""
+
+    data = ProductoCreate(
+        codigo_getoutside=codigo_getoutside,
+        descripcion=descripcion,
+        catalogo_id=catalogo_id,
+        precio_venta=precio_venta,
+        stock_actual=stock_actual,
+    )
+    return create_producto(db, data, foto)
 
 
 # === FORMULARIO HTML ===
@@ -156,8 +172,15 @@ def edit_productos_view(request: Request, db: Session = Depends(get_db)):
 
 
 @router.put("/id/{producto_id}", response_model=ProductoOut)
-def actualizar_producto_completo(
-    producto_id: int, data: ProductoCreate, db: Session = Depends(get_db)
+async def actualizar_producto_completo(
+    producto_id: int,
+    codigo_getoutside: str = Form(...),
+    descripcion: str = Form(...),
+    catalogo_id: Optional[int] = Form(None),
+    precio_venta: float = Form(...),
+    stock_actual: int = Form(...),
+    foto: UploadFile = File(None),
+    db: Session = Depends(get_db),
 ):
     """
     Endpoint para actualizar todos los campos de un producto.
@@ -165,6 +188,13 @@ def actualizar_producto_completo(
     - Lanza HTTP 400 en errores de validación.
     """
     try:
-        return update_producto_completo(db, producto_id, data)
+        data = ProductoCreate(
+            codigo_getoutside=codigo_getoutside,
+            descripcion=descripcion,
+            catalogo_id=catalogo_id,
+            precio_venta=precio_venta,
+            stock_actual=stock_actual,
+        )
+        return update_producto_completo(db, producto_id, data, foto)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -9,7 +9,7 @@ import { resetFormularioVisual } from './form_utils.js';
 export function attachCodigoListener(ctx) {
   const {
     codigoInput, estadoMsg, submitButton,
-    descripcionInput, catalogoSelect, precioInput, stockInput,
+    descripcionInput, catalogoSelect, precioInput, stockInput, fotoInput,
     descripcionLabel, catalogoLabel, precioLabel, stockLabel,
     stockAgregadoInput,
     nuevoForm, existenteForm
@@ -45,6 +45,11 @@ export function attachCodigoListener(ctx) {
         stockInput.disabled = false;
         stockInput.required = true;
 
+        if (fotoInput) {
+          fotoInput.disabled = false;
+          fotoInput.value = "";
+        }
+
         ctx.productoExistente = false;
         ctx.productoId = null;
         ctx.productoTemporal = null;
@@ -66,6 +71,11 @@ export function attachCodigoListener(ctx) {
         stockAgregadoInput.disabled = false;
         stockAgregadoInput.required = true;
         stockAgregadoInput.value = 1;
+
+        if (fotoInput) {
+          fotoInput.disabled = true;
+          fotoInput.value = "";
+        }
 
         ctx.productoExistente = true;
         ctx.productoId = prod.id;

@@ -10,7 +10,8 @@ export function setupFormBehavior(ctx) {
   const {
     form, overlay, alertPlaceholder,
     stockAgregadoInput, submitButton,
-    descripcionInput, precioInput
+    descripcionInput, precioInput,
+    fotoInput
   } = ctx;
 
   form.addEventListener("submit", async (e) => {
@@ -44,20 +45,9 @@ export function setupFormBehavior(ctx) {
       } else {
         // === CREAR NUEVO PRODUCTO ===
         const formData = new FormData(form);
-        const payload = {};
-
-        formData.forEach((value, key) => {
-          if (["precio_venta", "stock_actual", "catalogo_id"].includes(key)) {
-            payload[key] = value === "" ? null : Number(value);
-          } else {
-            payload[key] = value;
-          }
-        });
-
         res = await fetch("/productos/", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: formData
         });
       }
 

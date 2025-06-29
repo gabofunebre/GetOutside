@@ -22,6 +22,7 @@ class ProductoCreate(ProductoBase):
     """
 
     stock_actual: int  # Stock inicial disponible
+    foto_filename: Optional[str] = None
 
 
 class ProductoOut(BaseModel):
@@ -36,5 +37,6 @@ class ProductoOut(BaseModel):
     stock_actual: int
     catalogo_id: Optional[int]
     catalogo: Optional[CatalogoOut] = None
+    foto_filename: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
