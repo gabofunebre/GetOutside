@@ -15,6 +15,7 @@ class Producto(Base):
     catalogo_id = Column(Integer, ForeignKey("catalogos.id"), nullable=True)
     precio_venta = Column(DECIMAL(12, 2), nullable=False)
     stock_actual = Column(Integer, nullable=False)
+    foto_filename = Column(String, nullable=True)
 
     catalogo = relationship("Catalogo")
     movimientos = relationship("InventarioMovimiento", back_populates="producto")
