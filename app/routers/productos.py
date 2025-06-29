@@ -34,7 +34,7 @@ class StockUpdate(BaseModel):
 async def crear_producto(
     codigo_getoutside: str = Form(...),
     descripcion: str = Form(...),
-    catalogo_id: Optional[int] = Form(None),
+    catalogo_id: Optional[str] = Form(None),
     precio_venta: float = Form(...),
     stock_actual: int = Form(...),
     foto: UploadFile = File(None),
@@ -42,10 +42,12 @@ async def crear_producto(
 ):
     """Crea un nuevo producto con opción de subir foto"""
 
+    catalogo_val = int(catalogo_id) if catalogo_id not in (None, "") else None
+
     data = ProductoCreate(
         codigo_getoutside=codigo_getoutside,
         descripcion=descripcion,
-        catalogo_id=catalogo_id,
+        catalogo_id=catalogo_val,
         precio_venta=precio_venta,
         stock_actual=stock_actual,
     )
@@ -176,7 +178,7 @@ async def actualizar_producto_completo(
     producto_id: int,
     codigo_getoutside: str = Form(...),
     descripcion: str = Form(...),
-    catalogo_id: Optional[int] = Form(None),
+    catalogo_id: Optional[str] = Form(None),
     precio_venta: float = Form(...),
     stock_actual: int = Form(...),
     foto: UploadFile = File(None),
@@ -188,10 +190,11 @@ async def actualizar_producto_completo(
     - Lanza HTTP 400 en errores de validación.
     """
     try:
+        catalogo_val = int(catalogo_id) if catalogo_id not in (None, "") else None
         data = ProductoCreate(
             codigo_getoutside=codigo_getoutside,
             descripcion=descripcion,
-            catalogo_id=catalogo_id,
+            catalogo_id=catalogo_val,
             precio_venta=precio_venta,
             stock_actual=stock_actual,
         )
