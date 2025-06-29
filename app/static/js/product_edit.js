@@ -109,18 +109,19 @@ async function handleFormSubmit(e) {
 
   const id = idInput.value;
   const catalogoVal = catalogoSelect.value;
-  const payload = {
-    codigo_getoutside: codigoInput.value,
-    descripcion: descripcionInput.value,
-    precio_venta: parseFloat(precioInput.value),
-    stock_actual: parseInt(stockInput.value),
-    catalogo_id: catalogoVal === "" ? null : parseInt(catalogoVal),
-  };
+  const formData = new FormData();
+  formData.append("codigo_getoutside", codigoInput.value);
+  formData.append("descripcion", descripcionInput.value);
+  formData.append("precio_venta", parseFloat(precioInput.value));
+  formData.append("stock_actual", parseInt(stockInput.value));
+  formData.append(
+    "catalogo_id",
+    catalogoVal === "" ? "" : parseInt(catalogoVal)
+  );
 
   const res = await fetch(`/productos/id/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
+    body: formData,
   });
 
   overlay.style.display = "none";
