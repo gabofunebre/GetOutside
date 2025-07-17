@@ -1,6 +1,22 @@
 version: "3.9"
 
 services:
+  db:
+    image: postgres:15
+    env_file:
+      - .env.dev
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      TZ: Pacific/Auckland
+      PGTZ: Pacific/Auckland
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    networks:
+      - getoutside-net
+    restart: unless-stopped
+
   web:
     build: .
     ports:
@@ -11,12 +27,13 @@ services:
       - TZ=Pacific/Auckland
     volumes:
       - .:/app
-      - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/Uploads:/app/static/uploads
+      - ./app/static/uploads:/app/static/uploads
     networks:
       - getoutside-net
       - nginx_net
-    depends_on: []
-    restart: unless-stopped 
+    depends_on:
+      - db
+    restart: unless-stopped
 
 networks:
   getoutside-net:

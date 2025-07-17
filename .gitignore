@@ -33,3 +33,6 @@ app/static/uploads/*
 
 # Node
 node_modules/
+data/*
+!data/db/
+!data/db/.gitkeep

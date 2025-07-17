@@ -10,7 +10,7 @@ Simple web app to manage product catalog, stock, sales, payments and basic metri
    # edit .env: DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, SECRET_KEY
    ```
 
-2. Build & run with Docker Compose:
+2. Build & run with Docker Compose (includes a local Postgres container):
    ```bash
    make up        # builds images and starts containers
    ```
@@ -22,6 +22,10 @@ Simple web app to manage product catalog, stock, sales, payments and basic metri
    - Admin → `/admin`
    - Consults → `/consultas`
    - Metrics → `/metrics`
+
+Database files are stored under `./data/db`, so your data persists even if you
+rebuild the containers.  Code is mounted with live reload so changes to `.py`
+and template files are reflected immediately.
 
 4. To tear down (including DB data):
    ```bash
