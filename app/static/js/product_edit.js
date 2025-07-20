@@ -3,7 +3,7 @@
 let productos = [];
 let catalogos = [];
 
-let modal, form, idInput, codigoInput, descripcionInput, precioInput, stockInput, catalogoSelect, btnEliminar;
+let modal, form, idInput, codigoInput, descripcionInput, precioInput, costoInput, stockInput, catalogoSelect, btnEliminar;
 let modalConfirmar, modalError, overlay, confirmarEliminarBtn;
 
 let idPendienteEliminar = null;
@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   codigoInput = document.getElementById("codigo");
   descripcionInput = document.getElementById("descripcion");
   precioInput = document.getElementById("precio");
+  costoInput = document.getElementById("costo");
   stockInput = document.getElementById("stock");
   catalogoSelect = document.getElementById("catalogo");
   btnEliminar = document.getElementById("btn-eliminar");
@@ -97,6 +98,7 @@ function abrirModal(p) {
   codigoInput.value = p.codigo_getoutside;
   descripcionInput.value = p.descripcion;
   precioInput.value = p.precio_venta;
+  costoInput.value = p.costo_produccion ?? "";
   stockInput.value = p.stock_actual;
   catalogoSelect.value = p.catalogo_id ?? "";
   codigoInput.classList.remove("is-invalid");
@@ -113,6 +115,7 @@ async function handleFormSubmit(e) {
   formData.append("codigo_getoutside", codigoInput.value);
   formData.append("descripcion", descripcionInput.value);
   formData.append("precio_venta", parseFloat(precioInput.value));
+  formData.append("costo_produccion", parseFloat(costoInput.value));
   formData.append("stock_actual", parseInt(stockInput.value));
   formData.append(
     "catalogo_id",
