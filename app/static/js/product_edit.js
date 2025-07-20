@@ -3,7 +3,10 @@
 let productos = [];
 let catalogos = [];
 
-let modal, form, idInput, codigoInput, descripcionInput, precioInput, costoInput, stockInput, catalogoSelect, btnEliminar;
+let modal, form,
+  idInput, codigoInput, descripcionInput, precioInput, costoInput,
+  stockInput, catalogoSelect, fotoInput, fotoActual, eliminarFotoCheckbox,
+  btnEliminar;
 let modalConfirmar, modalError, overlay, confirmarEliminarBtn;
 
 let idPendienteEliminar = null;
@@ -24,6 +27,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   costoInput = document.getElementById("costo");
   stockInput = document.getElementById("stock");
   catalogoSelect = document.getElementById("catalogo");
+  fotoInput = document.getElementById("foto");
+  fotoActual = document.getElementById("foto-actual");
+  eliminarFotoCheckbox = document.getElementById("eliminar-foto");
   btnEliminar = document.getElementById("btn-eliminar");
   confirmarEliminarBtn = document.getElementById("confirmar-eliminar");
 
@@ -102,6 +108,16 @@ function abrirModal(p) {
   stockInput.value = p.stock_actual;
   catalogoSelect.value = p.catalogo_id ?? "";
   codigoInput.classList.remove("is-invalid");
+  fotoInput.value = "";
+  eliminarFotoCheckbox.checked = false;
+  if (p.foto_filename) {
+    fotoActual.src = `/static/uploads/products_photos/${p.foto_filename}`;
+    fotoActual.style.display = "block";
+    eliminarFotoCheckbox.disabled = false;
+  } else {
+    fotoActual.style.display = "none";
+    eliminarFotoCheckbox.disabled = true;
+  }
   modal.show();
 }
 
@@ -123,6 +139,11 @@ async function handleFormSubmit(e) {
     "catalogo_id",
     catalogoVal === "" ? "" : parseInt(catalogoVal)
   );
+
+  if (fotoInput.files[0]) {
+    formData.append("foto", fotoInput.files[0]);
+  }
+  formData.append("eliminar_foto", eliminarFotoCheckbox.checked ? "true" : "false");
 
   const res = await fetch(`/productos/id/${id}`, {
     method: "PUT",
