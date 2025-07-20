@@ -40,7 +40,11 @@ def create_producto(
 
 
 def update_producto_completo(
-    db: Session, producto_id: int, data: ProductoCreate, foto: UploadFile | None = None
+    db: Session,
+    producto_id: int,
+    data: ProductoCreate,
+    foto: UploadFile | None = None,
+    delete_foto: bool = False,
 ) -> Producto:
     """
     Actualiza completamente un producto existente:
@@ -79,7 +83,16 @@ def update_producto_completo(
         dest_path = os.path.join(PRODUCT_PHOTOS_DIR, filename)
         with open(dest_path, "wb") as out:
             out.write(foto.file.read())
+        if prod.foto_filename and prod.foto_filename != filename:
+            old_path = os.path.join(PRODUCT_PHOTOS_DIR, prod.foto_filename)
+            if os.path.exists(old_path):
+                os.remove(old_path)
         prod.foto_filename = filename
+    elif delete_foto and prod.foto_filename:
+        old_path = os.path.join(PRODUCT_PHOTOS_DIR, prod.foto_filename)
+        if os.path.exists(old_path):
+            os.remove(old_path)
+        prod.foto_filename = None
 
     # Guardar cambios
     db.commit()
