@@ -36,6 +36,7 @@ async def crear_producto(
     descripcion: str = Form(...),
     catalogo_id: Optional[str] = Form(None),
     precio_venta: float = Form(...),
+    costo_produccion: float = Form(0),
     stock_actual: int = Form(...),
     foto: UploadFile = File(None),
     db: Session = Depends(get_db),
@@ -49,6 +50,7 @@ async def crear_producto(
         descripcion=descripcion,
         catalogo_id=catalogo_val,
         precio_venta=precio_venta,
+        costo_produccion=costo_produccion,
         stock_actual=stock_actual,
     )
     return create_producto(db, data, foto)
@@ -180,6 +182,7 @@ async def actualizar_producto_completo(
     descripcion: str = Form(...),
     catalogo_id: Optional[str] = Form(None),
     precio_venta: float = Form(...),
+    costo_produccion: float = Form(0),
     stock_actual: int = Form(...),
     foto: UploadFile = File(None),
     db: Session = Depends(get_db),
@@ -196,6 +199,7 @@ async def actualizar_producto_completo(
             descripcion=descripcion,
             catalogo_id=catalogo_val,
             precio_venta=precio_venta,
+            costo_produccion=costo_produccion,
             stock_actual=stock_actual,
         )
         return update_producto_completo(db, producto_id, data, foto)

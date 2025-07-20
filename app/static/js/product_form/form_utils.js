@@ -11,7 +11,7 @@ export function resetFormularioVisual(ctx) {
   const {
     estadoMsg, submitButton,
     nuevoForm, existenteForm,
-    descripcionInput, catalogoSelect, precioInput, stockInput,
+    descripcionInput, catalogoSelect, precioInput, costoInput, stockInput,
     fotoInput,
     stockAgregadoInput,
     descripcionLabel, catalogoLabel, precioLabel, stockLabel
@@ -35,6 +35,10 @@ export function resetFormularioVisual(ctx) {
   precioInput.value = "";
   precioInput.disabled = true;
   precioInput.removeAttribute("required");
+
+  costoInput.value = "";
+  costoInput.disabled = true;
+  costoInput.removeAttribute("required");
 
   stockInput.value = 0;
   stockInput.disabled = true;
