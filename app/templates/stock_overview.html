@@ -24,7 +24,7 @@
     </div>
     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4" id="product-grid">
       {% for p in productos %}
-        <div class="col product-card" data-codigo="{{ p.codigo_getoutside }}" data-descripcion="{{ p.descripcion }}" data-precio="{{ p.precio_venta }}" data-stock="{{ p.stock_actual }}" data-catalogo-id="{{ p.catalogo_id }}" data-foto="{{ p.foto_filename }}">
+        <div class="col product-card" data-codigo="{{ p.codigo_getoutside }}" data-descripcion="{{ p.descripcion }}" data-precio="{{ p.precio_venta }}" data-costo="{{ p.costo_produccion }}" data-stock="{{ p.stock_actual }}" data-catalogo-id="{{ p.catalogo_id }}" data-foto="{{ p.foto_filename }}">
           <div class="card h-100 text-center">
             <img src="/static/uploads/products_photos/{{ p.foto_filename }}" class="card-img-top product-thumb" alt="{{ p.codigo_getoutside }}" onerror="this.src='/static/images/no-image.png'">
             <div class="card-body p-2">
@@ -52,6 +52,7 @@
           <img id="modal-foto" class="img-fluid mb-3" src="" alt="">
           <p id="modal-descripcion"></p>
           <p><strong>Precio:</strong> $<span id="modal-precio"></span></p>
+          <p><strong>Costo:</strong> $<span id="modal-costo"></span></p>
           <p><strong>Stock:</strong> <span id="modal-stock"></span></p>
           <p><strong>Código:</strong> <span id="modal-codigo"></span></p>
           <p><strong>Catálogo:</strong> <span id="modal-catalogo"></span></p>
