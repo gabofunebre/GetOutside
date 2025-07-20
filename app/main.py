@@ -34,8 +34,8 @@ from .routers import (
 )
 
 # Crear tablas en base de datos
-_ensure_extra_columns()
 Base.metadata.create_all(bind=engine)
+_ensure_extra_columns()
 
 app = FastAPI(title="GetOutside Stock API")
 
