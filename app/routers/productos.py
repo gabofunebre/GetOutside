@@ -189,6 +189,7 @@ async def actualizar_producto_completo(
 
     stock_actual: int = Form(...),
     foto: UploadFile = File(None),
+    eliminar_foto: bool = Form(False),
     db: Session = Depends(get_db),
 ):
     """
@@ -206,6 +207,6 @@ async def actualizar_producto_completo(
             costo_produccion=costo_produccion,
             stock_actual=stock_actual,
         )
-        return update_producto_completo(db, producto_id, data, foto)
+        return update_producto_completo(db, producto_id, data, foto, eliminar_foto)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
