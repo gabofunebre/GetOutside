@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fotoEl = document.getElementById("modal-foto");
   const descEl = document.getElementById("modal-descripcion");
   const precioEl = document.getElementById("modal-precio");
+  const costoEl = document.getElementById("modal-costo");
   const stockEl = document.getElementById("modal-stock");
   const codigoEl = document.getElementById("modal-codigo");
   const catalogoEl = document.getElementById("modal-catalogo");
@@ -28,6 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
       fotoEl.src = c.dataset.foto ? `/static/uploads/products_photos/${c.dataset.foto}` : '/static/images/no-image.png';
       descEl.textContent = c.dataset.descripcion;
       precioEl.textContent = parseFloat(c.dataset.precio).toFixed(2);
+      costoEl.textContent = c.dataset.costo
+        ? parseFloat(c.dataset.costo).toFixed(2)
+        : "-";
       stockEl.textContent = c.dataset.stock;
       codigoEl.textContent = c.dataset.codigo;
       const catId = c.dataset.catalogoId;

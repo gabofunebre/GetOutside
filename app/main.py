@@ -4,14 +4,19 @@ from sqlalchemy import inspect, text
 from app.core.db import Base, engine
 
 
-def _ensure_foto_column():
-    """Add foto_filename column if it's missing (simple auto-migration)."""
+def _ensure_extra_columns():
+    """Add optional columns if they're missing (simple auto-migration)."""
     inspector = inspect(engine)
     cols = [c["name"] for c in inspector.get_columns("productos")]
-    if "foto_filename" not in cols:
-        with engine.connect() as conn:
+    with engine.connect() as conn:
+        if "foto_filename" not in cols:
             conn.execute(text("ALTER TABLE productos ADD COLUMN foto_filename VARCHAR"))
-            conn.commit()
+        if "costo_produccion" not in cols:
+            conn.execute(
+                text("ALTER TABLE productos ADD COLUMN costo_produccion DECIMAL(12,2)")
+            )
+        conn.commit()
+
 
 # Routers existentes
 from .routers import (
@@ -29,7 +34,7 @@ from .routers import (
 )
 
 # Crear tablas en base de datos
-_ensure_foto_column()
+_ensure_extra_columns()
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="GetOutside Stock API")
@@ -49,6 +54,7 @@ app.include_router(movimientos_dinero.router)
 app.include_router(compras.router)
 app.include_router(tenencias.router)
 app.include_router(sistem.router)
+
 
 @app.get("/")
 def read_root():
