@@ -10,7 +10,7 @@ export function setupFormBehavior(ctx) {
   const {
     form, overlay, alertPlaceholder,
     stockAgregadoInput, submitButton,
-    descripcionInput, precioInput,
+    descripcionInput, precioInput, costoInput,
     fotoInput
   } = ctx;
 
@@ -23,6 +23,7 @@ export function setupFormBehavior(ctx) {
     if (ctx.productoExistente) {
       descripcionInput.removeAttribute("required");
       precioInput.removeAttribute("required");
+      costoInput.removeAttribute("required");
     } else {
       stockAgregadoInput.disabled = true;
       stockAgregadoInput.removeAttribute("required");

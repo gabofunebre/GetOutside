@@ -38,6 +38,7 @@ def create_producto(
     db.refresh(db_p)
     return db_p
 
+
 def update_producto_completo(
     db: Session, producto_id: int, data: ProductoCreate, foto: UploadFile | None = None
 ) -> Producto:
@@ -67,6 +68,7 @@ def update_producto_completo(
     prod.codigo_getoutside = data.codigo_getoutside
     prod.descripcion = data.descripcion
     prod.precio_venta = data.precio_venta
+    prod.costo_produccion = data.costo_produccion
     prod.stock_actual = data.stock_actual
     prod.catalogo_id = data.catalogo_id
 
