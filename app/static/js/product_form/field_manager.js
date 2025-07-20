@@ -12,6 +12,7 @@ export function setupFormBehavior(ctx) {
     stockAgregadoInput, submitButton,
     descripcionInput, precioInput, costoInput,
     stockInput, catalogoSelect,
+
     fotoInput
   } = ctx;
 

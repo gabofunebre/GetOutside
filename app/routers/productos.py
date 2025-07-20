@@ -36,7 +36,9 @@ async def crear_producto(
     descripcion: str = Form(...),
     catalogo_id: Optional[str] = Form(None),
     precio_venta: float = Form(...),
+
     costo_produccion: Optional[float] = Form(None),
+
     stock_actual: int = Form(...),
     foto: UploadFile = File(None),
     db: Session = Depends(get_db),
@@ -184,6 +186,7 @@ async def actualizar_producto_completo(
     catalogo_id: Optional[str] = Form(None),
     precio_venta: float = Form(...),
     costo_produccion: Optional[float] = Form(None),
+
     stock_actual: int = Form(...),
     foto: UploadFile = File(None),
     db: Session = Depends(get_db),
