@@ -1,10 +1,18 @@
-
-#app/models/inventario.py
-from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey, Enum as PgEnum
+# app/models/inventario.py
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DECIMAL,
+    DateTime,
+    ForeignKey,
+    Enum as PgEnum,
+)
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.core.db import Base
 from app.models.enums import TipoMov
+
 
 class Producto(Base):
     __tablename__ = "productos"
@@ -14,6 +22,7 @@ class Producto(Base):
     descripcion = Column(String, nullable=False)
     catalogo_id = Column(Integer, ForeignKey("catalogos.id"), nullable=True)
     precio_venta = Column(DECIMAL(12, 2), nullable=False)
+    costo_produccion = Column(DECIMAL(12, 2), nullable=True)
     stock_actual = Column(Integer, nullable=False)
     foto_filename = Column(String, nullable=True)
 
@@ -28,7 +37,7 @@ class InventarioMovimiento(Base):
     id = Column(Integer, primary_key=True, index=True)
     producto_id = Column(Integer, ForeignKey("productos.id"), nullable=False)
     fecha = Column(DateTime, default=datetime.utcnow)
-    #tipo = Column(String, nullable=False)  # TipoMov se manejará por enums.py
+    # tipo = Column(String, nullable=False)  # TipoMov se manejará por enums.py
     tipo = Column(PgEnum(TipoMov, name="tipomov", native_enum=True), nullable=False)
     cantidad = Column(Integer, nullable=False)
     referencia = Column(String)
