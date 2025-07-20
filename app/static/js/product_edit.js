@@ -115,7 +115,9 @@ async function handleFormSubmit(e) {
   formData.append("codigo_getoutside", codigoInput.value);
   formData.append("descripcion", descripcionInput.value);
   formData.append("precio_venta", parseFloat(precioInput.value));
-  formData.append("costo_produccion", parseFloat(costoInput.value));
+  if (costoInput.value !== "") {
+    formData.append("costo_produccion", parseFloat(costoInput.value));
+  }
   formData.append("stock_actual", parseInt(stockInput.value));
   formData.append(
     "catalogo_id",
