@@ -45,6 +45,7 @@ export function attachCodigoListener(ctx) {
         costoInput.disabled = false;
         costoInput.removeAttribute("required");
 
+
         stockInput.disabled = false;
         stockInput.required = true;
 
