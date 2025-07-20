@@ -11,10 +11,10 @@ export function resetFormularioVisual(ctx) {
   const {
     estadoMsg, submitButton,
     nuevoForm, existenteForm,
-    descripcionInput, catalogoSelect, precioInput, stockInput,
+    descripcionInput, catalogoSelect, precioInput, costoInput, stockInput,
     fotoInput,
     stockAgregadoInput,
-    descripcionLabel, catalogoLabel, precioLabel, stockLabel
+    descripcionLabel, catalogoLabel, precioLabel, costoLabel, stockLabel
   } = ctx;
 
   estadoMsg.textContent = "";
@@ -36,6 +36,10 @@ export function resetFormularioVisual(ctx) {
   precioInput.disabled = true;
   precioInput.removeAttribute("required");
 
+  costoInput.value = "";
+  costoInput.disabled = true;
+  costoInput.removeAttribute("required");
+
   stockInput.value = 0;
   stockInput.disabled = true;
   stockInput.removeAttribute("required");
@@ -52,5 +56,6 @@ export function resetFormularioVisual(ctx) {
   descripcionLabel.textContent = "";
   catalogoLabel.textContent = "";
   precioLabel.textContent = "";
+  costoLabel.textContent = "";
   stockLabel.textContent = "0";
 }

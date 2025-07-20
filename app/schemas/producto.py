@@ -13,6 +13,7 @@ class ProductoBase(BaseModel):
     descripcion: str  # Descripción textual
     catalogo_id: Optional[int] = None  # FK a catálogo
     precio_venta: float  # Precio de venta unitario
+    costo_produccion: Optional[float] = None  # Costo de producción
 
 
 class ProductoCreate(ProductoBase):
@@ -34,6 +35,7 @@ class ProductoOut(BaseModel):
     codigo_getoutside: str
     descripcion: str
     precio_venta: float
+    costo_produccion: Optional[float] = None
     stock_actual: int
     catalogo_id: Optional[int]
     catalogo: Optional[CatalogoOut] = None
