@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     descripcionLabel: document.getElementById("descripcion_label"),
     catalogoLabel: document.getElementById("catalogo_label"),
     precioLabel: document.getElementById("precio_label"),
+    costoLabel: document.getElementById("costo_label"),
     stockLabel: document.getElementById("stock_label"),
     stockAgregadoInput: document.getElementById("stock_agregado"),
 

@@ -10,7 +10,7 @@ export function attachCodigoListener(ctx) {
   const {
     codigoInput, estadoMsg, submitButton,
     descripcionInput, catalogoSelect, precioInput, costoInput, stockInput, fotoInput,
-    descripcionLabel, catalogoLabel, precioLabel, stockLabel,
+    descripcionLabel, catalogoLabel, precioLabel, costoLabel, stockLabel,
     stockAgregadoInput,
     nuevoForm, existenteForm
   } = ctx;
@@ -43,7 +43,8 @@ export function attachCodigoListener(ctx) {
         precioInput.required = true;
 
         costoInput.disabled = false;
-        costoInput.required = true;
+        costoInput.removeAttribute("required");
+
 
         stockInput.disabled = false;
         stockInput.required = true;
@@ -69,6 +70,9 @@ export function attachCodigoListener(ctx) {
         descripcionLabel.textContent = prod.descripcion;
         catalogoLabel.textContent = prod.catalogo_id;
         precioLabel.textContent = `$${prod.precio_venta.toFixed(2)}`;
+        costoLabel.textContent = prod.costo_produccion != null
+          ? `$${parseFloat(prod.costo_produccion).toFixed(2)}`
+          : "-";
         stockLabel.textContent = prod.stock_actual;
 
         stockAgregadoInput.disabled = false;

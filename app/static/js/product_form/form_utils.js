@@ -14,7 +14,7 @@ export function resetFormularioVisual(ctx) {
     descripcionInput, catalogoSelect, precioInput, costoInput, stockInput,
     fotoInput,
     stockAgregadoInput,
-    descripcionLabel, catalogoLabel, precioLabel, stockLabel
+    descripcionLabel, catalogoLabel, precioLabel, costoLabel, stockLabel
   } = ctx;
 
   estadoMsg.textContent = "";
@@ -56,5 +56,6 @@ export function resetFormularioVisual(ctx) {
   descripcionLabel.textContent = "";
   catalogoLabel.textContent = "";
   precioLabel.textContent = "";
+  costoLabel.textContent = "";
   stockLabel.textContent = "0";
 }

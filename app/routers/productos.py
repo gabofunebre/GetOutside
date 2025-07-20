@@ -36,7 +36,9 @@ async def crear_producto(
     descripcion: str = Form(...),
     catalogo_id: Optional[str] = Form(None),
     precio_venta: float = Form(...),
-    costo_produccion: float = Form(0),
+
+    costo_produccion: Optional[float] = Form(None),
+
     stock_actual: int = Form(...),
     foto: UploadFile = File(None),
     db: Session = Depends(get_db),
@@ -127,6 +129,7 @@ def producto_existe_por_codigo(
         "descripcion": prod.descripcion,
         "catalogo_id": prod.catalogo_id,
         "precio_venta": float(prod.precio_venta),
+        "costo_produccion": float(prod.costo_produccion) if prod.costo_produccion is not None else None,
         "stock_actual": prod.stock_actual,
     }
 
@@ -182,7 +185,8 @@ async def actualizar_producto_completo(
     descripcion: str = Form(...),
     catalogo_id: Optional[str] = Form(None),
     precio_venta: float = Form(...),
-    costo_produccion: float = Form(0),
+    costo_produccion: Optional[float] = Form(None),
+
     stock_actual: int = Form(...),
     foto: UploadFile = File(None),
     db: Session = Depends(get_db),
