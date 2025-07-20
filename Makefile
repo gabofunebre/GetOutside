@@ -59,11 +59,11 @@ logs-web:
 
 # Muestra logs del contenedor web de producción
 logs-web-prod:
-	$(COMPOSE) logs -f web
+	$(COMPOSE) -f docker-compose.prod.yml logs -f web
 
 # Muestra logs del contenedor db de producción
 logs-db:
-	$(COMPOSE) logs -f db
+	$(COMPOSE) -f docker-compose.prod.yml logs -f db
 
 ################################################################################
 #                       SECCIÓN: LIMPIEZA                                      #
