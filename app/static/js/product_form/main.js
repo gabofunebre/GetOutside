@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     descripcionInput: document.getElementById("descripcion"),
     catalogoSelect: document.getElementById("catalogo_id"),
     precioInput: document.getElementById("precio_venta"),
+    costoInput: document.getElementById("costo_produccion"),
     stockInput: document.getElementById("stock_actual"),
     fotoInput: document.getElementById("foto"),
 
@@ -26,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     descripcionLabel: document.getElementById("descripcion_label"),
     catalogoLabel: document.getElementById("catalogo_label"),
     precioLabel: document.getElementById("precio_label"),
+    costoLabel: document.getElementById("costo_label"),
     stockLabel: document.getElementById("stock_label"),
     stockAgregadoInput: document.getElementById("stock_agregado"),
 

@@ -10,7 +10,8 @@ export function setupFormBehavior(ctx) {
   const {
     form, overlay, alertPlaceholder,
     stockAgregadoInput, submitButton,
-    descripcionInput, precioInput,
+    descripcionInput, precioInput, costoInput,
+    stockInput, catalogoSelect,
     fotoInput
   } = ctx;
 
@@ -23,6 +24,7 @@ export function setupFormBehavior(ctx) {
     if (ctx.productoExistente) {
       descripcionInput.removeAttribute("required");
       precioInput.removeAttribute("required");
+      costoInput.removeAttribute("required");
     } else {
       stockAgregadoInput.disabled = true;
       stockAgregadoInput.removeAttribute("required");
@@ -44,7 +46,18 @@ export function setupFormBehavior(ctx) {
         });
       } else {
         // === CREAR NUEVO PRODUCTO ===
-        const formData = new FormData(form);
+        const formData = new FormData();
+        formData.append("codigo_getoutside", ctx.codigoInput.value);
+        formData.append("descripcion", descripcionInput.value);
+        formData.append("catalogo_id", ctx.catalogoSelect.value);
+        formData.append("precio_venta", parseFloat(precioInput.value));
+        if (costoInput.value !== "") {
+          formData.append("costo_produccion", parseFloat(costoInput.value));
+        }
+        formData.append("stock_actual", parseInt(stockInput.value));
+        if (fotoInput && fotoInput.files.length > 0) {
+          formData.append("foto", fotoInput.files[0]);
+        }
         res = await fetch("/productos/", {
           method: "POST",
           body: formData
