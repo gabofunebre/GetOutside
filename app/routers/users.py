@@ -1,3 +1,8 @@
+import os
+import secrets
+from urllib.parse import urlencode
+
+import requests
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
@@ -8,6 +13,7 @@ from app.core.deps import get_db
 from app.crud.users import (
     create_user,
     authenticate_user,
+    get_user_by_email,
     get_users,
     get_user,
     change_user_role,
@@ -72,9 +78,77 @@ def logout(request: Request):
     return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
 
 @router.get("/auth/google")
-def google_auth_placeholder():
-    """Placeholder for future Google OAuth2 implementation."""
-    raise HTTPException(status_code=501, detail="Google OAuth no implementado")
+def google_auth(request: Request):
+    """Inicio del flujo OAuth con Google."""
+    client_id = os.getenv("GOOGLE_CLIENT_ID")
+    redirect_uri = os.getenv("GOOGLE_REDIRECT_URI") or request.url_for("google_auth_callback")
+    if not client_id:
+        raise HTTPException(status_code=500, detail="Google OAuth no configurado")
+    state = secrets.token_urlsafe(16)
+    request.session["oauth_state"] = state
+    params = {
+        "client_id": client_id,
+        "response_type": "code",
+        "scope": "openid email profile",
+        "redirect_uri": redirect_uri,
+        "state": state,
+        "access_type": "offline",
+        "prompt": "consent",
+    }
+    url = "https://accounts.google.com/o/oauth2/v2/auth?" + urlencode(params)
+    return RedirectResponse(url)
+
+
+@router.get("/auth/google/callback")
+def google_auth_callback(request: Request, code: str = None, state: str = None, db: Session = Depends(get_db)):
+    if not code or not state:
+        raise HTTPException(status_code=400, detail="Código o estado faltante")
+    if state != request.session.pop("oauth_state", None):
+        raise HTTPException(status_code=400, detail="Estado inválido")
+
+    redirect_uri = os.getenv("GOOGLE_REDIRECT_URI") or request.url_for("google_auth_callback")
+    token_resp = requests.post(
+        "https://oauth2.googleapis.com/token",
+        data={
+            "code": code,
+            "client_id": os.getenv("GOOGLE_CLIENT_ID"),
+            "client_secret": os.getenv("GOOGLE_CLIENT_SECRET"),
+            "redirect_uri": redirect_uri,
+            "grant_type": "authorization_code",
+        },
+        headers={"Accept": "application/json"},
+    )
+    if not token_resp.ok:
+        raise HTTPException(status_code=400, detail="Error obteniendo token de Google")
+
+    access_token = token_resp.json().get("access_token")
+    if not access_token:
+        raise HTTPException(status_code=400, detail="Token no recibido")
+
+    userinfo_resp = requests.get(
+        "https://www.googleapis.com/oauth2/v2/userinfo",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    if not userinfo_resp.ok:
+        raise HTTPException(status_code=400, detail="Error consultando usuario")
+
+    profile = userinfo_resp.json()
+    email = profile.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Email no disponible")
+
+    first_name = profile.get("given_name", "")
+    last_name = profile.get("family_name", "")
+
+    user = get_user_by_email(db, email)
+    if not user:
+        random_password = secrets.token_urlsafe(16)
+        user = create_user(db, email, random_password)
+        update_user(db, user.id, first_name, last_name, email, None)
+
+    request.session["user_id"] = user.id
+    request.session["role"] = user.role.value
+    return RedirectResponse("/dashboard", status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/admin/users", response_class=HTMLResponse)
