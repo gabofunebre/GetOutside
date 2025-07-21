@@ -6,7 +6,7 @@ from app.core.templates import templates
 router = APIRouter()
 
 
-@router.get("/", response_class=HTMLResponse)
+@router.get("/dashboard", response_class=HTMLResponse)
 def show_dashboard(request: Request):
     return templates.TemplateResponse("dashboard.html", {"request": request})
 

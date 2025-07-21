@@ -6,5 +6,7 @@ python-dotenv
 alembic
 jinja2
 python-multipart
-alembic
 requests
+passlib[bcrypt]
+itsdangerous
+email-validator
