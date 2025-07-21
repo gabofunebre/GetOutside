@@ -28,11 +28,8 @@ __pycache__/
 dist/
 build/
 *.egg
-app/static/uploads/*
-!app/static/uploads/products_photos/
-!app/static/uploads/products_photos/.gitkeep
-!app/static/uploads/usuarios/
-!app/static/uploads/usuarios/.gitkeep
+app/static/uploads/
+
 
 # Node
 node_modules/
