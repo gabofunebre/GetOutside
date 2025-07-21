@@ -41,7 +41,12 @@ def login_action(
     if not user:
         return templates.TemplateResponse(
             "login.html",
-            {"request": request, "error": "Credenciales inválidas"},
+            {
+                "request": request,
+                "error": "Credenciales inválidas",
+                "email": email,
+                "password": password,
+            },
             status_code=status.HTTP_400_BAD_REQUEST,
         )
     request.session["user_id"] = user.id
@@ -57,19 +62,37 @@ def register_form(request: Request):
 @router.post("/register")
 def register_action(
     request: Request,
+    first_name: str = Form(...),
+    last_name: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
+    password_confirm: str = Form(...),
     db: Session = Depends(get_db),
 ):
+    if password != password_confirm:
+        return templates.TemplateResponse(
+            "register.html",
+            {"request": request, "error": "Las contrase\xC3\xB1as no coinciden"},
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
     try:
-        create_user(db, email, password)
+        user = create_user(
+            db,
+            email,
+            password,
+            first_name=first_name,
+            last_name=last_name,
+            oauth_provider="local",
+        )
     except ValueError as e:
         return templates.TemplateResponse(
             "register.html",
             {"request": request, "error": str(e)},
             status_code=status.HTTP_400_BAD_REQUEST,
         )
-    return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
+    request.session["user_id"] = user.id
+    request.session["role"] = user.role.value
+    return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/logout")
@@ -143,12 +166,28 @@ def google_auth_callback(request: Request, code: str = None, state: str = None, 
     user = get_user_by_email(db, email)
     if not user:
         random_password = secrets.token_urlsafe(16)
-        user = create_user(db, email, random_password)
-        update_user(db, user.id, first_name, last_name, email, None)
+        user = create_user(
+            db,
+            email,
+            random_password,
+            first_name=first_name,
+            last_name=last_name,
+            oauth_provider="google",
+        )
 
     request.session["user_id"] = user.id
     request.session["role"] = user.role.value
     return RedirectResponse("/dashboard", status_code=status.HTTP_302_FOUND)
+
+
+@router.post("/config/delete")
+def delete_own_account(request: Request, db: Session = Depends(get_db)):
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
+    delete_user(db, user_id)
+    request.session.clear()
+    return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/admin/users", response_class=HTMLResponse)
@@ -182,7 +221,8 @@ def user_config(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
     user = get_user(db, user_id)
     return templates.TemplateResponse(
-        "user_config.html", {"request": request, "user": user}
+        "user_config.html",
+        {"request": request, "user": user, "google_user": user.oauth_provider == "google"},
     )
 
 
@@ -198,13 +238,29 @@ def user_config_post(
     user_id = request.session.get("user_id")
     if not user_id:
         return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
+    user = get_user(db, user_id)
+    if user.oauth_provider == "google":
+        return templates.TemplateResponse(
+            "user_config.html",
+            {
+                "request": request,
+                "user": user,
+                "google_user": True,
+                "error": "Los usuarios de Google no pueden modificar sus datos",
+            },
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
     try:
         update_user(db, user_id, first_name, last_name, email, password)
     except ValueError as e:
-        user = get_user(db, user_id)
         return templates.TemplateResponse(
             "user_config.html",
-            {"request": request, "user": user, "error": str(e)},
+            {
+                "request": request,
+                "user": user,
+                "google_user": False,
+                "error": str(e),
+            },
             status_code=status.HTTP_400_BAD_REQUEST,
         )
     return RedirectResponse("/dashboard", status_code=status.HTTP_302_FOUND)
