@@ -13,12 +13,27 @@
     {% if error %}
     <div class="alert alert-danger">{{ error }}</div>
     {% endif %}
-    <form method="post" action="/register" class="d-flex flex-column gap-3">
-      <input type="text" name="first_name" class="form-control" placeholder="Nombre" required>
-      <input type="text" name="last_name" class="form-control" placeholder="Apellido" required>
-      <input type="email" name="email" class="form-control" placeholder="Email" required>
-      <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
-      <input type="password" name="password_confirm" class="form-control" placeholder="Confirmación de contraseña" required>
+    <form id="registerForm" method="post" action="/register" novalidate class="d-flex flex-column gap-3">
+      <div>
+        <input type="text" name="first_name" class="form-control" placeholder="Nombre">
+        <div class="invalid-feedback">Ingrese el nombre</div>
+      </div>
+      <div>
+        <input type="text" name="last_name" class="form-control" placeholder="Apellido">
+        <div class="invalid-feedback">Ingrese el apellido</div>
+      </div>
+      <div>
+        <input type="email" name="email" class="form-control" placeholder="Email">
+        <div class="invalid-feedback">Ingrese un email válido</div>
+      </div>
+      <div>
+        <input type="password" name="password" class="form-control" placeholder="Contraseña">
+        <div class="invalid-feedback">Ingrese una contraseña</div>
+      </div>
+      <div>
+        <input type="password" name="password_confirm" class="form-control" placeholder="Confirmación de contraseña">
+        <div class="invalid-feedback">Repita la contraseña</div>
+      </div>
       <button type="submit" class="btn btn-success">Registrarse</button>
     </form>
 
@@ -26,9 +41,10 @@
       <a href="/auth/google" class="btn btn-danger w-100">Ingresar con Google</a>
     </div>
 
-    <div class="text-center mt-3">
+  <div class="text-center mt-3">
       <a href="/login">Volver al login</a>
     </div>
   </div>
+  <script src="/static/js/auth/register.js"></script>
 </body>
 </html>
