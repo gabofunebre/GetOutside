@@ -69,6 +69,11 @@ def logout(request: Request):
     request.session.clear()
     return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
 
+@router.get("/auth/google")
+def google_auth_placeholder():
+    """Placeholder for future Google OAuth2 implementation."""
+    raise HTTPException(status_code=501, detail="Google OAuth no implementado")
+
 
 @router.get("/admin/users", response_class=HTMLResponse)
 def manage_users(request: Request, db: Session = Depends(get_db)):
