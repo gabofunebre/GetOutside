@@ -3,7 +3,9 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import inspect, text
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.responses import RedirectResponse
-from app.core.db import Base, engine
+from app.core.db import Base, engine, SessionLocal
+from app.crud import users as crud_users
+from app.models.user import UserRole
 import os
 
 
@@ -18,6 +20,15 @@ def _ensure_extra_columns():
             conn.execute(
                 text("ALTER TABLE productos ADD COLUMN costo_produccion DECIMAL(12,2)")
             )
+        conn.commit()
+
+    # Optional columns for users
+    cols = [c["name"] for c in inspector.get_columns("users")]
+    with engine.connect() as conn:
+        if "first_name" not in cols:
+            conn.execute(text("ALTER TABLE users ADD COLUMN first_name VARCHAR"))
+        if "last_name" not in cols:
+            conn.execute(text("ALTER TABLE users ADD COLUMN last_name VARCHAR"))
         conn.commit()
 
 
@@ -40,6 +51,21 @@ from .routers import (
 # Crear tablas en base de datos
 Base.metadata.create_all(bind=engine)
 _ensure_extra_columns()
+
+
+def _ensure_admin_user():
+    """Create default admin user if none exists."""
+    with SessionLocal() as db:
+        if not crud_users.get_user_by_email(db, "admin@admin.com"):
+            crud_users.create_user(
+                db,
+                email="admin@admin.com",
+                password="admin",
+                role=UserRole.ADMIN,
+            )
+
+
+_ensure_admin_user()
 
 app = FastAPI(title="GetOutside Stock API")
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "secret"))
