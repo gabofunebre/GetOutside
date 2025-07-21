@@ -20,7 +20,7 @@ def create_user(
     first_name: str = "",
     last_name: str = "",
     role: UserRole = UserRole.VENDEDOR,
-    provider: Optional[str] = None,
+    oauth_provider: Optional[str] = None,
 ) -> User:
     if get_user_by_email(db, email):
         raise ValueError("Email ya registrado")
@@ -30,7 +30,7 @@ def create_user(
         first_name=first_name,
         last_name=last_name,
         role=role,
-        oauth_provider=provider,
+        oauth_provider=oauth_provider,
     )
     db.add(user)
     db.commit()

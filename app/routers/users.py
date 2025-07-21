@@ -82,7 +82,7 @@ def register_action(
             password,
             first_name=first_name,
             last_name=last_name,
-            provider="local",
+            oauth_provider="local",
         )
     except ValueError as e:
         return templates.TemplateResponse(
@@ -172,7 +172,7 @@ def google_auth_callback(request: Request, code: str = None, state: str = None, 
             random_password,
             first_name=first_name,
             last_name=last_name,
-            provider="google",
+            oauth_provider="google",
         )
 
     request.session["user_id"] = user.id
