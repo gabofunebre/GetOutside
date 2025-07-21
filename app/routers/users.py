@@ -71,6 +71,7 @@ def register_action(
             status_code=status.HTTP_400_BAD_REQUEST,
         )
     try:
+
         user = create_user(
             db,
             email,
