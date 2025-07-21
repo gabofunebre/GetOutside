@@ -31,6 +31,8 @@ def _ensure_extra_columns():
             conn.execute(text("ALTER TABLE users ADD COLUMN last_name VARCHAR"))
         if "oauth_provider" not in cols:
             conn.execute(text("ALTER TABLE users ADD COLUMN oauth_provider VARCHAR"))
+        if "foto_filename" not in cols:
+            conn.execute(text("ALTER TABLE users ADD COLUMN foto_filename VARCHAR"))
         conn.commit()
 
 
