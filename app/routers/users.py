@@ -41,7 +41,12 @@ def login_action(
     if not user:
         return templates.TemplateResponse(
             "login.html",
-            {"request": request, "error": "Credenciales inválidas"},
+            {
+                "request": request,
+                "error": "Credenciales inválidas",
+                "email": email,
+                "password": password,
+            },
             status_code=status.HTTP_400_BAD_REQUEST,
         )
     request.session["user_id"] = user.id
@@ -71,7 +76,6 @@ def register_action(
             status_code=status.HTTP_400_BAD_REQUEST,
         )
     try:
-
         user = create_user(
             db,
             email,

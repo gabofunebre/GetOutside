@@ -14,8 +14,8 @@
     <div class="alert alert-danger">{{ error }}</div>
     {% endif %}
     <form method="post" action="/login" class="d-flex flex-column gap-3">
-      <input type="email" name="email" class="form-control" placeholder="Email" required>
-      <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
+      <input type="email" name="email" class="form-control{% if error %} is-invalid{% endif %}" placeholder="Email" required value="{{ email or '' }}">
+      <input type="password" name="password" class="form-control{% if error %} is-invalid{% endif %}" placeholder="Contraseña" required value="{{ password or '' }}">
       <button type="submit" class="btn btn-primary">Ingresar</button>
     </form>
     <div class="my-3 text-center">
