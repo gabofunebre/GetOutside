@@ -11,6 +11,10 @@ BASE_UPLOADS_DIR = os.path.join("app", "static", "uploads")
 CATALOGOS_DIR = os.path.join(BASE_UPLOADS_DIR, "catalogos")
 ARCHIVOS_DIR = os.path.join(BASE_UPLOADS_DIR, "archivos")
 PRODUCT_PHOTOS_DIR = os.path.join(BASE_UPLOADS_DIR, "products_photos")
+USER_PHOTOS_DIR = os.path.join(BASE_UPLOADS_DIR, "usuarios")
+
+# Email de la cuenta administrativa que no puede eliminarse
+ADMIN_EMAIL = "admin@admin.com"
 
 
 # Usada para traer los movimientos de dinero de la base.

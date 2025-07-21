@@ -3,7 +3,7 @@ import secrets
 from urllib.parse import urlencode
 
 import requests
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, File, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from starlette import status
@@ -19,6 +19,7 @@ from app.crud.users import (
     change_user_role,
     delete_user,
     update_user,
+    save_remote_photo,
 )
 from app.models.user import UserRole
 
@@ -175,6 +176,13 @@ def google_auth_callback(request: Request, code: str = None, state: str = None, 
             oauth_provider="google",
         )
 
+    picture = profile.get("picture")
+    if picture and not user.foto_filename:
+        filename = save_remote_photo(user.id, picture)
+        if filename:
+            user.foto_filename = filename
+            db.commit()
+
     request.session["user_id"] = user.id
     request.session["role"] = user.role.value
     return RedirectResponse("/dashboard", status_code=status.HTTP_302_FOUND)
@@ -185,7 +193,19 @@ def delete_own_account(request: Request, db: Session = Depends(get_db)):
     user_id = request.session.get("user_id")
     if not user_id:
         return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
-    delete_user(db, user_id)
+    success = delete_user(db, user_id)
+    if not success:
+        user = get_user(db, user_id)
+        return templates.TemplateResponse(
+            "user_config.html",
+            {
+                "request": request,
+                "user": user,
+                "google_user": user.oauth_provider == "google",
+                "error": "La cuenta administradora no puede eliminarse",
+            },
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
     request.session.clear()
     return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
 
@@ -210,7 +230,7 @@ def change_role(
 
 @router.post("/admin/users/delete")
 def delete_user_action(user_id: int = Form(...), db: Session = Depends(get_db)):
-    delete_user(db, user_id)
+    success = delete_user(db, user_id)
     return RedirectResponse("/admin/users", status_code=status.HTTP_302_FOUND)
 
 
@@ -233,32 +253,25 @@ def user_config_post(
     last_name: str = Form("") ,
     email: str = Form(...),
     password: str = Form(None),
+    foto: UploadFile = File(None),
     db: Session = Depends(get_db),
 ):
     user_id = request.session.get("user_id")
     if not user_id:
         return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
     user = get_user(db, user_id)
-    if user.oauth_provider == "google":
-        return templates.TemplateResponse(
-            "user_config.html",
-            {
-                "request": request,
-                "user": user,
-                "google_user": True,
-                "error": "Los usuarios de Google no pueden modificar sus datos",
-            },
-            status_code=status.HTTP_400_BAD_REQUEST,
-        )
     try:
-        update_user(db, user_id, first_name, last_name, email, password)
+        if user.oauth_provider == "google":
+            update_user(db, user_id, user.first_name or "", user.last_name or "", user.email, None, foto)
+        else:
+            update_user(db, user_id, first_name, last_name, email, password, foto)
     except ValueError as e:
         return templates.TemplateResponse(
             "user_config.html",
             {
                 "request": request,
                 "user": user,
-                "google_user": False,
+                "google_user": user.oauth_provider == "google",
                 "error": str(e),
             },
             status_code=status.HTTP_400_BAD_REQUEST,
