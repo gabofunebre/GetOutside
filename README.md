@@ -28,6 +28,13 @@ Simple web app to manage product catalog, stock, sales, payments and basic metri
    make down-volumes
    ```
 
+## Google OAuth
+
+1. Crea un **cliente OAuth 2.0** en la consola de Google y anota el `ID de cliente` y `secreto`.
+2. Agrega la URL de callback en el cliente (por ejemplo `http://localhost:14141/auth/google/callback`).
+3. Copia esos valores en tu archivo `.env` usando las claves `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` y `GOOGLE_REDIRECT_URI`.
+4. Inicia la aplicación y podrás ingresar o registrarte con Google desde la pantalla de login.
+
 ## Commands
 
 - `make up` / `make rebuild` / `make down(-volumes)`  
