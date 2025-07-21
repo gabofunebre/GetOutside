@@ -13,10 +13,25 @@ def get_user(db: Session, user_id: int) -> Optional[User]:
     return db.query(User).filter(User.id == user_id).first()
 
 
-def create_user(db: Session, email: str, password: str, role: UserRole = UserRole.VENDEDOR) -> User:
+def create_user(
+    db: Session,
+    email: str,
+    password: str,
+    first_name: str = "",
+    last_name: str = "",
+    role: UserRole = UserRole.VENDEDOR,
+    provider: Optional[str] = None,
+) -> User:
     if get_user_by_email(db, email):
         raise ValueError("Email ya registrado")
-    user = User(email=email, password_hash=bcrypt.hash(password), role=role)
+    user = User(
+        email=email,
+        password_hash=bcrypt.hash(password),
+        first_name=first_name,
+        last_name=last_name,
+        role=role,
+        oauth_provider=provider,
+    )
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -47,7 +62,7 @@ def delete_user(db: Session, user_id: int) -> bool:
     user = get_user(db, user_id)
     if not user:
         return False
-    db.delete(user)
+    db.query(User).filter(User.id == user_id).delete()
     db.commit()
     return True
 
