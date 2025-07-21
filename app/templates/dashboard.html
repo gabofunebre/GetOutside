@@ -16,6 +16,11 @@
 <body>
   <div class="container py-3 px-2">
 
+    <!-- Botón menú -->
+    <button class="btn btn-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+      <i class="bi bi-list fs-3"></i>
+    </button>
+
     <!-- 🔷 TÍTULO PRINCIPAL -->
     <h2 class="text-center mb-4">Dashboard GetOutside</h2>
     
@@ -140,6 +145,18 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Offcanvas Menu -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menú</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body d-grid gap-2">
+      <a href="/config" class="btn btn-outline-primary">Config</a>
+      <a href="/logout" class="btn btn-outline-danger">Log out</a>
     </div>
   </div>
 
