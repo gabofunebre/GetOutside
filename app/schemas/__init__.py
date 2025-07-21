@@ -29,3 +29,4 @@ from .compra import CompraCreate, CompraOut
 
 # Enums
 from .enums import TipoMovimientoDinero
+from .user import UserCreate, UserOut

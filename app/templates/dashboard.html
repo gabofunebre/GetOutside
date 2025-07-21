@@ -41,18 +41,18 @@
         <span class="label">Consultas</span>
       </a>
 
+      {% if request.session.get('role') == 'ADMIN' %}
       <a href="/metrics" class="btn-card text-success">
         <i class="bi bi-graph-up-arrow fs-4 me-1"></i>
         <span class="label">Métricas</span>
       </a>
 
-
-
       <a href="/admin" class="btn-card text-secondary">
         <i class="bi bi-gear fs-4 me-1"></i>
         <span class="label">Admin</span>
       </a>
-    </div>
+      {% endif %}
+   </div>
   
     <!-- 🔻 Línea divisoria -->
     <hr class="my-4 mx-3">
