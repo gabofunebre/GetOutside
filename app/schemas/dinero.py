@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 from .pago import PaymentMethodOut
-from .emus import TipoMovimientoDinero
+from .enums import TipoMovimientoDinero
 
 
 class MovimientoDineroBase(BaseModel):
