@@ -16,7 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
       confirmBtn.disabled = true;
       confirmBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Eliminando...`;
       try {
-        const res = await fetch("/config/delete", { method: "POST" });
+        const res = await fetch("/config/delete", {
+          method: "POST",
+          credentials: "same-origin",
+        });
         if (res.redirected) {
           window.location.href = res.url;
         } else {

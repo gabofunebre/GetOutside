@@ -62,7 +62,7 @@ def delete_user(db: Session, user_id: int) -> bool:
     user = get_user(db, user_id)
     if not user:
         return False
-    db.delete(user)
+    db.query(User).filter(User.id == user_id).delete()
     db.commit()
     return True
 
