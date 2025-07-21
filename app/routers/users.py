@@ -71,7 +71,8 @@ def register_action(
             status_code=status.HTTP_400_BAD_REQUEST,
         )
     try:
-        create_user(
+
+        user = create_user(
             db,
             email,
             password,
@@ -85,7 +86,9 @@ def register_action(
             {"request": request, "error": str(e)},
             status_code=status.HTTP_400_BAD_REQUEST,
         )
-    return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
+    request.session["user_id"] = user.id
+    request.session["role"] = user.role.value
+    return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/logout")
