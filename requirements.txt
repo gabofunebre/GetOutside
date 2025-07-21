@@ -10,3 +10,4 @@ requests
 passlib[bcrypt]
 itsdangerous
 email-validator
+

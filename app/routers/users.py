@@ -69,7 +69,6 @@ def logout(request: Request):
     request.session.clear()
     return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
 
-
 @router.get("/auth/google")
 def google_auth_placeholder():
     """Placeholder for future Google OAuth2 implementation."""
