@@ -1,7 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import inspect, text
+from starlette.middleware.sessions import SessionMiddleware
+from fastapi.responses import RedirectResponse
 from app.core.db import Base, engine
+import os
 
 
 def _ensure_extra_columns():
@@ -31,6 +34,7 @@ from .routers import (
     movimientos_dinero,
     compras,
     sistem,
+    users,
 )
 
 # Crear tablas en base de datos
@@ -38,6 +42,7 @@ Base.metadata.create_all(bind=engine)
 _ensure_extra_columns()
 
 app = FastAPI(title="GetOutside Stock API")
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "secret"))
 
 # Archivos estáticos
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -54,8 +59,11 @@ app.include_router(movimientos_dinero.router)
 app.include_router(compras.router)
 app.include_router(tenencias.router)
 app.include_router(sistem.router)
+app.include_router(users.router)
 
 
 @app.get("/")
-def read_root():
-    return {"message": "GetOutside Stock API is running!"}
+def root(request: Request):
+    if request.session.get("user_id"):
+        return RedirectResponse("/dashboard")
+    return RedirectResponse("/login")
