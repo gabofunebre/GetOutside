@@ -18,7 +18,13 @@
     {% if error %}
     <div class="alert alert-danger">{{ error }}</div>
     {% endif %}
-    <form method="post" action="/config" class="d-flex flex-column gap-3">
+    <form method="post" action="/config" enctype="multipart/form-data" class="d-flex flex-column gap-3">
+      <div class="text-center">
+        {% if user.foto_filename %}
+        <img src="/static/uploads/usuarios/{{ user.id }}/{{ user.foto_filename }}" class="offcanvas-user-photo" alt="Foto">
+        {% endif %}
+        <input type="file" name="foto" accept="image/*" capture="environment" class="form-control mt-2">
+      </div>
       <input type="text" name="first_name" class="form-control" placeholder="Nombre" value="{{ user.first_name or '' }}" {% if google_user %}disabled{% endif %}>
       <input type="text" name="last_name" class="form-control" placeholder="Apellido" value="{{ user.last_name or '' }}" {% if google_user %}disabled{% endif %}>
       <input type="email" name="email" class="form-control" placeholder="Email" value="{{ user.email }}" required {% if google_user %}disabled{% endif %}>

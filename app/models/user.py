@@ -22,3 +22,4 @@ class User(Base):
         default=UserRole.VENDEDOR,
     )
     oauth_provider = Column(String, nullable=True)
+    foto_filename = Column(String, nullable=True)

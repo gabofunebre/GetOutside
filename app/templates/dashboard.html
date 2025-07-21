@@ -17,8 +17,12 @@
   <div class="container py-3 px-2">
 
     <!-- Botón menú -->
-    <button class="btn btn-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
-      <i class="bi bi-list fs-3"></i>
+    <button class="btn btn-link user-photo-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+      {% if user_photo %}
+      <img src="{{ user_photo }}" alt="Menu">
+      {% else %}
+      <i class="bi bi-person-circle fs-3"></i>
+      {% endif %}
     </button>
 
     <!-- 🔷 TÍTULO PRINCIPAL -->
@@ -155,6 +159,9 @@
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body d-flex flex-column gap-2">
+      {% if user_photo %}
+      <img src="{{ user_photo }}" class="offcanvas-user-photo" alt="Foto">
+      {% endif %}
       <a href="/config" class="user-menu-link">Config</a>
       <a href="/logout" class="user-menu-link">Log out</a>
     </div>
