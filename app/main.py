@@ -68,7 +68,13 @@ def _ensure_admin_user():
 _ensure_admin_user()
 
 app = FastAPI(title="GetOutside Stock API")
-app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "secret"))
+# Expira la sesión después de 10 minutos de inactividad
+SESSION_TIMEOUT = 10 * 60  # 10 minutos en segundos
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=os.getenv("SECRET_KEY", "secret"),
+    max_age=SESSION_TIMEOUT,
+)
 
 # Archivos estáticos
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
