@@ -50,3 +50,27 @@ def delete_user(db: Session, user_id: int) -> bool:
     db.delete(user)
     db.commit()
     return True
+
+
+def update_user(
+    db: Session,
+    user_id: int,
+    first_name: str,
+    last_name: str,
+    email: str,
+    password: Optional[str] = None,
+) -> Optional[User]:
+    user = get_user(db, user_id)
+    if not user:
+        return None
+    # check email uniqueness if changed
+    if user.email != email and get_user_by_email(db, email):
+        raise ValueError("Email ya registrado")
+    user.first_name = first_name
+    user.last_name = last_name
+    user.email = email
+    if password:
+        user.password_hash = bcrypt.hash(password)
+    db.commit()
+    db.refresh(user)
+    return user
