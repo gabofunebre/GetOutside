@@ -10,39 +10,77 @@
 <body>
   <div class="container mt-5" style="max-width:500px;">
     <h2 class="text-center mb-4">Usuarios</h2>
-    <form method="post" action="/admin/users/change" class="mb-3">
-      <div class="mb-3">
-        <label class="form-label">Usuario</label>
-        <select name="user_id" class="form-select">
-          {% for u in users %}
-          <option value="{{ u.id }}">{{ u.email }} ({{ u.role.value }})</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Rol</label>
-        <select name="role" class="form-select">
-          {% for r in roles %}
-          <option value="{{ r.value }}">{{ r.value }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary">Modificar</button>
-    </form>
-    <form method="post" action="/admin/users/delete" class="mb-3">
-      <div class="mb-3">
-        <label class="form-label">Eliminar usuario</label>
-        <select name="user_id" class="form-select">
-          {% for u in users %}
-          <option value="{{ u.id }}">{{ u.email }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <button type="submit" class="btn btn-danger">Eliminar</button>
-    </form>
+
+    <div class="mb-3">
+      <label class="form-label">Usuario</label>
+      <select id="userSelect" class="form-select">
+        {% for u in users %}
+        <option value="{{ u.id }}" data-email="{{ u.email }}">{{ u.email }} ({{ u.role.value }})</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Rol</label>
+      <select id="roleSelect" class="form-select">
+        {% for r in roles %}
+        <option value="{{ r.value }}">{{ r.value }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="d-flex mb-3">
+      <button id="modifyBtn" class="btn btn-primary flex-grow-1 me-2">Modificar</button>
+      <button id="deleteBtn" class="btn btn-danger flex-grow-1 ms-2">Eliminar</button>
+    </div>
+
     <div class="text-center">
       <a href="/admin" class="text-muted">&larr; Volver</a>
     </div>
   </div>
+
+  <!-- Overlay Spinner -->
+  <div id="overlay">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Procesando...</span>
+    </div>
+  </div>
+
+  <!-- Modal Confirmar Modificación -->
+  <div class="modal fade" id="modifyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirmar modificación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="modifyModalBody"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" id="confirmModifyBtn" class="btn btn-primary">Modificar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Confirmar Eliminación -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirmar eliminación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="deleteModalBody"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/manage_users.js"></script>
 </body>
 </html>
