@@ -193,7 +193,19 @@ def delete_own_account(request: Request, db: Session = Depends(get_db)):
     user_id = request.session.get("user_id")
     if not user_id:
         return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
-    delete_user(db, user_id)
+    success = delete_user(db, user_id)
+    if not success:
+        user = get_user(db, user_id)
+        return templates.TemplateResponse(
+            "user_config.html",
+            {
+                "request": request,
+                "user": user,
+                "google_user": user.oauth_provider == "google",
+                "error": "La cuenta administradora no puede eliminarse",
+            },
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
     request.session.clear()
     return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
 
@@ -218,7 +230,7 @@ def change_role(
 
 @router.post("/admin/users/delete")
 def delete_user_action(user_id: int = Form(...), db: Session = Depends(get_db)):
-    delete_user(db, user_id)
+    success = delete_user(db, user_id)
     return RedirectResponse("/admin/users", status_code=status.HTTP_302_FOUND)
 
 

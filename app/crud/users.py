@@ -7,6 +7,7 @@ from fastapi import UploadFile
 from app.core.config import USER_PHOTOS_DIR
 
 from app.models.user import User, UserRole
+from app.core.config import ADMIN_EMAIL
 
 
 def get_user_by_email(db: Session, email: str) -> Optional[User]:
@@ -96,6 +97,8 @@ def change_user_role(db: Session, user_id: int, role: UserRole) -> bool:
 def delete_user(db: Session, user_id: int) -> bool:
     user = get_user(db, user_id)
     if not user:
+        return False
+    if user.email == ADMIN_EMAIL:
         return False
     db.query(User).filter(User.id == user_id).delete()
     db.commit()

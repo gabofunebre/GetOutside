@@ -6,6 +6,7 @@ from fastapi.responses import RedirectResponse
 from app.core.db import Base, engine, SessionLocal
 from app.crud import users as crud_users
 from app.models.user import UserRole
+from app.core import config
 import os
 
 
@@ -60,10 +61,10 @@ _ensure_extra_columns()
 def _ensure_admin_user():
     """Create default admin user if none exists."""
     with SessionLocal() as db:
-        if not crud_users.get_user_by_email(db, "admin@admin.com"):
+        if not crud_users.get_user_by_email(db, config.ADMIN_EMAIL):
             crud_users.create_user(
                 db,
-                email="admin@admin.com",
+                email=config.ADMIN_EMAIL,
                 password="admin",
                 role=UserRole.ADMIN,
             )
