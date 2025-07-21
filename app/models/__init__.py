@@ -3,3 +3,4 @@ from .ventas import Venta, DetalleVenta, Descuento, VentaPago, PaymentMethod, Vu
 from .dinero import MovimientoDinero
 from .compras import Compra, Archivo
 from .enums import TipoMov, TipoMovimientoDinero
+from .user import User, UserRole
