@@ -1,5 +1,6 @@
 # Configuración sensible
 .env
+.env.dev
 .env.*
 !.env.dev.example
 .venv/
