@@ -14,15 +14,38 @@
     <div class="alert alert-danger">{{ error }}</div>
     {% endif %}
     <form method="post" action="/config" class="d-flex flex-column gap-3">
-      <input type="text" name="first_name" class="form-control" placeholder="Nombre" value="{{ user.first_name or '' }}">
-      <input type="text" name="last_name" class="form-control" placeholder="Apellido" value="{{ user.last_name or '' }}">
-      <input type="email" name="email" class="form-control" placeholder="Email" value="{{ user.email }}" required>
-      <input type="password" name="password" class="form-control" placeholder="Nueva contraseña (opcional)">
-      <button type="submit" class="btn btn-primary">Guardar</button>
+      <input type="text" name="first_name" class="form-control" placeholder="Nombre" value="{{ user.first_name or '' }}" {% if google_user %}disabled{% endif %}>
+      <input type="text" name="last_name" class="form-control" placeholder="Apellido" value="{{ user.last_name or '' }}" {% if google_user %}disabled{% endif %}>
+      <input type="email" name="email" class="form-control" placeholder="Email" value="{{ user.email }}" required {% if google_user %}disabled{% endif %}>
+      <input type="password" name="password" class="form-control" placeholder="Nueva contraseña (opcional)" {% if google_user %}disabled{% endif %}>
+      <button type="submit" class="btn btn-primary" {% if google_user %}disabled{% endif %}>Guardar</button>
     </form>
+    <div class="text-center mt-3">
+      <button id="deleteAccountBtn" class="btn btn-outline-danger">Eliminar cuenta</button>
+    </div>
     <div class="text-center mt-3">
       <a href="/dashboard" class="text-muted">&larr; Volver</a>
     </div>
   </div>
+
+  <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirmar eliminación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          Está seguro que quiere eliminar este usuario del sistema, sus movimientos quedarán registrados al usuario pero deberá registrarse de nuevo para ingresar
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button id="confirmDeleteAccountBtn" type="button" class="btn btn-danger">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/user_config.js"></script>
 </body>
 </html>
