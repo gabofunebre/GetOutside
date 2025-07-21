@@ -14,13 +14,16 @@
     <div class="alert alert-danger">{{ error }}</div>
     {% endif %}
     <form method="post" action="/register" class="d-flex flex-column gap-3">
+      <input type="text" name="first_name" class="form-control" placeholder="Nombre" required>
+      <input type="text" name="last_name" class="form-control" placeholder="Apellido" required>
       <input type="email" name="email" class="form-control" placeholder="Email" required>
       <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
+      <input type="password" name="password_confirm" class="form-control" placeholder="Confirmación de contraseña" required>
       <button type="submit" class="btn btn-success">Registrarse</button>
     </form>
 
     <div class="my-3 text-center">
-      <a href="/auth/google" class="btn btn-danger w-100">Registrarse con Google</a>
+      <a href="/auth/google" class="btn btn-danger w-100">Ingresar con Google</a>
     </div>
 
     <div class="text-center mt-3">
