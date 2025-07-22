@@ -88,9 +88,9 @@ app.add_middleware(
         "/register",
         "/auth/google",
         "/auth/google/callback",
-        "/static",
         "/",
     ],
+    public_prefixes=["/static"],
 )
 
 # Archivos estáticos
