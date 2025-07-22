@@ -56,7 +56,7 @@ def login_action(
         )
     request.session["user_id"] = user.id
     request.session["role"] = user.role.value
-    return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse("/dashboard", status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/register", response_class=HTMLResponse)
