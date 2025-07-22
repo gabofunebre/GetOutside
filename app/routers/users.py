@@ -28,7 +28,10 @@ router = APIRouter()
 
 @router.get("/login", response_class=HTMLResponse)
 def login_form(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    google_client_id = os.getenv("GOOGLE_CLIENT_ID")
+    return templates.TemplateResponse(
+        "login.html", {"request": request, "google_client_id": google_client_id}
+    )
 
 
 @router.post("/login")
@@ -47,6 +50,7 @@ def login_action(
                 "error": "Credenciales inválidas",
                 "email": email,
                 "password": password,
+                "google_client_id": os.getenv("GOOGLE_CLIENT_ID"),
             },
             status_code=status.HTTP_400_BAD_REQUEST,
         )
