@@ -75,6 +75,23 @@ _ensure_admin_user()
 app = FastAPI(title="GetOutside Stock API")
 # Expira la sesión después de 10 minutos de inactividad
 SESSION_TIMEOUT = 10 * 60  # 10 minutos en segundos
+@app.middleware("http")
+async def require_login(request: Request, call_next):
+    public_paths = {
+        "/login",
+        "/register",
+        "/auth/google",
+        "/auth/google/callback",
+        "/openapi.json",
+    }
+    if request.url.path.startswith("/static") or request.url.path.startswith("/docs"):
+        return await call_next(request)
+    if request.url.path in public_paths:
+        return await call_next(request)
+    if not request.session.get("user_id"):
+        return RedirectResponse("/login")
+    return await call_next(request)
+
 app.add_middleware(
     SessionMiddleware,
     secret_key=os.getenv("SECRET_KEY", "secret"),
