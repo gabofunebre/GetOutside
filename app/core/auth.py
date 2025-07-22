@@ -1,5 +1,5 @@
-from typing import Iterable
 
+from typing import Iterable
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from fastapi.responses import RedirectResponse
@@ -7,6 +7,7 @@ from fastapi.responses import RedirectResponse
 
 class AuthRequiredMiddleware(BaseHTTPMiddleware):
     """Middleware to ensure user is authenticated for protected routes."""
+
 
     def __init__(self, app, public_paths: Iterable[str] | None = None,
                  public_prefixes: Iterable[str] | None = None):
@@ -27,5 +28,4 @@ class AuthRequiredMiddleware(BaseHTTPMiddleware):
 
         if request.session.get("user_id"):
             return await call_next(request)
-
         return RedirectResponse("/login")
