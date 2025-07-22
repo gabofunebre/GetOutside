@@ -3,6 +3,7 @@
    ========================================================================== */
 body {
   background-color: #f8f9fa;
+  font-family: 'Roboto', sans-serif;
 }
 
 .container-limited {
@@ -25,15 +26,17 @@ body {
 /* Google sign-in button */
 .btn-google {
   background-color: #fff;
-  border: 1px solid #dadce0;
-  color: #3c4043;
-  border-radius: 50px;
+  color: #444;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 4px;
   font-weight: 500;
+  transition: background-color 0.3s;
 }
 
 .btn-google:hover {
-  background-color: #f7f8f9;
-  color: #3c4043;
+  background-color: #f7f7f7;
 }
 
 .btn-google img {
