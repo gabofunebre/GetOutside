@@ -38,11 +38,4 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
     }
   });
-
-  const googleBtn = document.getElementById('googleSignIn');
-  if (googleBtn) {
-    googleBtn.addEventListener('click', () => {
-      window.location.href = '/auth/google';
-    });
-  }
 });
