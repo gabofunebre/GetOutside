@@ -28,7 +28,10 @@ router = APIRouter()
 
 @router.get("/login", response_class=HTMLResponse)
 def login_form(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    client_id = os.getenv("GOOGLE_CLIENT_ID")
+    return templates.TemplateResponse(
+        "login.html", {"request": request, "google_client_id": client_id}
+    )
 
 
 @router.post("/login")
@@ -40,6 +43,7 @@ def login_action(
 ):
     user = authenticate_user(db, email, password)
     if not user:
+        client_id = os.getenv("GOOGLE_CLIENT_ID")
         return templates.TemplateResponse(
             "login.html",
             {
@@ -47,12 +51,13 @@ def login_action(
                 "error": "Credenciales inválidas",
                 "email": email,
                 "password": password,
+                "google_client_id": client_id,
             },
             status_code=status.HTTP_400_BAD_REQUEST,
         )
     request.session["user_id"] = user.id
     request.session["role"] = user.role.value
-    return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse("/dashboard", status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/register", response_class=HTMLResponse)

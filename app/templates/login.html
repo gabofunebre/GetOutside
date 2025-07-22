@@ -25,10 +25,11 @@
       <button type="submit" class="btn btn-primary">Ingresar</button>
     </form>
       <div class="my-3 text-center">
-        <a href="/auth/google" class="btn btn-google w-100 d-flex align-items-center justify-content-center gap-2">
-          <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" width="20" height="20">
-          <span>Ingresar con Google</span>
-        </a>
+        <div id="googleSignIn"
+             class="g_id_signin"
+             data-client_id="{{ google_client_id }}"
+             data-theme="filled_blue"
+             data-text="signup_with"></div>
       </div>
   <div class="text-center mt-2">
 
@@ -36,5 +37,6 @@
     </div>
   </div>
   <script src="/static/js/auth/login.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </body>
 </html>

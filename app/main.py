@@ -81,6 +81,24 @@ app.add_middleware(
     max_age=SESSION_TIMEOUT,
 )
 
+
+@app.middleware("http")
+async def require_login(request: Request, call_next):
+    public_paths = {
+        "/login",
+        "/register",
+        "/auth/google",
+        "/auth/google/callback",
+        "/openapi.json",
+    }
+    if request.url.path.startswith("/static") or request.url.path.startswith("/docs"):
+        return await call_next(request)
+    if request.url.path in public_paths:
+        return await call_next(request)
+    if not request.session.get("user_id"):
+        return RedirectResponse("/login")
+    return await call_next(request)
+
 # Archivos estáticos
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
