@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import inspect, text
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.responses import RedirectResponse
+from app.core.auth import AuthRequiredMiddleware
 from app.core.db import Base, engine, SessionLocal
 from app.crud import users as crud_users
 from app.models.user import UserRole
@@ -79,6 +80,17 @@ app.add_middleware(
     SessionMiddleware,
     secret_key=os.getenv("SECRET_KEY", "secret"),
     max_age=SESSION_TIMEOUT,
+)
+app.add_middleware(
+    AuthRequiredMiddleware,
+    public_paths=[
+        "/login",
+        "/register",
+        "/auth/google",
+        "/auth/google/callback",
+        "/static",
+        "/",
+    ],
 )
 
 # Archivos estáticos
