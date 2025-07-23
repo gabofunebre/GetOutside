@@ -23,9 +23,11 @@ def form_compra_add(request: Request):
 #    - También registra un movimiento de egreso vinculado a esa compra
 # =======================================================================
 from fastapi import status
+from app.crud.actions import log_action
 
 @router.post("/new", response_model=CompraOut)
 def crear_compra(
+    request: Request,
     concepto: str = Form(...),
     fecha: datetime = Form(...),
     monto: float = Form(...),
@@ -42,6 +44,16 @@ def crear_compra(
         )
 
         compra = compras.crear_compra_completa(db, compra_data, archivo)
+        user_id = request.session.get("user_id")
+        if user_id:
+            log_action(
+                db,
+                user_id=user_id,
+                action="CREAR_COMPRA",
+                entity_type="COMPRA",
+                entity_id=compra.id,
+                detail=f"Compra #{compra.id} registrada",
+            )
         return compra
 
     except ValueError as e:

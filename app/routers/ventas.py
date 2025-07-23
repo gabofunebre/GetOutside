@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session #, joinedload
 from app.core.templates import templates
 from app.core.deps import get_db
 from app.crud.ventas import create_venta, get_ventas, filtrar_ventas, get_venta_by_id
+from app.crud.actions import log_action
 from app.crud.tenencias import get_tenencias, get_tenencias_convertidas
 from app.schemas.producto import ProductoOut
 from app.schemas.venta import VentaCreate, VentaOut, VentaFilterParams
@@ -102,10 +103,21 @@ def ventas_list(
 
 # === 4) API JSON para crear una venta ===
 @router.post("/", response_model=VentaOut)
-def create_venta_api(v: VentaCreate, db: Session = Depends(get_db)):
+def create_venta_api(v: VentaCreate, request: Request, db: Session = Depends(get_db)):
     """Registra una venta junto con detalles, pagos y descuentos"""
     try:
-        return create_venta(db, v)
+        venta = create_venta(db, v)
+        user_id = request.session.get("user_id")
+        if user_id:
+            log_action(
+                db,
+                user_id=user_id,
+                action="CREAR_VENTA",
+                entity_type="VENTA",
+                entity_id=venta.id,
+                detail=f"Venta #{venta.id} registrada",
+            )
+        return venta
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

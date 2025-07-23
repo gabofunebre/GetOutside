@@ -15,6 +15,7 @@ from app.schemas.dinero import MovimientoDineroCreate, MovimientoDineroOut
 from app.models.dinero import TipoMovimientoDinero, MovimientoDinero
 from app.core.deps import get_db
 from app.core.templates import templates
+from app.crud.actions import log_action
 
 from app.core.config import DEFAULT_MOVIMIENTOS_LIMIT
 
@@ -60,7 +61,9 @@ def listar_movimientos_dinero(
 
 @router.post("/api/movimientos-dinero", status_code=201)
 def crear_movimiento_dinero_api(
-    movimiento: MovimientoDineroCreate, db: Session = Depends(get_db)
+    movimiento: MovimientoDineroCreate,
+    request: Request,
+    db: Session = Depends(get_db)
 ):
     nuevo = crear_y_guardar_movimiento(
         db=db,
@@ -70,6 +73,16 @@ def crear_movimiento_dinero_api(
         importe=movimiento.importe,
         metodo_pago_id=movimiento.payment_method_id,
     )
+    user_id = request.session.get("user_id")
+    if user_id:
+        log_action(
+            db,
+            user_id=user_id,
+            action="MOVIMIENTO_DINERO",
+            entity_type="MOVIMIENTO",
+            entity_id=nuevo.id,
+            detail=f"Movimiento {nuevo.tipo.value} #{nuevo.id}",
+        )
     return JSONResponse(content={"id": nuevo.id}, status_code=status.HTTP_201_CREATED)
 
 @router.get("/movimiento/{movimiento_id}", response_class=HTMLResponse)
