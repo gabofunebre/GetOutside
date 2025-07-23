@@ -61,7 +61,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 # Routers
 from .routers import (
     dashboard, productos, ventas, payment_methods, stock, tenencias,
-    ranking, catalogos, movimientos_dinero, compras, sistem, users
+    ranking, catalogos, movimientos_dinero, compras, sistem, users, actions_log
 )
 
 app.include_router(dashboard.router)
@@ -76,6 +76,7 @@ app.include_router(compras.router)
 app.include_router(tenencias.router)
 app.include_router(sistem.router)
 app.include_router(users.router)
+app.include_router(actions_log.router)
 
 # Redirección raíz
 @app.get("/")

@@ -14,6 +14,7 @@ from app.crud.inventario import (
     update_producto_completo,
     update_stock,
 )
+from app.crud.actions import log_action
 from app.core.deps import get_db
 from app.core.templates import templates
 
@@ -87,7 +88,10 @@ def read_producto_by_id(producto_id: int, db: Session = Depends(get_db)):
 
 @router.put("/id/{producto_id}/stock", response_model=ProductoOut)
 def update_stock_by_id(
-    producto_id: int, data: StockUpdate, db: Session = Depends(get_db)
+    producto_id: int,
+    data: StockUpdate,
+    request: Request,
+    db: Session = Depends(get_db)
 ):
     """
     Ajusta únicamente el stock de un producto.
@@ -95,7 +99,18 @@ def update_stock_by_id(
     prod = db.query(Producto).filter(Producto.id == producto_id).first()
     if not prod:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
-    return update_stock(db, producto_id, data.stock_agregado, data.referencia)
+    prod = update_stock(db, producto_id, data.stock_agregado, data.referencia)
+    user_id = request.session.get("user_id")
+    if user_id:
+        log_action(
+            db,
+            user_id=user_id,
+            action="AJUSTE_STOCK",
+            entity_type="PRODUCTO",
+            entity_id=producto_id,
+            detail=f"Ajuste de stock {data.stock_agregado} ({data.referencia})",
+        )
+    return prod
 
 
 # === LISTADO DE PRODUCTOS COMPLETO ===
