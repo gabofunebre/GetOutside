@@ -1,12 +1,12 @@
 import os
 import secrets
 from urllib.parse import urlencode
-
 import requests
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, File, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from starlette import status
+from starlette.status import HTTP_302_FOUND
 
 from app.core.templates import templates
 from app.core.deps import get_db
@@ -48,11 +48,20 @@ def login_action(
                 "email": email,
                 "password": password,
             },
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=400,
         )
+
+    # Modificá la sesión
     request.session["user_id"] = user.id
     request.session["role"] = user.role.value
-    return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+
+    #LOG DE DEBUG
+    print("🔐 Session set:", dict(request.session))
+
+
+    # Redirección explícita
+    response = RedirectResponse("/", status_code=HTTP_302_FOUND)
+    return response
 
 
 @router.get("/register", response_class=HTMLResponse)

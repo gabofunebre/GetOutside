@@ -28,6 +28,8 @@ up:
 down:
 	$(COMPOSE) -p getoutside_dev -f docker-compose.yml -f docker-compose.override.yml down
 
+down-v:
+	$(COMPOSE) -p getoutside_dev -f docker-compose.yml -f docker-compose.override.yml down -v
 ################################################################################
 #                       SECCIÓN: PRODUCCIÓN                                    #
 ################################################################################

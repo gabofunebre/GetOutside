@@ -1,30 +1,27 @@
+import os
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from sqlalchemy import inspect, text
 from starlette.middleware.sessions import SessionMiddleware
-from fastapi.responses import RedirectResponse
+
 from app.core.auth import AuthRequiredMiddleware
 from app.core.db import Base, engine, SessionLocal
+from app.core import config
 from app.crud import users as crud_users
 from app.models.user import UserRole
-from app.core import config
-import os
 
-
+# Crear columnas faltantes
 def _ensure_extra_columns():
-    """Add optional columns if they're missing (simple auto-migration)."""
     inspector = inspect(engine)
     cols = [c["name"] for c in inspector.get_columns("productos")]
     with engine.connect() as conn:
         if "foto_filename" not in cols:
             conn.execute(text("ALTER TABLE productos ADD COLUMN foto_filename VARCHAR"))
         if "costo_produccion" not in cols:
-            conn.execute(
-                text("ALTER TABLE productos ADD COLUMN costo_produccion DECIMAL(12,2)")
-            )
+            conn.execute(text("ALTER TABLE productos ADD COLUMN costo_produccion DECIMAL(12,2)"))
         conn.commit()
 
-    # Optional columns for users
     cols = [c["name"] for c in inspector.get_columns("users")]
     with engine.connect() as conn:
         if "first_name" not in cols:
@@ -37,30 +34,12 @@ def _ensure_extra_columns():
             conn.execute(text("ALTER TABLE users ADD COLUMN foto_filename VARCHAR"))
         conn.commit()
 
-
-# Routers existentes
-from .routers import (
-    dashboard,
-    productos,
-    ventas,
-    payment_methods,
-    stock,
-    tenencias,
-    ranking,
-    catalogos,
-    movimientos_dinero,
-    compras,
-    sistem,
-    users,
-)
-
-# Crear tablas en base de datos
+# Crear tablas y columnas
 Base.metadata.create_all(bind=engine)
 _ensure_extra_columns()
 
-
+# Crear admin si no existe
 def _ensure_admin_user():
-    """Create default admin user if none exists."""
     with SessionLocal() as db:
         if not crud_users.get_user_by_email(db, config.ADMIN_EMAIL):
             crud_users.create_user(
@@ -70,17 +49,14 @@ def _ensure_admin_user():
                 role=UserRole.ADMIN,
             )
 
-
 _ensure_admin_user()
 
+# Crear app
 app = FastAPI(title="GetOutside Stock API")
-# Expira la sesión después de 10 minutos de inactividad
-SESSION_TIMEOUT = 10 * 60  # 10 minutos en segundos
-app.add_middleware(
-    SessionMiddleware,
-    secret_key=os.getenv("SECRET_KEY", "secret"),
-    max_age=SESSION_TIMEOUT,
-)
+
+SESSION_TIMEOUT = 10 * 60  # 10 minutos
+
+# Middleware de autenticación
 app.add_middleware(
     AuthRequiredMiddleware,
     public_paths=[
@@ -93,10 +69,25 @@ app.add_middleware(
     public_prefixes=["/static"],
 )
 
+# Middleware de sesión
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=os.getenv("SECRET_KEY"),
+    max_age=SESSION_TIMEOUT,
+    same_site="lax",
+    https_only=True,
+    session_cookie="session"
+)
+
 # Archivos estáticos
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Routers
+from .routers import (
+    dashboard, productos, ventas, payment_methods, stock, tenencias,
+    ranking, catalogos, movimientos_dinero, compras, sistem, users
+)
+
 app.include_router(dashboard.router)
 app.include_router(productos.router)
 app.include_router(ventas.router)
@@ -110,9 +101,10 @@ app.include_router(tenencias.router)
 app.include_router(sistem.router)
 app.include_router(users.router)
 
-
+# Redirección raíz
 @app.get("/")
 def root(request: Request):
     if request.session.get("user_id"):
         return RedirectResponse("/dashboard")
     return RedirectResponse("/login")
+
