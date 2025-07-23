@@ -16,7 +16,7 @@
     <h5 class="mb-3">Productos</h5>
     {% for d in venta.detalles %}
       <div class="producto-block mb-3">
-        <div><strong>{{ d.producto.codigo_getoutside }}</strong> - {{ d.producto.descripcion }}</div>
+        <div><strong>{{ d.codigo_getoutside }}</strong> - {{ d.descripcion }}</div>
         <div class="d-flex justify-content-between text-muted">
           <span>
             Cantidad: {{ d.cantidad }} &nbsp;&nbsp;&nbsp;

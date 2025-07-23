@@ -21,6 +21,8 @@ class DetalleVentaOut(DetalleVentaIn):
     Esquema de salida para detalle de venta, con subtotal calculado.
     """
 
+    codigo_getoutside: str  # Código del producto al momento de la venta
+    descripcion: str  # Descripción guardada del producto
     subtotal: float  # cantidad * precio_unitario
 
     model_config = ConfigDict(from_attributes=True)

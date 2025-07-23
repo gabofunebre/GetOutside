@@ -47,6 +47,8 @@ def create_venta(db: Session, v: VentaCreate) -> Venta:
             DetalleVenta(
                 venta_id=venta.id,
                 producto_id=item.producto_id,
+                codigo_getoutside=prod.codigo_getoutside,
+                descripcion=prod.descripcion,
                 cantidad=item.cantidad,
                 precio_unitario=item.precio_unitario,
                 subtotal=item.cantidad * item.precio_unitario,
