@@ -27,8 +27,8 @@
             <td>
               {% for d in v.detalles %}
                 <span>
-                  {{ d.producto.codigo_getoutside }}
-                  <span class="d-none d-md-inline"> - {{ d.producto.descripcion }}</span>
+                  {{ d.codigo_getoutside }}
+                  <span class="d-none d-md-inline"> - {{ d.descripcion }}</span>
                 </span>{% if not loop.last %}, {% endif %}
               {% endfor %}
             </td>
