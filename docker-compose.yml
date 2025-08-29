@@ -1,10 +1,8 @@
-version: "3.9"
-
 services:
   web:
     build: .
-    ports:
-      - "14141:8000"
+    expose:
+      - "8000"                    # ← antes: ports 14141:8000
     env_file:
       - .env.dev
     environment:
@@ -13,10 +11,10 @@ services:
       - .:/app
       - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/Uploads:/app/static/uploads
     networks:
-      - getoutside-net
-      - nginx_net
+      - getoutside-net            # privada de la app (para DB)
+      - nginx_net                 # salida al túnel para UI
     depends_on: []
-    restart: unless-stopped 
+    restart: unless-stopped
 
 networks:
   getoutside-net:

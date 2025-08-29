@@ -1,31 +1,27 @@
-version: "3.8"
-
 services:
   db:
     image: postgres:15
     container_name: getoutside_stock-db
-    ports:
-      - "5432:5432"
+    # ❌ ports eliminado (no exponer al host)
     env_file:
       - .env
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-      TZ: Pacific/Auckland           # Afecta el sistema del contenedor
-      PGTZ: Pacific/Auckland         # Sugerido: asegura que PostgreSQL use ese timezone
+      TZ: Pacific/Auckland
+      PGTZ: Pacific/Auckland
     volumes:
       - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/DataBase:/var/lib/postgresql/data
-      - /etc/localtime:/etc/localtime:ro  # Opcional pero útil
+      - /etc/localtime:/etc/localtime:ro
     networks:
-      - getoutside-net
-      - nginx_net
-    restart: unless-stopped  
+      - getoutside-net            # ← DB SOLO en la red privada
+    restart: unless-stopped
 
   web:
     build: .
-    ports:
-      - "55155:8000"
+    expose:
+      - "8000"                    # ← antes: ports 55155:8000
     depends_on:
       - db
     env_file:
@@ -35,9 +31,9 @@ services:
     volumes:
       - /srv/dev-disk-by-uuid-1735d6ab-2a75-4dc4-91a9-b81bb3fda73d/Servicios/GetOutside_produccion/Uploads:/app/static/uploads
     networks:
-      - getoutside-net
-      - nginx_net
-    restart: unless-stopped  
+      - getoutside-net            # habla con DB por acá
+      - nginx_net                 # UI accesible por Cloudflare
+    restart: unless-stopped
 
 networks:
   getoutside-net:
